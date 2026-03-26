@@ -1,6 +1,7 @@
 package com.algaworks.algafoodapi2.exceptionhandler;
 
 import com.algaworks.algafoodapi2.domain.exception.EmUso.EntidadeEmUsoException;
+import com.algaworks.algafoodapi2.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafoodapi2.domain.exception.NotFound.EntityNotFoundException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.MessageSource;
@@ -99,6 +100,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntidadeEmUsoException.class)
     public ResponseEntity<?> handleEntidadeEmUso(EntidadeEmUsoException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        String detail = ex.getMessage();
+        ProblemType problemType = ProblemType.ENTIDADE_EM_USO;
+        Problem problem = createProblemBuilder(status, problemType, detail).build();
+        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+    @ExceptionHandler(EntidadeJaExistente.class)
+    public ResponseEntity<?> handleNotFound(EntidadeJaExistente ex, WebRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
         String detail = ex.getMessage();
         ProblemType problemType = ProblemType.ENTIDADE_EM_USO;

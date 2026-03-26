@@ -1,10 +1,13 @@
 package com.algaworks.algafoodapi2.service;
 
+import com.algaworks.algafoodapi2.DTO.RestauranteDTO;
+import com.algaworks.algafoodapi2.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafoodapi2.domain.exception.NotFound.CozinhaNotFoundException;
 import com.algaworks.algafoodapi2.domain.exception.NotFound.EntityNotFoundException;
 import com.algaworks.algafoodapi2.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafoodapi2.domain.model.*;
 import com.algaworks.algafoodapi2.infrastructure.repository.spec.RestauranteSpecs;
+import com.algaworks.algafoodapi2.mapper.RestauranteDTOMapper;
 import com.algaworks.algafoodapi2.repository.CozinhaRepository;
 import com.algaworks.algafoodapi2.repository.FormaPagamentoRepository;
 import com.algaworks.algafoodapi2.repository.RestauranteRepository;
@@ -28,10 +31,16 @@ public class RestauranteService {
     private final RestauranteRepository restauranteRepository;
     private final CozinhaRepository cozinhaRepository;
     private final FormaPagamentoRepository formaPagamentoRepository;
+    private final RestauranteDTOMapper restauranteDTOMapper;
 
 
-    public List<Restaurante> listAll() {
-        return restauranteRepository.findAll();
+
+
+    public List<RestauranteDTO> listAll() {
+        return restauranteRepository.findAll()
+                .stream()
+                .map(restauranteDTOMapper::toDTO)
+                .toList();
     }
 
 
@@ -48,6 +57,7 @@ public class RestauranteService {
     }
 
     public Restaurante save(Restaurante restauranteRequest) {
+        checarSeExisteNome(restauranteRequest.getNome(), restauranteRequest.getId());
         Cozinha cozinha = cozinhaRepository.findById(restauranteRequest.getCozinha().getId())
                 .orElseThrow(() -> new CozinhaNotFoundException(restauranteRequest.getCozinha().getId()));
         List<Long> ids = restauranteRequest.getFormaPagamento().stream()
@@ -72,7 +82,7 @@ public class RestauranteService {
     }
 
     public Restaurante replace(Long id, Restaurante restauranteRequest) {
-
+        checarSeExisteNome(restauranteRequest.getNome(), id);
         Restaurante restaurante = restauranteRepository.findById(id)
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
 
@@ -177,6 +187,16 @@ public class RestauranteService {
 
             restaurante.setFormaPagamento(formas);
         }
+
+    }
+    public void checarSeExisteNome(String nome, Long id) {
+
+        restauranteRepository.findByNome(nome)
+                .ifPresent(restaurante -> {
+                    if(!restaurante.getId().equals(id)) {
+                        throw new EntidadeJaExistente();
+                    }
+                });
     }
     }
 

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface RestauranteRepository extends JpaRepository<Restaurante, Long>, RestauranteRepositoryQueries, JpaSpecificationExecutor<Restaurante> {
 
@@ -18,6 +19,8 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long>,
     List<Restaurante> findAll();
 
     boolean existsByCozinhaId(Long cozinhaId);
+
+    Optional<Restaurante> findByNome(String nome);
 
 
 }

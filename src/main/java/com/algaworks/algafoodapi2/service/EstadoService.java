@@ -1,6 +1,8 @@
 package com.algaworks.algafoodapi2.service;
 
 import com.algaworks.algafoodapi2.domain.exception.EmUso.EstadoEmUsoException;
+import com.algaworks.algafoodapi2.domain.exception.JaExistente.EntidadeJaExistente;
+import com.algaworks.algafoodapi2.domain.exception.JaExistente.NegocioExistenteException;
 import com.algaworks.algafoodapi2.domain.exception.NotFound.EstadoNotFoundException;
 import com.algaworks.algafoodapi2.domain.model.Estado;
 import com.algaworks.algafoodapi2.repository.CidadeRepository;
@@ -31,6 +33,7 @@ public class EstadoService {
                 .orElseThrow(() -> new EstadoNotFoundException(id));
     }
     public Estado save(Estado estado) {
+        checarSeExiste(estado.getNome(), estado.getId());
         Estado.builder()
                 .nome(estado.getNome())
                 .build();
@@ -42,5 +45,20 @@ public class EstadoService {
         }
         estadoRepository.delete(findById(id));
     }
+    public Estado put(Long id, Estado estadoRequest) {
+        Estado estado = findById(id);
+        checarSeExiste(estadoRequest.getNome(), estado.getId());
+        estado.setNome(estadoRequest.getNome());
+        return estadoRepository.save(estado);
+    }
+    public void checarSeExiste(String nome, Long id) {
+
+        estadoRepository.findByNome(nome)
+                .ifPresent(estadoExistente -> {
+                    if(!estadoExistente.getId().equals(id)) {
+                    throw new EntidadeJaExistente();
+                    }
+                });
+                }
 
 }
