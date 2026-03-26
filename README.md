@@ -4,9 +4,9 @@ Projeto em Java/Spring Boot inspirado em soluções como iFood e Uber Eats, obje
 
 ## Requisitos
 
--JDK 17
--Maven
--MySQL
+- JDK 17
+- Maven
+- MySQL
 
 ## Principais Recursos
 
