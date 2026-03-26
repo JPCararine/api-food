@@ -25,7 +25,7 @@ public class CozinhaController {
         this.cozinhaService = cozinhaService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<Cozinha>> list() {
         return ResponseEntity.ok(cozinhaService.findAll());
     }
