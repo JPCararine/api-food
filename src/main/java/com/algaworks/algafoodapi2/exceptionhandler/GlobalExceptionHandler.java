@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class
+GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private MessageSource messageSource;
 

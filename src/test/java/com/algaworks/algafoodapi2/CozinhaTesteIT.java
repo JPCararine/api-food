@@ -12,7 +12,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
 @SpringBootTest
-public class CozinhaIntegrationTests {
+public class CozinhaTesteIT {
 
         @Autowired
         private CozinhaService cozinhaService;
