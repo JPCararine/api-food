@@ -39,4 +39,8 @@ public class EstadoController {
         estadoService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Estado> put(@PathVariable long id, @RequestBody @Valid Estado estadoRequest){
+        return new ResponseEntity<>(estadoService.put(id, estadoRequest), HttpStatus.OK);
+    }
 }

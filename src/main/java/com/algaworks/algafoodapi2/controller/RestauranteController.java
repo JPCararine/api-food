@@ -29,7 +29,7 @@ public class RestauranteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Restaurante>> list() {
+    public ResponseEntity<List<RestauranteDTO>> list() {
             return ResponseEntity.ok(restauranteService.listAll());
         }
         @GetMapping("/{id}")

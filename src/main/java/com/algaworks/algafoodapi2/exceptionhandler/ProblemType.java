@@ -9,7 +9,7 @@ public enum ProblemType {
     PROPRIEDADE_IGNORADA("Propriedade Ignorada no Domain", "/mensagem-ignorada"),
     MENSAGEM_INCOMPREENSIVEL("Mensagem incompreensível", "/mensagem-incompreensivel"),
     ENTIDADE_NAO_ENCONTRADA("Nenhuma entidade foi encontrada", "/entidade-nao-encontrada"),
-    ENTIDADE_EM_USO("Entidade em uso", "/entidade-em-uso");
+    ENTIDADE_EM_USO("Em uso", "/em-uso");
 
     private String title;
     private String uri;
