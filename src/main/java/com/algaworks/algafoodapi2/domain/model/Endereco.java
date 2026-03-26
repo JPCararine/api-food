@@ -1,9 +1,8 @@
 package com.algaworks.algafoodapi2.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -19,6 +18,7 @@ public class Endereco {
     private String complemento;
     @Column(name = "endereco_bairro")
     private String bairro;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "endereco_cidade_id")
     private Cidade cidade;
 }
