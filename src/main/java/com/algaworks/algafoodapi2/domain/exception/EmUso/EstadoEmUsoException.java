@@ -4,4 +4,8 @@ public class EstadoEmUsoException extends EntidadeEmUsoException {
     public EstadoEmUsoException(Long id) {
         super("Estado de " + id + " não pode ser deletado, pois está em uso");
     }
-}
+
+
+    }
+
+

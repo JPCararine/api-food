@@ -12,6 +12,5 @@ public class RestauranteDTOPut {
     private BigDecimal taxaFrete;
     private boolean ativo;
     private boolean aberto;
-    LocalDateTime dataCadastro = LocalDateTime.now();
-    LocalDateTime dataAtualizacao = LocalDateTime.now();
+    private CozinhaDTOPUT cozinhaDTOPUT;
 }
