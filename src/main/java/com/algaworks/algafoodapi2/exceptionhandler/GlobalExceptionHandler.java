@@ -19,8 +19,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.util.InvalidUrlException;
 import tools.jackson.core.JacksonException;
+import tools.jackson.databind.exc.IgnoredPropertyException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.PropertyBindingException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,11 +44,14 @@ GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         if (exception instanceof InvalidFormatException) {
             return handleInvalidFormatException((InvalidFormatException) exception, headers, status, request);
         }
-        if (exception instanceof PropertyBindingException) {
-            return handleIgnorePropertyException((PropertyBindingException) exception, headers, status, request);
+        if (exception instanceof IgnoredPropertyException) {
+            return handleIgnorePropertyException((IgnoredPropertyException) exception, headers, status, request);
         }
         if(exception instanceof MethodArgumentNotValidException) {
             return handleMethodArgumentNotValid((MethodArgumentNotValidException) exception, headers, status, request);
+        }
+        if(exception instanceof UnrecognizedPropertyException) {
+            return handleUnrecognizedProperty((UnrecognizedPropertyException) exception, headers, status, request);
         }
         ProblemType problemType = ProblemType.MENSAGEM_INCOMPREENSIVEL;
         String detail = "O corpo da requisição está inválido. Verifique erro de sintaxe";
@@ -81,11 +86,19 @@ GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return handleExceptionInternal(ex, problem, headers, status, request);
     }
-    private ResponseEntity<Object> handleIgnorePropertyException(PropertyBindingException ex, HttpHeaders headers,
+    private ResponseEntity<Object> handleIgnorePropertyException(IgnoredPropertyException ex, HttpHeaders headers,
                                                                  HttpStatusCode status, WebRequest request) {
         String path = pather(ex.getPath());
         String detail = String.format("Campo '%s' inválido", path);
         ProblemType problemType = ProblemType.PROPRIEDADE_IGNORADA;
+        Problem problem = createProblemBuilder((HttpStatus) status, problemType, detail).build();
+        return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+    private ResponseEntity<Object> handleUnrecognizedProperty(UnrecognizedPropertyException ex, HttpHeaders headers, HttpStatusCode
+                                                              status, WebRequest request) {
+        String path = pather(ex.getPath());
+        ProblemType problemType = ProblemType.PROPRIEDADE_NAO_RECONHECIDA;
+        String detail = String.format("Campo '%s' não reconhecido ou inexistente", path);
         Problem problem = createProblemBuilder((HttpStatus) status, problemType, detail).build();
         return handleExceptionInternal(ex, problem, headers, status, request);
     }

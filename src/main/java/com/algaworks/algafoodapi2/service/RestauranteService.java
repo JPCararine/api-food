@@ -11,6 +11,7 @@ import com.algaworks.algafoodapi2.mapper.RestauranteDTOMapper;
 import com.algaworks.algafoodapi2.repository.CozinhaRepository;
 import com.algaworks.algafoodapi2.repository.FormaPagamentoRepository;
 import com.algaworks.algafoodapi2.repository.RestauranteRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -55,7 +56,7 @@ public class RestauranteService {
         }
         return restauranteRepository.consultarPorNome(nome, id);
     }
-
+    @Transactional
     public Restaurante save(Restaurante restauranteRequest) {
         checarSeExisteNome(restauranteRequest.getNome(), restauranteRequest.getId());
         Cozinha cozinha = cozinhaRepository.findById(restauranteRequest.getCozinha().getId())
@@ -76,18 +77,18 @@ public class RestauranteService {
 
 
     }
-
+    @Transactional
     public void delete(long id) {
         restauranteRepository.delete(findById(id));
     }
-
+    @Transactional
     public Restaurante replace(Long id, Restaurante restauranteRequest) {
         checarSeExisteNome(restauranteRequest.getNome(), id);
         Restaurante restaurante = restauranteRepository.findById(id)
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
 
         BeanUtils.copyProperties(restauranteRequest, restaurante,
-                "id", "formaPagamentos", "endereco", "dataCadastro", "aberto", "ativo");
+                "id", "formaPagamento", "endereco", "dataCadastro", "aberto", "ativo");
 
         Long cozinhaId = restauranteRequest.getCozinha().getId();
 
@@ -99,7 +100,6 @@ public class RestauranteService {
         return restauranteRepository.save(restaurante);
 
         }
-
 
 
     public void merge(Map<String, Object> camposPassados, Restaurante restauranteAtual) {
@@ -122,6 +122,7 @@ public class RestauranteService {
         });
 
     }
+
     public Restaurante update(Restaurante restauranteAtual) {
         return restauranteRepository.save(restauranteAtual);
     }

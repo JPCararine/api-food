@@ -23,6 +23,5 @@ public class FormaPagamento {
     public FormaPagamento() {
     }
     @ManyToMany
-    @JsonIgnore
     public List<Restaurante> restaurantes;
 }

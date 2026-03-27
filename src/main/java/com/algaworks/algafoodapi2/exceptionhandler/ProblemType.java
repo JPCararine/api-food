@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ProblemType {
 
+    PROPRIEDADE_NAO_RECONHECIDA("Propriedade não reconhecida ", "/propriedade-nao-reconhecida"),
     ATRIBUTO_FALTANDO("Está faltando atributos no body", "/atributos-faltando"),
     PROPRIEDADE_IGNORADA("Propriedade Ignorada no Domain", "/mensagem-ignorada"),
     MENSAGEM_INCOMPREENSIVEL("Mensagem incompreensível", "/mensagem-incompreensivel"),

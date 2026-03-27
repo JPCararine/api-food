@@ -27,7 +27,6 @@ public class Cozinha {
     public Cozinha() {
     }
     @OneToMany(mappedBy = "cozinha")
-    @JsonIgnore
     public List<Restaurante> restaurantes;
 }
 

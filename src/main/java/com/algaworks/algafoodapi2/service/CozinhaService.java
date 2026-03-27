@@ -6,6 +6,7 @@ import com.algaworks.algafoodapi2.domain.exception.EmUso.EntidadeEmUsoException;
 import com.algaworks.algafoodapi2.domain.model.Cozinha;
 import com.algaworks.algafoodapi2.repository.CozinhaRepository;
 import com.algaworks.algafoodapi2.repository.RestauranteRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ public class CozinhaService {
         return cozinhaRepository.findById(id)
                 .orElseThrow(() -> new CozinhaNotFoundException(id));
     }
+    @Transactional
     public Cozinha save(Cozinha cozinhaRequest) {
         Cozinha cozinha = Cozinha.builder()
                 .nome(cozinhaRequest.getNome())
@@ -43,6 +45,7 @@ public class CozinhaService {
 
         return cozinhaRepository.save(cozinha);
     }
+    @Transactional
     public void delete(long id) {
 
         if(restauranteRepository.existsByCozinhaId(id)) {
@@ -51,6 +54,7 @@ public class CozinhaService {
         cozinhaRepository.delete(findById(id));
 
     }
+    @Transactional
     public Cozinha replace(Long id, Cozinha cozinhaRequest) {
         Cozinha cozinha = findById(id);
         cozinha.setNome(cozinhaRequest.getNome());

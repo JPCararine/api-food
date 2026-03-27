@@ -25,22 +25,26 @@ public class Restaurante {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotBlank
     private String nome;
+
     @NotNull
     @PositiveOrZero
     private BigDecimal taxaFrete;
+
+
     private Boolean aberto;
     private Boolean ativo;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"hibernateLazyInitializer"})
+
+
+    @ManyToOne
     @NotNull
     @ConvertGroup(from = Default.class, to = Groups.CozinhaId.class)
     @Valid
     private Cozinha cozinha;
 
     @OneToMany(mappedBy = "restaurante")
-    @JsonIgnore
     private List<Produto> produtos;
 
 
@@ -48,16 +52,13 @@ public class Restaurante {
     private List<FormaPagamento> formaPagamento = new ArrayList<>();
 
     @Embedded
-    @JsonIgnore
     private Endereco endereco;
 
     @CreationTimestamp
-    @JsonIgnore
     @Column(columnDefinition = "datetime")
     private LocalDateTime dataCadastro;
 
     @UpdateTimestamp
-    @JsonIgnore
     @Column(columnDefinition = "datetime")
     private LocalDateTime dataAtualizacao;
     public Restaurante() {
