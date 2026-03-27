@@ -6,6 +6,7 @@ import com.algaworks.algafoodapi2.domain.model.Cidade;
 import com.algaworks.algafoodapi2.domain.model.Estado;
 import com.algaworks.algafoodapi2.repository.CidadeRepository;
 import com.algaworks.algafoodapi2.repository.EstadoRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class CidadeService {
         return cidadeRepository.findById(id)
                 .orElseThrow(() -> new CidadeNotFoundException(id));
     }
+    @Transactional
     public Cidade save(Cidade cidade) {
         Estado estado = estadoRepository.findById(cidade.getEstado().getId())
                         .orElseThrow(() -> new EstadoNotFoundException(cidade.getEstado().getId()));
@@ -37,11 +39,12 @@ public class CidadeService {
                 .build();
         return cidadeRepository.save(cidade);
     }
+    @Transactional
     public void delete(long id) {
 
         cidadeRepository.delete(findById(id));
     }
-
+    @Transactional
     public Cidade replace(Long id, Cidade cidadeRequest) {
         Cidade cidade = findById(id);
 

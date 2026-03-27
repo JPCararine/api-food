@@ -24,6 +24,5 @@ public class Permissao {
     private String nome;
     private String descricao;
     @ManyToMany
-    @JsonIgnore
     private List<Grupo> grupos;
 }

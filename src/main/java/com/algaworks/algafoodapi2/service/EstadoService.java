@@ -8,6 +8,7 @@ import com.algaworks.algafoodapi2.domain.model.Estado;
 import com.algaworks.algafoodapi2.repository.CidadeRepository;
 import com.algaworks.algafoodapi2.repository.CozinhaRepository;
 import com.algaworks.algafoodapi2.repository.EstadoRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ public class EstadoService {
         return estadoRepository.findById(id)
                 .orElseThrow(() -> new EstadoNotFoundException(id));
     }
+    @Transactional
     public Estado save(Estado estado) {
         checarSeExiste(estado.getNome(), estado.getId());
         Estado.builder()
@@ -39,12 +41,14 @@ public class EstadoService {
                 .build();
         return estadoRepository.save(estado);
     }
+    @Transactional
     public void delete(long id) {
         if(cidadeRepository.existsByEstadoId(id)) {
             throw new EstadoEmUsoException(id);
         }
         estadoRepository.delete(findById(id));
     }
+    @Transactional
     public Estado put(Long id, Estado estadoRequest) {
         Estado estado = findById(id);
         checarSeExiste(estadoRequest.getNome(), estado.getId());

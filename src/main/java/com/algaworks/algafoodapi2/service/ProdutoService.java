@@ -6,6 +6,7 @@ import com.algaworks.algafoodapi2.domain.model.Produto;
 import com.algaworks.algafoodapi2.domain.model.Restaurante;
 import com.algaworks.algafoodapi2.repository.ProdutoRepository;
 import com.algaworks.algafoodapi2.repository.RestauranteRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
@@ -33,6 +34,7 @@ public class ProdutoService {
         return produtoRepository.findById(id)
                 .orElseThrow(() -> new ProdutoNotFoundException(id));
     }
+    @Transactional
     public Produto save(Produto produtoRequest) {
         corrigirRelacionamento(produtoRequest);
         Produto produto = Produto.builder()
@@ -44,6 +46,7 @@ public class ProdutoService {
                 .build();
         return produtoRepository.save(produto);
     }
+    @Transactional
     public void delete(long id){
         produtoRepository.delete(findById(id));
     }

@@ -30,6 +30,5 @@ public class Estado {
     public Estado() {
     }
     @OneToMany(mappedBy = "estado")
-    @JsonIgnore
     private List<Cidade> cidades;
 }
