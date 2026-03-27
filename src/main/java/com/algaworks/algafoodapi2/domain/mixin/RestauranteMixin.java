@@ -13,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +36,10 @@ public class RestauranteMixin {
     private Endereco endereco;
 
 
-    @JsonIgnore
-    private LocalDateTime dataCadastro;
+   // @JsonIgnore
+    private OffsetDateTime dataCadastro;
 
 
-    @JsonIgnore
-    private LocalDateTime dataAtualizacao;
+   // @JsonIgnore
+    private OffsetDateTime dataAtualizacao;
 }

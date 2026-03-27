@@ -6,5 +6,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class CidadeMixin {
 
     @JsonIgnoreProperties(value = "nome", allowGetters = true)
-    private Estado estado;
+    private Estado estado ;
 }

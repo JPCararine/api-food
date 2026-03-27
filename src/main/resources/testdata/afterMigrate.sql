@@ -48,7 +48,7 @@ insert into restaurante (
     ativo, aberto
 ) values (
              1, 'Thai Gourmet', 10, 1,
-             utc_timestamp(), utc_timestamp(),
+             `current_timestamp`(), `current_timestamp`(),
              1,
              '38400-999', 'Rua João Pinheiro', '1000', 'Centro',
              true, true
@@ -61,7 +61,7 @@ insert into restaurante (
     ativo, aberto
 ) values (
              2, 'Thai Delivery', 9.50, 1,
-             utc_timestamp(), utc_timestamp(),
+             `current_timestamp`(), `current_timestamp`(),
              1,
              true, true
          );
@@ -73,7 +73,7 @@ insert into restaurante (
     ativo, aberto
 ) values (
              3, 'Tuk Tuk Comida Indiana', 15, 2,
-             utc_timestamp(), utc_timestamp(),
+             `current_timestamp`(), `current_timestamp`(),
              2,
              true, true
          );
@@ -85,7 +85,7 @@ insert into restaurante (
     ativo, aberto
 ) values (
              4, 'Java Steakhouse', 12, 3,
-             utc_timestamp(), utc_timestamp(),
+             `current_timestamp`(), `current_timestamp`(),
              3,
              true, true
          );
@@ -97,7 +97,7 @@ insert into restaurante (
     ativo, aberto
 ) values (
              5, 'Lanchonete do Tio Sam', 11, 4,
-             utc_timestamp(), utc_timestamp(),
+             `current_timestamp`(), `current_timestamp`(),
              4,
              true, true
          );
@@ -109,7 +109,7 @@ insert into restaurante (
     ativo, aberto
 ) values (
              6, 'Bar da Maria', 6, 4,
-             utc_timestamp(), utc_timestamp(),
+             `current_timestamp`(), `current_timestamp`(),
              5,
              true, true
          );

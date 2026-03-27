@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.module.SimpleModule;
 
 @Component
-public class CustomJacksonMixinModule extends SimpleModule {
+public class customJacksonMixinModule extends SimpleModule {
 
-    public CustomJacksonMixinModule() {
+    public customJacksonMixinModule() {
         setMixInAnnotation(Restaurante.class, RestauranteMixin.class);
         setMixInAnnotation(Cozinha.class, CozinhaMixin.class);
         setMixInAnnotation(Estado.class, EstadoMixin.class);
