@@ -1,0 +1,10 @@
+{
+  "nome": "Lá no Soneca",
+  "taxaFrete": 15,
+  "aberto": true,
+  "ativo": true,
+  "cozinha": {
+    "id": 1
+  },
+  "formaPagamento": []
+}

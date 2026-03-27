@@ -1,0 +1,11 @@
+{
+
+  "nome": "Teste sem frete",
+  "aberto": true,
+  "ativo": true,
+  "cozinha": {
+    "id": 2
+  },
+  "formaPagamento": []
+
+}
