@@ -1,5 +1,10 @@
 package com.algaworks.algafood.domain.service;
 
+import com.algaworks.algafood.api.DTO.Cidade.CidadeDTO;
+import com.algaworks.algafood.api.DTO.Cidade.CidadeInputDTO;
+import com.algaworks.algafood.api.assembler.CidadeDTOAssembler;
+import com.algaworks.algafood.api.assembler.CidadeInputDisassembler;
+import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.CidadeNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.EstadoNotFoundException;
 import com.algaworks.algafood.domain.model.Cidade;
@@ -18,43 +23,67 @@ public class CidadeService {
 
     private final CidadeRepository cidadeRepository;
     private final EstadoRepository estadoRepository;
+    private final CidadeDTOAssembler cidadeDTOAssembler;
+    private final CidadeInputDisassembler cidadeInputDisassembler;
 
 
 
-    public List<Cidade> listAll() {
-        return cidadeRepository.findAll();
+    public List<CidadeDTO> listAll() {
+
+        return cidadeRepository.findAll()
+                .stream()
+                .map(cidadeDTOAssembler::toDto)
+                .toList();
     }
 
-    public Cidade findById(Long id) {
-        return cidadeRepository.findById(id)
+    public CidadeDTO findById(Long id) {
+        Cidade cidade = cidadeRepository.findById(id)
                 .orElseThrow(() -> new CidadeNotFoundException(id));
+        return cidadeDTOAssembler.toDto(cidade);
     }
     @Transactional
-    public Cidade save(Cidade cidade) {
-        Estado estado = estadoRepository.findById(cidade.getEstado().getId())
-                        .orElseThrow(() -> new EstadoNotFoundException(cidade.getEstado().getId()));
-        Cidade.builder()
-                .nome(cidade.getNome())
-                .estado(estado)
-                .build();
-        return cidadeRepository.save(cidade);
+    public CidadeDTO save(CidadeInputDTO cidadeInputDTO) {
+        checarSeExisteNome(cidadeInputDTO.getNome(), null);
+
+        Estado estado = estadoRepository.findById(cidadeInputDTO.getEstado().getId())
+                .orElseThrow(() -> new EstadoNotFoundException(cidadeInputDTO.getEstado().getId()));
+
+        Cidade cidade = cidadeInputDisassembler.toEntity(cidadeInputDTO, estado);
+
+
+        return cidadeDTOAssembler.toDto(cidadeRepository.save(cidade));
     }
     @Transactional
     public void delete(long id) {
-
-        cidadeRepository.delete(findById(id));
+        Cidade cidade = cidadeRepository.findById(id)
+                        .orElseThrow(() -> new CidadeNotFoundException(id));
+        cidadeRepository.delete(cidade);
     }
     @Transactional
-    public Cidade replace(Long id, Cidade cidadeRequest) {
-        Cidade cidade = findById(id);
+    public CidadeDTO replace(Long id, CidadeInputDTO cidadeInputDTO) {
 
-        cidade.setNome(cidadeRequest.getNome());
-        if(cidadeRequest.getEstado() != null) {
-            Estado estado = estadoRepository.findById(cidadeRequest.getEstado().getId())
-                    .orElseThrow(() -> new EstadoNotFoundException(cidadeRequest.getEstado().getId()));
-            cidade.setEstado(estado);
+        Cidade cidade = cidadeRepository.findById(id)
+                .orElseThrow(() -> new CidadeNotFoundException(id));
+        checarSeExisteNome(cidadeInputDTO.getNome(), cidade.getId());
+
+        Estado estado = estadoRepository.findById(cidadeInputDTO.getEstado().getId())
+                .orElseThrow(() -> new EstadoNotFoundException(cidadeInputDTO.getEstado().getId()));
+        cidade.setEstado(estado);
+
+        cidadeInputDisassembler.copyToEntity(cidadeInputDTO, cidade);
+
+
+
+        return cidadeDTOAssembler.toDto(cidadeRepository.save(cidade));
+
         }
-        return cidadeRepository.save(cidade);
+        public void checarSeExisteNome(String nome, Long id) {
+            cidadeRepository.findByNome(nome)
+                    .ifPresent(cidade -> {
+                        if(!cidade.getId().equals(id)) {
+                            throw new EntidadeJaExistente();
+                        }
+                    });
         }
 
     }

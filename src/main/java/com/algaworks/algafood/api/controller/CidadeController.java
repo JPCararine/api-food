@@ -1,5 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
+import com.algaworks.algafood.api.DTO.Cidade.CidadeDTO;
+import com.algaworks.algafood.api.DTO.Cidade.CidadeInputDTO;
 import com.algaworks.algafood.domain.model.Cidade;
 import com.algaworks.algafood.domain.service.CidadeService;
 import jakarta.validation.Valid;
@@ -20,16 +22,16 @@ public class CidadeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Cidade>> findAll(){
+    public ResponseEntity<List<CidadeDTO>> findAll(){
         return ResponseEntity.ok(cidadeService.listAll());
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Cidade> findById(@PathVariable long id){
+    public ResponseEntity<CidadeDTO> findById(@PathVariable long id){
         return ResponseEntity.ok(cidadeService.findById(id));
     }
     @PostMapping
-    public ResponseEntity<Cidade> save(@RequestBody @Valid  Cidade cidade){
-        return new ResponseEntity<>(cidadeService.save(cidade), HttpStatus.CREATED);
+    public ResponseEntity<CidadeDTO> save(@RequestBody @Valid CidadeInputDTO cidadeInputDTO){
+        return new ResponseEntity<>(cidadeService.save(cidadeInputDTO), HttpStatus.CREATED);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id){
@@ -37,7 +39,7 @@ public class CidadeController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Cidade> replace(@PathVariable long id, @RequestBody @Valid Cidade cidadeRequest) {
-        return ResponseEntity.ok(cidadeService.replace(id, cidadeRequest));
+    public ResponseEntity<CidadeDTO> replace(@PathVariable long id, @RequestBody @Valid CidadeInputDTO cidadeInputDTO) {
+        return ResponseEntity.ok(cidadeService.replace(id, cidadeInputDTO));
     }
 }

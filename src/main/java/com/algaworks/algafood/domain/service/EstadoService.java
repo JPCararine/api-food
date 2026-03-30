@@ -1,5 +1,9 @@
 package com.algaworks.algafood.domain.service;
 
+import com.algaworks.algafood.api.DTO.Estado.EstadoDTO;
+import com.algaworks.algafood.api.DTO.Estado.EstadoInputDTO;
+import com.algaworks.algafood.api.assembler.EstadoDTOAssembler;
+import com.algaworks.algafood.api.assembler.EstadoInputDisassembler;
 import com.algaworks.algafood.domain.exception.EmUso.EstadoEmUsoException;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.EstadoNotFoundException;
@@ -20,39 +24,49 @@ public class EstadoService {
     private final EstadoRepository estadoRepository;
     private final CidadeRepository cidadeRepository;
     private final CozinhaRepository cozinhaRepository;
+    private final EstadoDTOAssembler estadoDTOAssembler;
+    private final EstadoInputDisassembler estadoInputDisassembler;
 
 
-    public List<Estado> listAll() {
+    public List<EstadoDTO> listAll() {
 
-        return estadoRepository.findAll();
+        return estadoRepository.findAll()
+                .stream()
+                .map(estadoDTOAssembler::toDTO)
+                .toList();
 
     }
 
-    public Estado findById(long id) {
-        return estadoRepository.findById(id)
+    public EstadoDTO findById(Long id) {
+         Estado estado = estadoRepository.findById(id)
                 .orElseThrow(() -> new EstadoNotFoundException(id));
+         return estadoDTOAssembler.toDTO(estado);
     }
     @Transactional
-    public Estado save(Estado estado) {
-        checarSeExiste(estado.getNome(), estado.getId());
-        Estado.builder()
-                .nome(estado.getNome())
-                .build();
-        return estadoRepository.save(estado);
+    public EstadoDTO save(EstadoInputDTO estadoInputDTO) {
+        checarSeExiste(estadoInputDTO.getNome(), null);
+
+        Estado estado = estadoInputDisassembler.toEntity(estadoInputDTO);
+
+        return estadoDTOAssembler.toDTO(estadoRepository.save(estado));
     }
     @Transactional
     public void delete(long id) {
         if(cidadeRepository.existsByEstadoId(id)) {
             throw new EstadoEmUsoException(id);
         }
-        estadoRepository.delete(findById(id));
+        Estado estado =  estadoRepository.findById(id)
+                .orElseThrow(() -> new EstadoNotFoundException(id));
+        estadoRepository.delete(estado);
     }
     @Transactional
-    public Estado put(Long id, Estado estadoRequest) {
-        Estado estado = findById(id);
-        checarSeExiste(estadoRequest.getNome(), estado.getId());
-        estado.setNome(estadoRequest.getNome());
-        return estadoRepository.save(estado);
+    public EstadoDTO put(Long id, EstadoInputDTO estadoInputDTO) {
+        Estado estado = estadoRepository.findById(id)
+                .orElseThrow(() -> new EstadoNotFoundException(id));
+        checarSeExiste(estadoInputDTO.getNome(), estado.getId());
+
+        estadoInputDisassembler.copyToEntity(estadoInputDTO, estado);
+        return estadoDTOAssembler.toDTO(estadoRepository.save(estado));
     }
     public void checarSeExiste(String nome, Long id) {
 
