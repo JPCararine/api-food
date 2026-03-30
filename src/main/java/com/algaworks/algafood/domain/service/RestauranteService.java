@@ -1,8 +1,8 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.RestauranteDTO;
-import com.algaworks.algafood.api.DTO.RestauranteDTOPut;
-import com.algaworks.algafood.api.DTO.RestauranteDetalhadoDTO;
+import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
+import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTOPut;
+import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
 import com.algaworks.algafood.api.assembler.RestauranteDTOAssembler;
 import com.algaworks.algafood.api.assembler.RestauranteInputDisassembler;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
@@ -58,11 +58,11 @@ public class RestauranteService {
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
     }
 
-    public List<RestauranteDTO> consultarPorNome(String nome, Long id) {
-        if (nome == null && id == null) {
+    public List<RestauranteDTO> findByNome(String nome) {
+        if (nome == null) {
             return listAll();
         }
-        return restauranteRepository.consultarPorNome(nome, id)
+        return restauranteRepository.findByNome(nome)
                 .stream()
                 .map(restauranteDTOAssembler::toDTO)
                 .toList();
@@ -100,10 +100,11 @@ public class RestauranteService {
 
     @Transactional
     public RestauranteDTO save(RestauranteDTOPut dto) {
-        checarSeExisteNome(dto.getNome(), dto.getId());
+        checarSeExisteNome(dto.getNome(), null);
 
         Cozinha cozinha = cozinhaRepository.findById(dto.getCozinha().getId())
                 .orElseThrow(() -> new CozinhaNotFoundException(dto.getCozinha().getId()));
+
 
         Restaurante restaurante = restauranteInputDisassembler.toEntity(dto, cozinha);
 
@@ -112,13 +113,13 @@ public class RestauranteService {
 
     @Transactional
     public RestauranteDTO replace(Long id, RestauranteDTOPut dto) {
+
         Restaurante restaurante = restauranteRepository.findById(id)
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
 
-        checarSeExisteNome(dto.getNome(), id);
+        checarSeExisteNome(dto.getNome(), restaurante.getId());
 
-        restaurante.setNome(dto.getNome());
-        restaurante.setTaxaFrete(dto.getTaxaFrete());
+        restauranteInputDisassembler.copyToEntity(dto, restaurante);
 
         Cozinha cozinha = cozinhaRepository.findById(dto.getCozinha().getId())
                 .orElseThrow(() -> new CozinhaNotFoundException(dto.getCozinha().getId()));

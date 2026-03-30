@@ -1,4 +1,4 @@
-package com.algaworks.algafood.api.DTO;
+package com.algaworks.algafood.api.DTO.Restaurante;
 
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -12,7 +12,7 @@ public class RestauranteDTO {
 
     private Long id;
     private String nome;
-    private BigDecimal taxaFrete;
+    private BigDecimal frete;
     private boolean ativo;
     private boolean aberto;
     private CozinhaDTO cozinha;

@@ -1,6 +1,11 @@
 package com.algaworks.algafood.domain.service;
 
+import com.algaworks.algafood.api.DTO.Cozinha.CozinhaInputDTO;
+import com.algaworks.algafood.api.DTO.Restaurante.CozinhaDTO;
+import com.algaworks.algafood.api.assembler.CozinhaDTOAssembler;
+import com.algaworks.algafood.api.assembler.CozinhaInputDisassembler;
 import com.algaworks.algafood.domain.exception.EmUso.CozinhaEmUsoException;
+import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.CozinhaNotFoundException;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.infrastructure.repository.CozinhaRepository;
@@ -17,32 +22,45 @@ public class CozinhaService {
 
     private final CozinhaRepository cozinhaRepository;
     private final RestauranteRepository restauranteRepository;
+    private final CozinhaDTOAssembler cozinhaDTOAssembler;
+    private final CozinhaInputDisassembler cozinhaInputDisassembler;
 
 
-    public List<Cozinha> findAll() {
-        return cozinhaRepository.findAll();
+    public List<CozinhaDTO> findAll() {
+
+        return cozinhaRepository.findAll()
+                .stream()
+                .map(cozinhaDTOAssembler::toDto)
+                .toList();
     }
 
-    public List<Cozinha> findbyNome(String nome) {
+    public List<CozinhaDTO> findByNome(String nome) {
         if(nome == null) {
-            return cozinhaRepository.findAll();
+            return findAll();
         }
-        return cozinhaRepository.findByNome(nome);
+        return cozinhaRepository.findByNome(nome)
+                .stream()
+                .map(cozinhaDTOAssembler::toDto)
+                .toList();
     }
-    public List<Cozinha> findByNomeContaningIgnoreCase(String nome) {
-        return cozinhaRepository.findByNomeContainingIgnoreCase(nome);
+    public List<CozinhaDTO> findByNomeContaningIgnoreCase(String nome) {
+        return cozinhaRepository.findByNomeContainingIgnoreCase(nome)
+                .stream()
+                .map(cozinhaDTOAssembler::toDto)
+                .toList();
     }
-    public Cozinha findById(Long id) {
-        return cozinhaRepository.findById(id)
+    public CozinhaDTO findById(Long id) {
+        Cozinha cozinha = cozinhaRepository.findById(id)
                 .orElseThrow(() -> new CozinhaNotFoundException(id));
+        return cozinhaDTOAssembler.toDto(cozinha);
     }
     @Transactional
-    public Cozinha save(Cozinha cozinhaRequest) {
-        Cozinha cozinha = Cozinha.builder()
-                .nome(cozinhaRequest.getNome())
-                .build();
+    public CozinhaDTO save(CozinhaInputDTO cozinhaInputDTO) {
+        ChecarSeExisteNome(cozinhaInputDTO.getNome(), null);
 
-        return cozinhaRepository.save(cozinha);
+        Cozinha cozinha =  cozinhaInputDisassembler.toEntity(cozinhaInputDTO);
+
+        return cozinhaDTOAssembler.toDto(cozinhaRepository.save(cozinha));
     }
     @Transactional
     public void delete(long id) {
@@ -50,14 +68,30 @@ public class CozinhaService {
         if(restauranteRepository.existsByCozinhaId(id)) {
             throw new CozinhaEmUsoException(id);
         }
-        cozinhaRepository.delete(findById(id));
+        Cozinha cozinha = cozinhaRepository.findById(id)
+                .orElseThrow(() -> new CozinhaNotFoundException(id));
+        cozinhaRepository.delete(cozinha);
 
     }
     @Transactional
-    public Cozinha replace(Long id, Cozinha cozinhaRequest) {
-        Cozinha cozinha = findById(id);
-        cozinha.setNome(cozinhaRequest.getNome());
-        cozinha.setId(cozinhaRequest.getId());
-        return cozinhaRepository.save(cozinha);
+    public CozinhaDTO replace(Long id, CozinhaInputDTO cozinhaInputDTO) {
+        Cozinha cozinha = cozinhaRepository.findById(id)
+                .orElseThrow(() -> new CozinhaNotFoundException(id));
+
+        ChecarSeExisteNome(cozinhaInputDTO.getNome(), cozinha.getId());
+
+        cozinhaInputDisassembler.copyToEntity(cozinhaInputDTO, cozinha);
+
+        return cozinhaDTOAssembler.toDto(cozinhaRepository.save(cozinha));
+    }
+    public void ChecarSeExisteNome(String nome, Long id) {
+        cozinhaRepository.findByNome(nome)
+                .ifPresent(cozinha -> {
+                    if(!cozinha.getId().equals(id)) {
+                        throw new EntidadeJaExistente();
+                    }
+                });
+
+
     }
 }

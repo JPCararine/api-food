@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface RestauranteRepository extends JpaRepository<Restaurante, Long>, RestauranteRepositoryQueries, JpaSpecificationExecutor<Restaurante> {
 
-    List<Restaurante> consultarPorNome(String nome, Long id);
     List<Restaurante> findByNomeContainingAndCozinhaId(String nome, Long id);
 
     @Query("select r from Restaurante r join r.cozinha left join fetch r.formaPagamento")

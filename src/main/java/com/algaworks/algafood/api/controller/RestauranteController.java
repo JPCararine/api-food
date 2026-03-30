@@ -1,8 +1,8 @@
 package com.algaworks.algafood.api.controller;
 
-import com.algaworks.algafood.api.DTO.RestauranteDTO;
-import com.algaworks.algafood.api.DTO.RestauranteDTOPut;
-import com.algaworks.algafood.api.DTO.RestauranteDetalhadoDTO;
+import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
+import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTOPut;
+import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
 import com.algaworks.algafood.domain.service.RestauranteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ public class RestauranteController {
     public ResponseEntity<List<RestauranteDTO>> consultaPorNomeEId(
             @RequestParam String nome,
             @RequestParam Long id) {
-        return ResponseEntity.ok(restauranteService.consultarPorNome(nome, id));
+        return ResponseEntity.ok(restauranteService.findByNome(nome));
     }
 
     @GetMapping("/por-nome-e-frete")

@@ -1,5 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
+import com.algaworks.algafood.api.DTO.Cozinha.CozinhaInputDTO;
+import com.algaworks.algafood.api.DTO.Restaurante.CozinhaDTO;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.service.CozinhaService;
 import jakarta.validation.Valid;
@@ -20,33 +22,33 @@ public class CozinhaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Cozinha>> list() {
+    public ResponseEntity<List<CozinhaDTO>> list() {
         return ResponseEntity.ok(cozinhaService.findAll());
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Cozinha> findById(@PathVariable Long id) {
+    public ResponseEntity<CozinhaDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(cozinhaService.findById(id));
     }
     @GetMapping("/nomes")
-    public ResponseEntity<List<Cozinha>> findByNome(@RequestParam String nome) {
-        return ResponseEntity.ok(cozinhaService.findbyNome(nome));
+    public ResponseEntity<List<CozinhaDTO>> findByNome(@RequestParam String nome) {
+        return ResponseEntity.ok(cozinhaService.findByNome(nome));
     }
     @GetMapping("/nomes/busca")
-    public ResponseEntity<List<Cozinha>> findByNomeBusca(@RequestParam String nome) {
+    public ResponseEntity<List<CozinhaDTO>> findByNomeBusca(@RequestParam String nome) {
         return ResponseEntity.ok(cozinhaService.findByNomeContaningIgnoreCase(nome));
     }
 
     @PostMapping
-    public ResponseEntity<Cozinha> save(@RequestBody @Valid Cozinha cozinha) {
-        return new ResponseEntity<>(cozinhaService.save(cozinha), HttpStatus.CREATED);
+    public ResponseEntity<CozinhaDTO> save(@RequestBody @Valid CozinhaInputDTO cozinhaInputDTO) {
+        return new ResponseEntity<>(cozinhaService.save(cozinhaInputDTO), HttpStatus.CREATED);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         cozinhaService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Cozinha> put(@PathVariable long id, @RequestBody @Valid Cozinha cozinhaRequest ) {
-        return new ResponseEntity<>(cozinhaService.replace(id, cozinhaRequest), HttpStatus.NO_CONTENT);
+    public ResponseEntity<CozinhaDTO> put(@PathVariable long id, @RequestBody @Valid CozinhaInputDTO cozinhaInputDTO ) {
+        return ResponseEntity.ok(cozinhaService.replace(id, cozinhaInputDTO));
     }
 }

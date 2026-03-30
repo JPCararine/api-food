@@ -1,4 +1,4 @@
-package com.algaworks.algafood.api.DTO;
+package com.algaworks.algafood.api.DTO.Restaurante;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 @Data
 public class RestauranteDTOPut {
 
-    private Long id;
     @NotBlank
     private String nome;
     @NotNull
@@ -19,5 +18,5 @@ public class RestauranteDTOPut {
 
     @Valid
     @NotNull
-    private CozinhaDTOPUT cozinha;
+    private CozinhaIdDTOPUT cozinha;
 }
