@@ -1,6 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
 import com.algaworks.algafood.api.DTO.Estado.EstadoDTO;
+import com.algaworks.algafood.api.DTO.Estado.EstadoDTODetalhado;
 import com.algaworks.algafood.api.DTO.Estado.EstadoInputDTO;
 import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.domain.service.CidadeService;
@@ -26,8 +27,8 @@ public class EstadoController {
         return ResponseEntity.ok(estadoService.listAll());
     }
     @GetMapping("/{id}")
-    public ResponseEntity<EstadoDTO> findById(@PathVariable long id){
-        return ResponseEntity.ok(estadoService.findById(id));
+    public ResponseEntity<EstadoDTODetalhado> findById(@PathVariable long id){
+        return ResponseEntity.ok(estadoService.findByIdDetalhado(id));
     }
     @PostMapping
     public ResponseEntity<EstadoDTO> save(@RequestBody @Valid EstadoInputDTO estadoInputDTO){

@@ -1,6 +1,7 @@
 package com.algaworks.algafood.domain.service;
 
 import com.algaworks.algafood.api.DTO.Estado.EstadoDTO;
+import com.algaworks.algafood.api.DTO.Estado.EstadoDTODetalhado;
 import com.algaworks.algafood.api.DTO.Estado.EstadoInputDTO;
 import com.algaworks.algafood.api.assembler.EstadoDTOAssembler;
 import com.algaworks.algafood.api.assembler.EstadoInputDisassembler;
@@ -41,6 +42,13 @@ public class EstadoService {
          Estado estado = estadoRepository.findById(id)
                 .orElseThrow(() -> new EstadoNotFoundException(id));
          return estadoDTOAssembler.toDTO(estado);
+    }
+    public EstadoDTODetalhado findByIdDetalhado(Long id) {
+        return estadoRepository.findById(id)
+                .map(estadoDTOAssembler::toDTODetalhado)
+                .orElseThrow(() -> new EstadoNotFoundException(id));
+
+
     }
     @Transactional
     public EstadoDTO save(EstadoInputDTO estadoInputDTO) {

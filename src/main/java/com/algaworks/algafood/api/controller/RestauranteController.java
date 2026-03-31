@@ -85,4 +85,15 @@ public class RestauranteController {
             @RequestBody Map<String, Object> campos) {
         return ResponseEntity.ok(restauranteService.patch(id, campos));
     }
+    @PutMapping("/{id}/ativo")
+    public ResponseEntity<Void> ativar(@PathVariable Long id) {
+        restauranteService.ativar(id);
+        return ResponseEntity.noContent().build();
+    }
+    @DeleteMapping("/{id}/ativo")
+    public ResponseEntity<Void> desativar(@PathVariable Long id) {
+        restauranteService.desativar(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class Estado {
 
     public Estado() {
     }
+    @ToString.Exclude
     @OneToMany(mappedBy = "estado")
     private List<Cidade> cidades;
 }

@@ -122,7 +122,6 @@ public class TesteRestauranteIT {
         burgerTopRestaurante.setTaxaFrete(new BigDecimal("10"));
         burgerTopRestaurante.setCozinha(cozinhaBrasileira);
         burgerTopRestaurante.setAtivo(true);
-        burgerTopRestaurante.setAberto(true);
         restauranteRepository.save(burgerTopRestaurante);
 
 

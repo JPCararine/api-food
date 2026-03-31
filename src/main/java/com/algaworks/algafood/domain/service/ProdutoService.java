@@ -40,7 +40,6 @@ public class ProdutoService {
         Produto produto = Produto.builder()
                 .nome(produtoRequest.getNome())
                 .descricao(produtoRequest.getDescricao())
-                .ativo(true)
                 .preco(produtoRequest.getPreco())
                 .restaurante(produtoRequest.getRestaurante())
                 .build();

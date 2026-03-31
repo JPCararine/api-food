@@ -32,8 +32,7 @@ public class Restaurante {
     private BigDecimal taxaFrete;
 
 
-    private Boolean aberto;
-    private Boolean ativo;
+    private Boolean ativo = Boolean.TRUE;
 
 
     @ManyToOne
@@ -61,5 +60,6 @@ public class Restaurante {
     private OffsetDateTime dataAtualizacao;
     public Restaurante() {
     }
+
 }
 
