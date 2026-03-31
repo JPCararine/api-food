@@ -6,16 +6,9 @@ import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
 import com.algaworks.algafood.api.assembler.RestauranteDTOAssembler;
 import com.algaworks.algafood.api.assembler.RestauranteInputDisassembler;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
-import com.algaworks.algafood.domain.exception.NotFound.BaseEntityNotFoundException;
-import com.algaworks.algafood.domain.exception.NotFound.CozinhaNotFoundException;
-import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
-import com.algaworks.algafood.domain.model.Cozinha;
-import com.algaworks.algafood.domain.model.Endereco;
-import com.algaworks.algafood.domain.model.FormaPagamento;
-import com.algaworks.algafood.domain.model.Restaurante;
-import com.algaworks.algafood.infrastructure.repository.CozinhaRepository;
-import com.algaworks.algafood.infrastructure.repository.FormaPagamentoRepository;
-import com.algaworks.algafood.infrastructure.repository.RestauranteRepository;
+import com.algaworks.algafood.domain.exception.NotFound.*;
+import com.algaworks.algafood.domain.model.*;
+import com.algaworks.algafood.infrastructure.repository.*;
 import com.algaworks.algafood.infrastructure.spec.RestauranteSpecs;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +32,8 @@ public class RestauranteService {
     private final FormaPagamentoRepository formaPagamentoRepository;
     private final RestauranteDTOAssembler restauranteDTOAssembler;
     private final RestauranteInputDisassembler restauranteInputDisassembler;
+    private final CidadeRepository cidadeRepository;
+    private final EstadoRepository estadoRepository;
 
 
     public List<RestauranteDTO> listAll() {
@@ -54,9 +49,10 @@ public class RestauranteService {
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
     }
     public RestauranteDetalhadoDTO findByIdDetalhado(Long id) {
-        return restauranteRepository.findById(id)
+         return restauranteRepository.findById(id)
                 .map(restauranteDTOAssembler::toDTODetalhado)
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
+
     }
 
     public List<RestauranteDTO> findByNome(String nome) {
@@ -106,9 +102,10 @@ public class RestauranteService {
         Cozinha cozinha = cozinhaRepository.findById(dto.getCozinha().getId())
                 .orElseThrow(() -> new CozinhaNotFoundException(dto.getCozinha().getId()));
 
+        Cidade cidade = cidadeRepository.findById(dto.getEndereco().getCidade().getId())
+                .orElseThrow(() -> new CidadeNotFoundException(dto.getEndereco().getCidade().getId()));
+        Restaurante restaurante = restauranteInputDisassembler.toEntity(dto, cozinha, cidade);
 
-
-        Restaurante restaurante = restauranteInputDisassembler.toEntity(dto, cozinha);
 
         return restauranteDTOAssembler.toDTO(restauranteRepository.save(restaurante));
     }
@@ -127,6 +124,11 @@ public class RestauranteService {
                 .orElseThrow(() -> new CozinhaNotFoundException(dto.getCozinha().getId()));
 
         restaurante.setCozinha(cozinha);
+
+        Cidade cidade = cidadeRepository.findById(dto.getEndereco().getCidade().getId())
+                .orElseThrow(() -> new CidadeNotFoundException(dto.getEndereco().getCidade().getId()));
+
+        restaurante.getEndereco().setCidade(cidade);
 
         return restauranteDTOAssembler.toDTO(restauranteRepository.save(restaurante));
     }

@@ -22,4 +22,6 @@ public class EnderecoDTO {
     private String bairro;
 
     private CidadeResumoDTO cidade;
+
+
 }

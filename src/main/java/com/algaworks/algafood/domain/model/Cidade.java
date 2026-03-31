@@ -9,6 +9,8 @@ import jakarta.validation.groups.Default;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
+
 @Builder
 @Data
 @Entity
@@ -29,5 +31,6 @@ public class Cidade {
     @Valid
     @NotNull
     @ConvertGroup(from = Default.class, to = Groups.EstadoId.class)
+    @ToString.Exclude
     private Estado estado;
 }
