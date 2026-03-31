@@ -1,5 +1,6 @@
 package com.algaworks.algafood.api.DTO.Restaurante;
 
+import com.algaworks.algafood.domain.model.Endereco;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,4 +20,6 @@ public class RestauranteDTOPut {
     @Valid
     @NotNull
     private CozinhaIdDTOPUT cozinha;
+    @NotNull
+    private Endereco endereco;
 }

@@ -1,5 +1,6 @@
 package com.algaworks.algafood.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,5 @@ public class FormaPagamento {
 
     public FormaPagamento() {
     }
-    @ManyToMany
-    public List<Restaurante> restaurantes;
+
 }

@@ -10,6 +10,7 @@ import com.algaworks.algafood.domain.exception.NotFound.BaseEntityNotFoundExcept
 import com.algaworks.algafood.domain.exception.NotFound.CozinhaNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.Cozinha;
+import com.algaworks.algafood.domain.model.Endereco;
 import com.algaworks.algafood.domain.model.FormaPagamento;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.infrastructure.repository.CozinhaRepository;
@@ -106,6 +107,7 @@ public class RestauranteService {
                 .orElseThrow(() -> new CozinhaNotFoundException(dto.getCozinha().getId()));
 
 
+
         Restaurante restaurante = restauranteInputDisassembler.toEntity(dto, cozinha);
 
         return restauranteDTOAssembler.toDTO(restauranteRepository.save(restaurante));
@@ -187,5 +189,21 @@ public class RestauranteService {
 
             restaurante.setFormaPagamento(formas);
         }
+    }
+    @Transactional
+    public void ativar(Long id) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        restaurante.setAtivo(true);
+        restauranteRepository.save(restaurante);
+
+    }
+    @Transactional
+    public void desativar(Long id) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        restaurante.setAtivo(false);
+        restauranteRepository.save(restaurante);
+
     }
 }

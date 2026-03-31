@@ -15,7 +15,7 @@ public class EstadoInputDisassembler {
     public Estado toEntity(EstadoInputDTO estadoInputDTO) {
         return modelMapper.map(estadoInputDTO, Estado.class);
     }
-    public Estado copyToEntity(EstadoInputDTO estadoInputDTO, Estado estado) {
-        return modelMapper.map(estadoInputDTO, Estado.class);
+    public void copyToEntity(EstadoInputDTO estadoInputDTO, Estado estado) {
+        modelMapper.map(estadoInputDTO, estado);
     }
 }

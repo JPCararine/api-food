@@ -19,5 +19,7 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long>,
 
     Optional<Restaurante> findByNome(String nome);
 
+    boolean existsByFormaPagamentoId(Long formaPagamentoId);
+
 
 }
