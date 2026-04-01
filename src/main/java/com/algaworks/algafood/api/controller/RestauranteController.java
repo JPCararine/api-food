@@ -76,7 +76,7 @@ public class RestauranteController {
     public ResponseEntity<RestauranteDTO> put(
             @PathVariable Long id,
             @RequestBody @Valid RestauranteDTOPut dto) {
-        return ResponseEntity.ok(restauranteService.replace(id, dto));
+        return ResponseEntity.ok(restauranteService.update(id, dto));
     }
 
     @PatchMapping("/{id}")
@@ -93,6 +93,16 @@ public class RestauranteController {
     @DeleteMapping("/{id}/ativo")
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
         restauranteService.desativar(id);
+        return ResponseEntity.noContent().build();
+    }
+    @DeleteMapping("/{restauranteId}/formas/{formaPagamentoId}")
+    public ResponseEntity<Void> removerFormas(@PathVariable Long restauranteId, @PathVariable Long formaPagamentoId) {
+        restauranteService.removerFormaPagamento(restauranteId, formaPagamentoId);
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/{restauranteId}/formas/{formaPagamentoId}")
+    public ResponseEntity<Void> adicionarFormas(@PathVariable Long restauranteId, @PathVariable Long formaPagamentoId) {
+        restauranteService.adicionarFormaPagamento(restauranteId, formaPagamentoId);
         return ResponseEntity.noContent().build();
     }
 

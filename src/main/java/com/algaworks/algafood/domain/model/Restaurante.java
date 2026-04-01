@@ -46,7 +46,10 @@ public class Restaurante {
 
 
     @ManyToMany
-    private List<FormaPagamento> formaPagamento = new ArrayList<>();
+    @JoinTable(name = "restaurante_forma_pagamento",
+                joinColumns = @JoinColumn(name = "restaurante_id"),
+                inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))
+    private List<FormaPagamento> formaPagamentos = new ArrayList<>();
 
     @Embedded
     private Endereco endereco;

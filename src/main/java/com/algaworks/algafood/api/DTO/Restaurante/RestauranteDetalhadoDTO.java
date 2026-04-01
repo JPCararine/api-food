@@ -25,5 +25,7 @@ public class RestauranteDetalhadoDTO {
 
     private EnderecoDTO endereco;
 
+    private List<String> formaPagamentos;
+
 
 }

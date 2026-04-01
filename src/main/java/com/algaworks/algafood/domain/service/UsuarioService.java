@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.DTO.Usuario.UsuarioDTO;
 import com.algaworks.algafood.api.DTO.Usuario.UsuarioInputDTO;
 import com.algaworks.algafood.api.assembler.UsuarioDTOAssembler;
 import com.algaworks.algafood.api.assembler.UsuarioInputDTODisassambler;
+import com.algaworks.algafood.domain.exception.JaExistente.EmailJaExistente;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.UsuarioNotFoundException;
 import com.algaworks.algafood.domain.model.Grupo;
@@ -91,7 +92,7 @@ public class UsuarioService {
         usuarioRepository.findByEmail(email)
                 .ifPresent(usuario -> {
                     if(!usuario.getId().equals(id)) {
-                        throw new EntidadeJaExistente();
+                        throw new EmailJaExistente();
                     }
                 });
 

@@ -1,5 +1,6 @@
 package com.algaworks.algafood.infrastructure.repository;
 
+import com.algaworks.algafood.domain.model.FormaPagamento;
 import com.algaworks.algafood.domain.model.Restaurante;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -12,14 +13,15 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long>,
 
     List<Restaurante> findByNomeContainingAndCozinhaId(String nome, Long id);
 
-    @Query("select r from Restaurante r join r.cozinha left join fetch r.formaPagamento")
+    @Query("select r from Restaurante r join r.cozinha left join fetch r.formaPagamentos")
     List<Restaurante> findAll();
 
     boolean existsByCozinhaId(Long cozinhaId);
 
     Optional<Restaurante> findByNome(String nome);
 
-    boolean existsByFormaPagamentoId(Long formaPagamentoId);
+    boolean existsByFormaPagamentosId(Long formaPagamentosId);
 
-
+    Optional<FormaPagamento> findByFormaPagamentos(Long id);
+    Long id(Long id);
 }
