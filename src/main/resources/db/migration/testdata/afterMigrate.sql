@@ -44,71 +44,71 @@ insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
     endereco_cidade_id,
-    endereco_cep, endereco_logradouro, endereco_numero, endereco_bairro, ativo
+    endereco_cep, endereco_logradouro, endereco_numero, endereco_bairro, ativo, aberto
 ) values (
              1, 'Thai Gourmet', 10, 1,
              current_timestamp(), current_timestamp(),
              1,
-             '38400-999', 'Rua João Pinheiro', '1000', 'Centro', true
+             '38400-999', 'Rua João Pinheiro', '1000', 'Centro', true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 ) values (
              2, 'Thai Delivery', 9.50, 1,
              current_timestamp(), current_timestamp(),
-             1, true
+             1, true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 
 ) values (
              3, 'Tuk Tuk Comida Indiana', 15, 2,
              current_timestamp(), current_timestamp(),
-             2, true
+             2, true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 
 ) values (
              4, 'Java Steakhouse', 12, 3,
              current_timestamp(), current_timestamp(),
-             3, true
+             3, true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 
 ) values (
              5, 'Lanchonete do Tio Sam', 11, 4,
              current_timestamp(), current_timestamp(),
-             4, true
+             4, true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 
 ) values (
              6, 'Bar da Maria', 6, 4,
              current_timestamp(), current_timestamp(),
-             5, true
+             5, true, false
 
          );
 
