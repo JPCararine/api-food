@@ -1,5 +1,9 @@
 package com.algaworks.algafood.domain.service;
 
+import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
+import com.algaworks.algafood.api.DTO.Produto.ProdutoInputDTO;
+import com.algaworks.algafood.api.assembler.ProdutoDTOAssembler;
+import com.algaworks.algafood.api.assembler.ProdutoInputDTODisassembler;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.Produto;
@@ -23,36 +27,48 @@ public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
     private final RestauranteRepository restauranteRepository;
+    private final ProdutoDTOAssembler produtoDTOAssembler;
+    private final ProdutoInputDTODisassembler produtoInputDTODisassembler;
 
-    public List<Produto> findAll() {
-        return produtoRepository.findAll();
+
+    public List<ProdutoDTO> findAll() {
+
+        return produtoRepository.findAll()
+                .stream()
+                .map(produtoDTOAssembler::toDTO)
+                .toList();
     }
-    public List<Produto> find(String nome, BigDecimal precoInicial, BigDecimal precoFinal) {
-        return produtoRepository.find(nome, precoInicial, precoFinal);
+    public List<ProdutoDTO> find(String nome, BigDecimal precoInicial, BigDecimal precoFinal) {
+        return produtoRepository.find(nome, precoInicial, precoFinal)
+                .stream()
+                .map(produtoDTOAssembler::toDTO)
+                .toList();
     }
-    public Produto findById(Long id) {
-        return produtoRepository.findById(id)
+    public ProdutoDTO findById(Long id) {
+        Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new ProdutoNotFoundException(id));
+        return produtoDTOAssembler.toDTO(produto);
     }
     @Transactional
-    public Produto save(Produto produtoRequest) {
-        corrigirRelacionamento(produtoRequest);
-        Produto produto = Produto.builder()
-                .nome(produtoRequest.getNome())
-                .descricao(produtoRequest.getDescricao())
-                .preco(produtoRequest.getPreco())
-                .restaurante(produtoRequest.getRestaurante())
-                .build();
-        return produtoRepository.save(produto);
-    }
-    @Transactional
-    public void delete(long id){
-        produtoRepository.delete(findById(id));
-    }
-    public void merge(Map<String, Object> camposPassados, Produto produtoAtual) {
+    public ProdutoDTO save(ProdutoInputDTO produtoInputDTO) {
 
+        Produto produto = produtoInputDTODisassembler.toEntity(produtoInputDTO);
+
+        return produtoDTOAssembler.toDTO(produtoRepository.save(produto));
+
+    }
+
+    public void delete(long id){
+        Produto produto = produtoRepository.findById(id)
+                        .orElseThrow(() -> new ProdutoNotFoundException(id));
+        produtoRepository.delete(produto);
+    }
+    @Transactional
+    public ProdutoDTO merge(Map<String, Object> camposPassados, Long id) {
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new ProdutoNotFoundException(id));
         ObjectMapper mapper = new ObjectMapper();
-        Produto produto = mapper.convertValue(camposPassados, Produto.class);
+        Produto produtoAtual = mapper.convertValue(camposPassados, Produto.class);
 
         List<String> camposIgnorados = List.of("id");
 
@@ -63,14 +79,11 @@ public class ProdutoService {
             Field campo = ReflectionUtils.findField(Produto.class, key);
             campo.setAccessible(true);
 
-            Object novoValor = ReflectionUtils.getField(campo, produto);
+            Object novoValor = ReflectionUtils.getField(campo, produtoAtual);
 
-            ReflectionUtils.setField(campo, produtoAtual, novoValor);
+            ReflectionUtils.setField(campo, produto, novoValor);
         });
-
-    }
-    public Produto update(Produto produtoAtual) {
-        return produtoRepository.save(produtoAtual);
+        return produtoDTOAssembler.toDTO(produtoRepository.save(produto));
     }
     public void corrigirRelacionamento(Produto produto) {
 
