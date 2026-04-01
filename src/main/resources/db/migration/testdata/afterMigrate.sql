@@ -44,71 +44,71 @@ insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
     endereco_cidade_id,
-    endereco_cep, endereco_logradouro, endereco_numero, endereco_bairro, ativo
+    endereco_cep, endereco_logradouro, endereco_numero, endereco_bairro, ativo, aberto
 ) values (
              1, 'Thai Gourmet', 10, 1,
              current_timestamp(), current_timestamp(),
              1,
-             '38400-999', 'Rua João Pinheiro', '1000', 'Centro', true
+             '38400-999', 'Rua João Pinheiro', '1000', 'Centro', true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 ) values (
              2, 'Thai Delivery', 9.50, 1,
              current_timestamp(), current_timestamp(),
-             1, true
+             1, true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 
 ) values (
              3, 'Tuk Tuk Comida Indiana', 15, 2,
              current_timestamp(), current_timestamp(),
-             2, true
+             2, true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 
 ) values (
              4, 'Java Steakhouse', 12, 3,
              current_timestamp(), current_timestamp(),
-             3, true
+             3, true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 
 ) values (
              5, 'Lanchonete do Tio Sam', 11, 4,
              current_timestamp(), current_timestamp(),
-             4, true
+             4, true, false
 
          );
 
 insert into restaurante (
     id, nome, taxa_frete, cozinha_id,
     data_cadastro, data_atualizacao,
-    endereco_cidade_id, ativo
+    endereco_cidade_id, ativo, aberto
 
 ) values (
              6, 'Bar da Maria', 6, 4,
              current_timestamp(), current_timestamp(),
-             5, true
+             5, true, false
 
          );
 
@@ -137,6 +137,8 @@ insert into produto (nome, descricao, preco,  restaurante_id) values ('Sanduích
 insert into produto (nome, descricao, preco,  restaurante_id) values ('Espetinho de Cupim', 'Acompanha farinha, mandioca e vinagrete', 8,  6);
 
 insert into grupo (nome) values ('Gerente'), ('Vendedor'), ('Secretária'), ('Cadastrador');
+
+insert into grupo_permissao (grupo_id, permissao_id) values (1, 1), (1, 2), (2, 1), (2, 2), (3, 1);
 
 insert into usuario (id, nome, email, senha, data_cadastro) values
                                                                 (1, 'João da Silva', 'joao.ger@algafood.com', '123', utc_timestamp),

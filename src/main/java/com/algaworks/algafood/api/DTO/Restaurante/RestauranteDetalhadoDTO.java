@@ -21,6 +21,7 @@ public class RestauranteDetalhadoDTO {
     private BigDecimal frete;
 
     private Boolean ativo;
+    private Boolean aberto;
 
     private CozinhaDTO cozinha;
 

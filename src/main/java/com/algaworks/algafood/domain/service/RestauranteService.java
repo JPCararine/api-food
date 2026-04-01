@@ -292,5 +292,17 @@ public class RestauranteService {
         restaurante.getProdutos().remove(produto);
 
     }
+    public void abrir(Long id) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        restaurante.setAberto(true);
+        restauranteRepository.save(restaurante);
+    }
+    public void fechar(Long id) {
+        Restaurante restaurante = restauranteRepository.findById(id)
+                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        restaurante.setAberto(false);
+        restauranteRepository.save(restaurante);
+    }
 
 }
