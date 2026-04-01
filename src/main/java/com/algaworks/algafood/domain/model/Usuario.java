@@ -28,7 +28,18 @@ public class Usuario {
     @CreationTimestamp
     private OffsetDateTime dataCadastro;
     @ManyToMany
+    @JoinTable(name = "usuario_grupo",
+                joinColumns = @JoinColumn(name = "grupo_id"),
+                inverseJoinColumns = @JoinColumn(name = "usuario_id"))
+
     private List<Grupo> grupos = new ArrayList<>();
+
+    public boolean senhaCorreta(String senha) {
+        return getSenha().equals(senha);
+    }
+    public boolean senhaIncorreta(String senha) {
+        return !senhaCorreta(senha);
+    }
 
 
 

@@ -47,7 +47,7 @@ public class FormaPagamentoService {
     @Transactional
     public void delete(Long id) {
 
-        if(restauranteRepository.existsByFormaPagamentoId(id)) {
+        if(restauranteRepository.existsByFormaPagamentosId(id)) {
             throw new FormaEmUsoException(id);
         }
         FormaPagamento formaPagamento = formaPagamentoRepository.findById(id)

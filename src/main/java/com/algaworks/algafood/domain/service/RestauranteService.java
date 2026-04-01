@@ -6,6 +6,7 @@ import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
 import com.algaworks.algafood.api.assembler.RestauranteDTOAssembler;
 import com.algaworks.algafood.api.assembler.RestauranteInputDisassembler;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
+import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.*;
 import com.algaworks.algafood.domain.model.*;
 import com.algaworks.algafood.infrastructure.repository.*;
@@ -96,22 +97,32 @@ public class RestauranteService {
     }
 
     @Transactional
-    public RestauranteDTO save(RestauranteDTOPut dto) {
-        checarSeExisteNome(dto.getNome(), null);
+    public RestauranteDTO save(RestauranteDTOPut restauranteDTOPut) {
+        checarSeExisteNome(restauranteDTOPut.getNome(), null);
 
-        Cozinha cozinha = cozinhaRepository.findById(dto.getCozinha().getId())
-                .orElseThrow(() -> new CozinhaNotFoundException(dto.getCozinha().getId()));
+        Cozinha cozinha = cozinhaRepository.findById(restauranteDTOPut.getCozinha().getId())
+                .orElseThrow(() -> new CozinhaNotFoundException(restauranteDTOPut.getCozinha().getId()));
 
-        Cidade cidade = cidadeRepository.findById(dto.getEndereco().getCidade().getId())
-                .orElseThrow(() -> new CidadeNotFoundException(dto.getEndereco().getCidade().getId()));
-        Restaurante restaurante = restauranteInputDisassembler.toEntity(dto, cozinha, cidade);
+        Cidade cidade = cidadeRepository.findById(restauranteDTOPut.getEndereco().getCidade().getId())
+                .orElseThrow(() -> new CidadeNotFoundException(restauranteDTOPut.getEndereco().getCidade().getId()));
+
+        List<Long> ids = restauranteDTOPut.getFormaPagamentos()
+                .stream()
+                .map(f -> f.getId())
+                .toList();
+        List<FormaPagamento> formasPagamento = formaPagamentoRepository.findAllById(ids);
+
+        Restaurante restaurante = restauranteInputDisassembler.toEntity(restauranteDTOPut);
+        restaurante.setCozinha(cozinha);
+        restaurante.getEndereco().setCidade(cidade);
+        restaurante.setFormaPagamentos(formasPagamento);
 
 
         return restauranteDTOAssembler.toDTO(restauranteRepository.save(restaurante));
     }
 
     @Transactional
-    public RestauranteDTO replace(Long id, RestauranteDTOPut dto) {
+    public RestauranteDTO update(Long id, RestauranteDTOPut dto) {
 
         Restaurante restaurante = restauranteRepository.findById(id)
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
@@ -177,8 +188,8 @@ public class RestauranteService {
             restaurante.setCozinha(cozinha);
         }
 
-        if (restaurante.getFormaPagamento() != null) {
-            List<Long> ids = restaurante.getFormaPagamento()
+        if (restaurante.getFormaPagamentos() != null) {
+            List<Long> ids = restaurante.getFormaPagamentos()
                     .stream()
                     .map(FormaPagamento::getId)
                     .toList();
@@ -189,7 +200,7 @@ public class RestauranteService {
                 throw new BaseEntityNotFoundException("Uma ou mais formas de pagamento não existem");
             }
 
-            restaurante.setFormaPagamento(formas);
+            restaurante.setFormaPagamentos(formas);
         }
     }
     @Transactional
@@ -208,4 +219,31 @@ public class RestauranteService {
         restauranteRepository.save(restaurante);
 
     }
+    @Transactional
+    public void removerFormaPagamento(Long restauranteId, Long formaPagamentoId) {
+
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        FormaPagamento formaPagamento = formaPagamentoRepository.findById(formaPagamentoId)
+                .orElseThrow(() -> new FormaPagamentoNotFoundException(formaPagamentoId));
+
+        restaurante.getFormaPagamentos().remove(formaPagamento);
+
+    }
+    @Transactional
+    public void adicionarFormaPagamento(Long restauranteId, Long formaPagamentoId) {
+
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        FormaPagamento formaPagamento = formaPagamentoRepository.findById(formaPagamentoId)
+                .orElseThrow(() -> new FormaPagamentoNotFoundException(formaPagamentoId));
+
+        if(restaurante.getFormaPagamentos().contains(formaPagamento)) {
+            throw new FormaPagamentoJaExistente();
+        }
+        restaurante.getFormaPagamentos().add(formaPagamento);
+    }
+
 }

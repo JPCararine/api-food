@@ -1,6 +1,7 @@
 package com.algaworks.algafood.api.DTO.Restaurante;
 
 import com.algaworks.algafood.api.DTO.Endereco.EnderecoInputDTO;
+import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoIDInputDTO;
 import com.algaworks.algafood.domain.model.Endereco;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
+
 @Data
 public class RestauranteDTOPut {
 
@@ -25,4 +28,7 @@ public class RestauranteDTOPut {
     @NotNull
     @Valid
     private EnderecoInputDTO endereco;
+    @Valid
+    @NotNull
+    private List<FormaPagamentoIDInputDTO> formaPagamentos;
 }

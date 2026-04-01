@@ -20,7 +20,14 @@ public class RestauranteDTOAssembler {
     }
     public RestauranteDetalhadoDTO toDTODetalhado(Restaurante restaurante) {
 
-        return modelMapper.map(restaurante, RestauranteDetalhadoDTO.class);
+        RestauranteDetalhadoDTO dto = modelMapper.map(restaurante, RestauranteDetalhadoDTO.class);
+
+        dto.setFormaPagamentos(
+                restaurante.getFormaPagamentos().stream()
+                        .map(f -> f.getDescricao())
+                        .toList());
+
+        return dto;
 
 
     }

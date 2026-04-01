@@ -1,7 +1,9 @@
 package com.algaworks.algafood.api.exceptionhandler;
 
 import com.algaworks.algafood.domain.exception.EmUso.BaseEntidadeEmUsoException;
+import com.algaworks.algafood.domain.exception.JaExistente.EmailJaExistente;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
+import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.BaseEntityNotFoundException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.MessageSource;
@@ -119,6 +121,22 @@ GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
     @ExceptionHandler(EntidadeJaExistente.class)
     public ResponseEntity<?> handleNotFound(EntidadeJaExistente ex, WebRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        String detail = ex.getMessage();
+        ProblemType problemType = ProblemType.ENTIDADE_EM_USO;
+        Problem problem = createProblemBuilder(status, problemType, detail).build();
+        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+    @ExceptionHandler(EmailJaExistente.class)
+    public ResponseEntity<?> handleNotFound(EmailJaExistente ex, WebRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        String detail = ex.getMessage();
+        ProblemType problemType = ProblemType.ENTIDADE_EM_USO;
+        Problem problem = createProblemBuilder(status, problemType, detail).build();
+        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+    @ExceptionHandler(FormaPagamentoJaExistente.class)
+    public ResponseEntity<?> handleNotFound(FormaPagamentoJaExistente ex, WebRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
         String detail = ex.getMessage();
         ProblemType problemType = ProblemType.ENTIDADE_EM_USO;

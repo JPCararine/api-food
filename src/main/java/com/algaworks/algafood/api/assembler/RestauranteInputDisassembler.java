@@ -9,20 +9,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 public class RestauranteInputDisassembler {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Restaurante toEntity(RestauranteDTOPut restauranteDTOPut, Cozinha cozinha, Cidade cidade) {
-         Restaurante restaurante = modelMapper.map(restauranteDTOPut, Restaurante.class);
+    public Restaurante toEntity(RestauranteDTOPut restauranteDTOPut) {
+        return modelMapper.map(restauranteDTOPut, Restaurante.class);
 
-         restaurante.setCozinha(cozinha);
-        if(restaurante.getEndereco() != null) {
-            restaurante.getEndereco().setCidade(cidade);
-        }
 
-         return restaurante;
 
     }
     public void copyToEntity(RestauranteDTOPut restauranteDTOPut, Restaurante restaurante) {
@@ -31,6 +28,7 @@ public class RestauranteInputDisassembler {
         if(restaurante.getEndereco() != null) {
             restaurante.getEndereco().setCidade(new Cidade());
         }
+        restaurante.setFormaPagamentos(new ArrayList<>());
         modelMapper.map(restauranteDTOPut, restaurante);
     }
 }

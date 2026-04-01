@@ -47,7 +47,7 @@ insert into restaurante (
     endereco_cep, endereco_logradouro, endereco_numero, endereco_bairro, ativo
 ) values (
              1, 'Thai Gourmet', 10, 1,
-             `current_timestamp`(), `current_timestamp`(),
+             current_timestamp(), current_timestamp(),
              1,
              '38400-999', 'Rua João Pinheiro', '1000', 'Centro', true
 
@@ -59,7 +59,7 @@ insert into restaurante (
     endereco_cidade_id, ativo
 ) values (
              2, 'Thai Delivery', 9.50, 1,
-             `current_timestamp`(), `current_timestamp`(),
+             current_timestamp(), current_timestamp(),
              1, true
 
          );
@@ -71,7 +71,7 @@ insert into restaurante (
 
 ) values (
              3, 'Tuk Tuk Comida Indiana', 15, 2,
-             `current_timestamp`(), `current_timestamp`(),
+             current_timestamp(), current_timestamp(),
              2, true
 
          );
@@ -83,7 +83,7 @@ insert into restaurante (
 
 ) values (
              4, 'Java Steakhouse', 12, 3,
-             `current_timestamp`(), `current_timestamp`(),
+             current_timestamp(), current_timestamp(),
              3, true
 
          );
@@ -95,7 +95,7 @@ insert into restaurante (
 
 ) values (
              5, 'Lanchonete do Tio Sam', 11, 4,
-             `current_timestamp`(), `current_timestamp`(),
+             current_timestamp(), current_timestamp(),
              4, true
 
          );
@@ -107,7 +107,7 @@ insert into restaurante (
 
 ) values (
              6, 'Bar da Maria', 6, 4,
-             `current_timestamp`(), `current_timestamp`(),
+             current_timestamp(), current_timestamp(),
              5, true
 
          );
@@ -135,3 +135,11 @@ insert into produto (nome, descricao, preco,  restaurante_id) values ('T-Bone', 
 insert into produto (nome, descricao, preco,  restaurante_id) values ('Sanduíche X-Tudo', 'Sandubão com muito queijo, hamburger bovino, bacon, ovo, salada e maionese', 19,  5);
 
 insert into produto (nome, descricao, preco,  restaurante_id) values ('Espetinho de Cupim', 'Acompanha farinha, mandioca e vinagrete', 8,  6);
+
+insert into grupo (nome) values ('Gerente'), ('Vendedor'), ('Secretária'), ('Cadastrador');
+
+insert into usuario (id, nome, email, senha, data_cadastro) values
+                                                                (1, 'João da Silva', 'joao.ger@algafood.com', '123', utc_timestamp),
+                                                                (2, 'Maria Joaquina', 'maria.vnd@algafood.com', '123', utc_timestamp),
+                                                                (3, 'José Souza', 'jose.aux@algafood.com', '123', utc_timestamp),
+                                                                (4, 'Sebastião Martins', 'sebastiao.cad@algafood.com', '123', utc_timestamp);
