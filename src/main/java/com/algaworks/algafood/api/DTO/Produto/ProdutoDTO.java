@@ -1,9 +1,10 @@
 package com.algaworks.algafood.api.DTO.Produto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-
+@JsonPropertyOrder({"id", "nome", "descricao", "preco"})
 @Data
 public class ProdutoDTO {
 
