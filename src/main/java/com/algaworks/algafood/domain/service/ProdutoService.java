@@ -96,4 +96,14 @@ public class ProdutoService {
         }
 
     }
+    public ProdutoDTO findByRestaurante(Long restauranteId, Long produtoId) {
+        Produto produto = produtoRepository.findById(produtoId)
+                .orElseThrow(() -> new ProdutoNotFoundException(produtoId));
+
+        if(!produto.getRestaurante().getId().equals(restauranteId)) {
+            throw new RuntimeException("Produto não pertence ao restaurante");
+        }
+        return produtoDTOAssembler.toDTO(produtoRepository.save(produto));
+
+    }
 }

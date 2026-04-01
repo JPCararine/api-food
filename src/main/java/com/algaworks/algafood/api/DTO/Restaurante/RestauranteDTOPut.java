@@ -28,7 +28,5 @@ public class RestauranteDTOPut {
     @NotNull
     @Valid
     private EnderecoInputDTO endereco;
-    @Valid
-    @NotNull
-    private List<FormaPagamentoIDInputDTO> formaPagamentos;
+
 }

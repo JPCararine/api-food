@@ -95,15 +95,6 @@ public class RestauranteController {
         restauranteService.desativar(id);
         return ResponseEntity.noContent().build();
     }
-    @DeleteMapping("/{restauranteId}/formas/{formaPagamentoId}")
-    public ResponseEntity<Void> removerFormas(@PathVariable Long restauranteId, @PathVariable Long formaPagamentoId) {
-        restauranteService.removerFormaPagamento(restauranteId, formaPagamentoId);
-        return ResponseEntity.noContent().build();
-    }
-    @PutMapping("/{restauranteId}/formas/{formaPagamentoId}")
-    public ResponseEntity<Void> adicionarFormas(@PathVariable Long restauranteId, @PathVariable Long formaPagamentoId) {
-        restauranteService.adicionarFormaPagamento(restauranteId, formaPagamentoId);
-        return ResponseEntity.noContent().build();
-    }
+
 
 }

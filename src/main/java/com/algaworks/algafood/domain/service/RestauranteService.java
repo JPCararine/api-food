@@ -1,8 +1,11 @@
 package com.algaworks.algafood.domain.service;
 
+import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoDTO;
+import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTOPut;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
+import com.algaworks.algafood.api.assembler.ProdutoDTOAssembler;
 import com.algaworks.algafood.api.assembler.RestauranteDTOAssembler;
 import com.algaworks.algafood.api.assembler.RestauranteInputDisassembler;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
@@ -35,6 +38,8 @@ public class RestauranteService {
     private final RestauranteInputDisassembler restauranteInputDisassembler;
     private final CidadeRepository cidadeRepository;
     private final EstadoRepository estadoRepository;
+    private final ProdutoDTOAssembler produtoDTOAssembler;
+    private final ProdutoRepository produtoRepository;
 
 
     public List<RestauranteDTO> listAll() {
@@ -106,16 +111,12 @@ public class RestauranteService {
         Cidade cidade = cidadeRepository.findById(restauranteDTOPut.getEndereco().getCidade().getId())
                 .orElseThrow(() -> new CidadeNotFoundException(restauranteDTOPut.getEndereco().getCidade().getId()));
 
-        List<Long> ids = restauranteDTOPut.getFormaPagamentos()
-                .stream()
-                .map(f -> f.getId())
-                .toList();
-        List<FormaPagamento> formasPagamento = formaPagamentoRepository.findAllById(ids);
+
 
         Restaurante restaurante = restauranteInputDisassembler.toEntity(restauranteDTOPut);
         restaurante.setCozinha(cozinha);
         restaurante.getEndereco().setCidade(cidade);
-        restaurante.setFormaPagamentos(formasPagamento);
+
 
 
         return restauranteDTOAssembler.toDTO(restauranteRepository.save(restaurante));
@@ -219,6 +220,7 @@ public class RestauranteService {
         restauranteRepository.save(restaurante);
 
     }
+
     @Transactional
     public void removerFormaPagamento(Long restauranteId, Long formaPagamentoId) {
 
@@ -244,6 +246,51 @@ public class RestauranteService {
             throw new FormaPagamentoJaExistente();
         }
         restaurante.getFormaPagamentos().add(formaPagamento);
+    }
+    public List<String> listarFormaPagamentos(Long restauranteId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+
+        return restaurante.getFormaPagamentos()
+                .stream()
+                .map(f -> f.getDescricao())
+                .toList();
+
+    }
+    public List<ProdutoDTO> listarProdutos(Long restauranteId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        return restaurante.getProdutos()
+                .stream()
+                .map(produtoDTOAssembler::toDTO)
+                .toList();
+
+    }
+    public void adicionarProduto(Long restauranteId, Long produtoId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        Produto produto = produtoRepository.findById(produtoId)
+                .orElseThrow(() -> new FormaPagamentoNotFoundException(produtoId));
+
+        if(restaurante.getProdutos().contains(produto)) {
+            throw new FormaPagamentoJaExistente();
+        }
+        restaurante.getProdutos().add(produto);
+
+    }
+    public void removerProduto(Long restauranteId, Long produtoId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        Produto produto = produtoRepository.findById(produtoId)
+                .orElseThrow(() -> new FormaPagamentoNotFoundException(produtoId));
+
+
+        restaurante.getProdutos().remove(produto);
+
     }
 
 }
