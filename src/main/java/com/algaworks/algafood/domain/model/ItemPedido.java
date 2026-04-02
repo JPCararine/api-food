@@ -26,7 +26,6 @@ public class ItemPedido {
     private String observacao;
 
     @ManyToOne
-    @JsonIgnore
     private Pedido pedido;
     @ManyToOne
     private Produto produto;

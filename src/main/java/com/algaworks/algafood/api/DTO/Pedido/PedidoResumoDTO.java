@@ -1,7 +1,8 @@
 package com.algaworks.algafood.api.DTO.Pedido;
 
 import com.algaworks.algafood.api.DTO.Endereco.EnderecoSimplificadoDTO;
-import com.algaworks.algafood.api.DTO.ItemPedido.ItemPedidoDTO;
+
+import com.algaworks.algafood.api.DTO.ItemPedido.ItemPedidoResumoDTO;
 import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeDTO;
 import com.algaworks.algafood.domain.model.*;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -32,7 +33,7 @@ public class PedidoResumoDTO {
 
     private EnderecoSimplificadoDTO endereco;
 
-    private List<ItemPedidoDTO> itens;
+    private List<ItemPedidoResumoDTO> itens;
 
     private String formaPagamentos;
 

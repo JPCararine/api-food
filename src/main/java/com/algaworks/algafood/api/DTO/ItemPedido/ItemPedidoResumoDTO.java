@@ -1,11 +1,19 @@
 package com.algaworks.algafood.api.DTO.ItemPedido;
 
-import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
-import com.algaworks.algafood.domain.model.Pedido;
-import com.algaworks.algafood.domain.model.Produto;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-
+@JsonPropertyOrder({"produtoId", "produtoNome", "quantidade", "precoUnitario", "precoTotal", "observacao"})
 @Data
+public class ItemPedidoResumoDTO {
+
+    private Long produtoId;
+    private String produtoNome;
+
+    private Integer quantidade;
+    private BigDecimal precoUnitario;
+    private BigDecimal precoTotal;
+
+    private String observacao;
+}

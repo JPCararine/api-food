@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -94,6 +95,7 @@ public class PedidoService {
 
         pedido.setStatus(StatusPedido.CRIADO);
 
+
         return pedidoDTOAssembler.toDTO(pedidoRepository.save(pedido));
 
 
@@ -115,13 +117,44 @@ public class PedidoService {
 
         BigDecimal subTotal = pedido.getItens()
                 .stream()
-                .map(itens -> itens.getPrecoUnitario()
-                        .multiply(BigDecimal.valueOf(itens.getQuantidade())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .peek(itens -> {
+                            BigDecimal precoTotal = itens.getPrecoUnitario()
+                                    .multiply(BigDecimal.valueOf(itens.getQuantidade()));
+                            itens.setPrecoTotal(precoTotal);
+                        })
+                        .map(ItemPedido::getPrecoTotal)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+
         pedido.setSubtotal(subTotal);
         pedido.setValorTotal(subTotal.add(pedido.getTaxaFrete()));
 
 
+    }
+    @Transactional
+    public void confirmar(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new PedidoNotFoundException(id));
+        if(!pedido.getStatus().equals(StatusPedido.CRIADO)) {
+            throw new RuntimeException("Status não pode ser alterado");
+        }
+        pedido.setStatus(StatusPedido.CONFIRMADO);
+        pedido.setDataConfirmacao(OffsetDateTime.now());
+        pedidoDTOAssembler.toDTO(pedidoRepository.save(pedido));
+    }
+    public void entregar(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new PedidoNotFoundException(id));
+        pedido.setStatus(StatusPedido.ENTREGUE);
+        pedido.setDataEntrega(OffsetDateTime.now());
+        pedidoDTOAssembler.toDTO(pedidoRepository.save(pedido));
+    }
+    public void cancelar(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new PedidoNotFoundException(id));
+        pedido.setStatus(StatusPedido.CANCELADO);
+        pedido.setDataCancelamento(OffsetDateTime.now());
+        pedidoDTOAssembler.toDTO(pedidoRepository.save(pedido));
     }
 
 }

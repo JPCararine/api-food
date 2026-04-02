@@ -25,10 +25,26 @@ public class RestaurantePedidoController {
     public ResponseEntity<List<PedidoResumoDTO>> listar(@PathVariable Long restauranteId) {
         return ResponseEntity.ok(restauranteService.listarPedidos(restauranteId));
     }
-    @PostMapping("/teste")
+    @PostMapping
     public ResponseEntity<PedidoResumoDTO> criar(@PathVariable Long restauranteId, @RequestBody @Valid PedidoInputDTO pedidoInputDTO) {
         return new ResponseEntity<>(pedidoService.criar(restauranteId, pedidoInputDTO), HttpStatus.CREATED);
     }
+    @PutMapping("/{pedidoId}/confirmacao")
+    public ResponseEntity<Void> confirmar(@PathVariable Long pedidoId) {
+        pedidoService.confirmar(pedidoId);
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/{pedidoId}/entregar")
+    public ResponseEntity<Void> entregar(@PathVariable Long pedidoId) {
+        pedidoService.entregar(pedidoId);
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/{pedidoId}/cancelar")
+    public ResponseEntity<Void> cancelar(@PathVariable Long pedidoId) {
+        pedidoService.cancelar(pedidoId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 
 

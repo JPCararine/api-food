@@ -353,6 +353,7 @@ public class RestauranteService {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
 
+
         return restaurante.getPedidos().stream()
                 .map(pedidoDTOAssembler::toDTO)
                 .toList();

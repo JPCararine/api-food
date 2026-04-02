@@ -27,7 +27,7 @@ public class Pedido {
     private BigDecimal valorTotal;
     @CreationTimestamp
     private OffsetDateTime dataCriacao;
-    @UpdateTimestamp
+
     private OffsetDateTime dataConfirmacao;
     private OffsetDateTime dataCancelamento;
     private OffsetDateTime dataEntrega;
@@ -40,7 +40,7 @@ public class Pedido {
 
     @Embedded
     private Endereco endereco;
-    @OneToMany(mappedBy = "pedido")
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<ItemPedido> itens;
     @ManyToOne
     private FormaPagamento formaPagamento;

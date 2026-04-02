@@ -11,11 +11,18 @@ import org.springframework.stereotype.Component;
 public class PedidoDTOAssembler {
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private ItemPedidoDTOAssembler itemPedidoDTOAssembler;
 
     public PedidoResumoDTO toDTO(Pedido pedido) {
         PedidoResumoDTO dto = modelMapper.map(pedido, PedidoResumoDTO.class);
 
         dto.setFormaPagamentos(pedido.getFormaPagamento().getDescricao());
+        dto.setItens(
+                pedido.getItens().stream()
+                        .map(i -> itemPedidoDTOAssembler.toDTO(i))
+                        .toList()
+        );
 
         return dto;
     }
