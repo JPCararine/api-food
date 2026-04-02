@@ -1,11 +1,14 @@
 package com.algaworks.algafood.domain.service;
 
+import com.algaworks.algafood.api.DTO.Grupo.GrupoDTO;
 import com.algaworks.algafood.api.DTO.Usuario.UsuarioDTO;
 import com.algaworks.algafood.api.DTO.Usuario.UsuarioInputDTO;
+import com.algaworks.algafood.api.assembler.GrupoDTOAssembler;
 import com.algaworks.algafood.api.assembler.UsuarioDTOAssembler;
 import com.algaworks.algafood.api.assembler.UsuarioInputDTODisassambler;
 import com.algaworks.algafood.domain.exception.JaExistente.EmailJaExistente;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
+import com.algaworks.algafood.domain.exception.NotFound.GrupoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.UsuarioNotFoundException;
 import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.model.Usuario;
@@ -26,6 +29,7 @@ public class UsuarioService {
     private final UsuarioDTOAssembler usuarioDTOAssembler;
     private final UsuarioInputDTODisassambler usuarioInputDTODisassambler;
     private final GrupoRepository grupoRepository;
+    private final GrupoDTOAssembler grupoDTOAssembler;
 
     public List<UsuarioDTO> listAll() {
         return usuarioRepository.findAll()
@@ -114,6 +118,40 @@ public class UsuarioService {
             throw new RuntimeException("Email ou senha incorretos");
         }
 
+    }
+    public List<GrupoDTO> listarGrupos(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
+
+        return usuario.getGrupos()
+                .stream()
+                .map(grupoDTOAssembler::toDTO)
+                .toList();
+    }
+    @Transactional
+    public void adicionarGrupo(Long usuarioId, Long grupoId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
+
+        Grupo grupo = grupoRepository.findById(grupoId)
+                .orElseThrow(() -> new GrupoNotFoundException(grupoId));
+
+        if(usuario.getGrupos().contains(grupo)) {
+            throw new RuntimeException("Usuário já está nesse grupo");
+        }
+
+        usuario.getGrupos().add(grupo);
+    }
+    @Transactional
+    public void removerGrupo(Long usuarioId, Long grupoId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
+
+        Grupo grupo = grupoRepository.findById(grupoId)
+                .orElseThrow(() -> new GrupoNotFoundException(grupoId));
+
+
+        usuario.getGrupos().remove(grupo);
     }
 
 

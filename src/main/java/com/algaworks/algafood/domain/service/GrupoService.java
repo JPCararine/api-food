@@ -4,10 +4,7 @@ import com.algaworks.algafood.api.DTO.Grupo.GrupoDTO;
 import com.algaworks.algafood.api.DTO.Grupo.GrupoInputDTO;
 import com.algaworks.algafood.api.DTO.Permissao.PermissaoDTO;
 import com.algaworks.algafood.api.DTO.Produto.ProdutoIdInputDTO;
-import com.algaworks.algafood.api.assembler.GrupoDTOAssembler;
-import com.algaworks.algafood.api.assembler.GrupoInputDTODisassembler;
-import com.algaworks.algafood.api.assembler.PermissaoDTOAssembler;
-import com.algaworks.algafood.api.assembler.ProdutoDTOAssembler;
+import com.algaworks.algafood.api.assembler.*;
 import com.algaworks.algafood.domain.exception.NotFound.GrupoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.PermissaoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoNotFoundException;
@@ -17,6 +14,7 @@ import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.infrastructure.repository.GrupoRepository;
 import com.algaworks.algafood.infrastructure.repository.PermissaoRepository;
 import com.algaworks.algafood.infrastructure.repository.ProdutoRepository;
+import com.algaworks.algafood.infrastructure.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -35,6 +33,8 @@ public class GrupoService {
     private final GrupoInputDTODisassembler grupoInputDTODisassembler;
     private final ProdutoDTOAssembler produtoDTOAssembler;
     private final PermissaoDTOAssembler  permissaoDTOAssembler;
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioDTOAssembler usuarioDTOAssembler;
 
 
     public List<GrupoDTO> listAll() {
@@ -131,4 +131,5 @@ public class GrupoService {
         grupo.getPermissoes().remove(permissao);
 
     }
+
 }
