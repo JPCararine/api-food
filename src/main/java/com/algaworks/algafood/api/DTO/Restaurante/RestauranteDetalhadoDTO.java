@@ -3,6 +3,8 @@ package com.algaworks.algafood.api.DTO.Restaurante;
 import com.algaworks.algafood.api.DTO.Endereco.EnderecoDTO;
 import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoDTO;
 import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
+import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdInputDTO;
+import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeDTO;
 import com.algaworks.algafood.domain.model.*;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -10,6 +12,8 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 @JsonPropertyOrder({"id", "nome", "frete",  "ativo", "aberto", "cozinha", "endereco"})
 @Data
 public class RestauranteDetalhadoDTO {
@@ -30,6 +34,8 @@ public class RestauranteDetalhadoDTO {
     private List<String> formaPagamentos;
 
     private List<ProdutoDTO> produtos;
+
+    private Set<UsuarioIdNomeDTO> responsaveis;
 
 
 }

@@ -1,13 +1,13 @@
 package com.algaworks.algafood.domain.service;
 
 import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoDTO;
+import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
 import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTOPut;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
-import com.algaworks.algafood.api.assembler.ProdutoDTOAssembler;
-import com.algaworks.algafood.api.assembler.RestauranteDTOAssembler;
-import com.algaworks.algafood.api.assembler.RestauranteInputDisassembler;
+import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeDTO;
+import com.algaworks.algafood.api.assembler.*;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.*;
@@ -26,6 +26,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +42,9 @@ public class RestauranteService {
     private final EstadoRepository estadoRepository;
     private final ProdutoDTOAssembler produtoDTOAssembler;
     private final ProdutoRepository produtoRepository;
+    private final UsuarioDTOAssembler usuarioDTOAssembler;
+    private final UsuarioRepository usuarioRepository;
+    private final PedidoDTOAssembler pedidoDTOAssembler;
 
 
     public List<RestauranteDTO> listAll() {
@@ -303,6 +308,55 @@ public class RestauranteService {
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
         restaurante.setAberto(false);
         restauranteRepository.save(restaurante);
+    }
+    public Set<UsuarioIdNomeDTO> listarUsuarios(Long restauranteId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        return restaurante.getResponsaveis().stream()
+                .map(usuarioDTOAssembler::toDTOIdNome)
+                .collect(Collectors.toSet());
+    }
+    @Transactional
+    public void adicionarResponsavel(Long restauranteId, Long responsavelId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        Usuario usuario = usuarioRepository.findById(responsavelId)
+                .orElseThrow(() -> new UsuarioNotFoundException(responsavelId));
+
+        if(restaurante.getResponsaveis().contains(usuario)) {
+            throw new RuntimeException("Usuário já é responsável por este restaurante");
+        }
+        restaurante.getResponsaveis().add(usuario);
+    }
+    @Transactional
+    public void removerResponsavel(Long restauranteId, Long responsavelId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        Usuario usuario = usuarioRepository.findById(responsavelId)
+                .orElseThrow(() -> new UsuarioNotFoundException(responsavelId));
+
+
+        restaurante.getResponsaveis().remove(usuario);
+    }
+    @Transactional
+    public void ativarVarios(List<Long> restauranteIds) {
+        restauranteIds.forEach(this::ativar);
+    }
+    @Transactional
+    public void desativarVarios(List<Long> restauranteIds) {
+        restauranteIds.forEach(this::desativar);
+    }
+    public List<PedidoResumoDTO> listarPedidos(Long restauranteId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+
+        return restaurante.getPedidos().stream()
+                .map(pedidoDTOAssembler::toDTO)
+                .toList();
     }
 
 }

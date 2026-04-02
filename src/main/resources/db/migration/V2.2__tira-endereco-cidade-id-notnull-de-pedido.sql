@@ -1,0 +1,1 @@
+ALTER TABLE pedido MODIFY endereco_cidade_id BIGINT NULL;

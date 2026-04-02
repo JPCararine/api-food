@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -55,6 +56,12 @@ public class Restaurante {
     @Embedded
     private Endereco endereco;
 
+    @ManyToMany
+    @JoinTable(name = "restaurante_usuario_responsavel",
+                joinColumns = @JoinColumn(name = "restaurante_id"),
+                inverseJoinColumns = @JoinColumn(name = "usuario_id"))
+    private Set<Usuario> responsaveis;
+
     @CreationTimestamp
     @Column(columnDefinition = "datetime")
     private OffsetDateTime dataCadastro;
@@ -64,6 +71,8 @@ public class Restaurante {
     private OffsetDateTime dataAtualizacao;
     public Restaurante() {
     }
+    @OneToMany(mappedBy = "restaurante")
+    private List<Pedido> pedidos;
 
 }
 

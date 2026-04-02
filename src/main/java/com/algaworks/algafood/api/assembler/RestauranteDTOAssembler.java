@@ -4,12 +4,14 @@ import com.algaworks.algafood.api.DTO.Cidade.CidadeResumoDTO;
 import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
+import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeDTO;
 import com.algaworks.algafood.domain.model.Restaurante;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Component
 public class RestauranteDTOAssembler {
@@ -29,10 +31,8 @@ public class RestauranteDTOAssembler {
                 restaurante.getFormaPagamentos().stream()
                         .map(f -> f.getDescricao())
                         .toList());
-        dto.setProdutos(
-                restaurante.getProdutos().stream()
-                        .map(p -> new ProdutoDTO())
-                        .toList());
+
+
         return dto;
 
 

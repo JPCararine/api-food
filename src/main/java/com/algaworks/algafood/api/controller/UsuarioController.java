@@ -1,7 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
 
-import com.algaworks.algafood.api.DTO.LoginInputDTO;
+import com.algaworks.algafood.api.DTO.Usuario.LoginInputDTO;
 import com.algaworks.algafood.api.DTO.Senha.SenhaInput;
 import com.algaworks.algafood.api.DTO.Usuario.UsuarioInputDTO;
 import com.algaworks.algafood.api.DTO.Usuario.UsuarioDTO;

@@ -105,6 +105,16 @@ public class RestauranteController {
         restauranteService.fechar(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/ativacoes")
+    public ResponseEntity<Void> ativarVarios(@RequestBody List<Long> ids) {
+        restauranteService.ativarVarios(ids);
+        return ResponseEntity.noContent().build();
+    }
+    @DeleteMapping("/desativacoes")
+    public ResponseEntity<Void> desativarVarios(@RequestBody List<Long> ids) {
+        restauranteService.desativarVarios(ids);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }

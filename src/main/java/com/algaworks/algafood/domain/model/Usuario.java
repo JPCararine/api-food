@@ -40,6 +40,8 @@ public class Usuario {
     public boolean senhaIncorreta(String senha) {
         return !senhaCorreta(senha);
     }
+    @OneToMany
+    private List<Pedido> pedidos;
 
 
 
