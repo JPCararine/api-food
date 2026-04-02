@@ -7,10 +7,8 @@ import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
 import com.algaworks.algafood.api.assembler.ItemPedidoDTODisassembler;
 import com.algaworks.algafood.api.assembler.PedidoDTOAssembler;
 import com.algaworks.algafood.api.assembler.PedidoDTODisassembler;
-import com.algaworks.algafood.domain.exception.NotFound.FormaPagamentoNotFoundException;
-import com.algaworks.algafood.domain.exception.NotFound.PedidoNotFoundException;
-import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
-import com.algaworks.algafood.domain.exception.NotFound.UsuarioNotFoundException;
+import com.algaworks.algafood.domain.exception.NotFound.*;
+import com.algaworks.algafood.domain.exception.NotFound.PedidoNotFoundExceptionId;
 import com.algaworks.algafood.domain.model.*;
 import com.algaworks.algafood.infrastructure.repository.*;
 import jakarta.transaction.Transactional;
@@ -40,14 +38,19 @@ public class PedidoService {
                 .map(pedidoDTOAssembler::toAdminDTO)
                 .toList();
     }
-    public PedidoResumoDTO findById(Long id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new PedidoNotFoundException(id));
+    public PedidoResumoDTO findByCodigo(String codigo) {
+        Pedido pedido = pedidoRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
         return pedidoDTOAssembler.toDTO(pedido);
     }
-    public PedidoResumoAdminDTO findByIdDetalhado(Long id) {
+    public PedidoResumoDTO findById(Long id) {
         Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new PedidoNotFoundException(id));
+                .orElseThrow(() -> new PedidoNotFoundExceptionId(id));
+        return pedidoDTOAssembler.toDTO(pedido);
+    }
+    public PedidoResumoAdminDTO findByIdDetalhado(String codigo) {
+        Pedido pedido = pedidoRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
         return pedidoDTOAssembler.toAdminDTO(pedido);
     }
     public List<PedidoResumoDTO> findByClienteId(Long id) {
@@ -132,29 +135,22 @@ public class PedidoService {
 
     }
     @Transactional
-    public void confirmar(Long id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new PedidoNotFoundException(id));
-        if(!pedido.getStatus().equals(StatusPedido.CRIADO)) {
-            throw new RuntimeException("Status não pode ser alterado");
-        }
-        pedido.setStatus(StatusPedido.CONFIRMADO);
-        pedido.setDataConfirmacao(OffsetDateTime.now());
-        pedidoDTOAssembler.toDTO(pedidoRepository.save(pedido));
+    public void confirmar(String codigo) {
+        Pedido pedido = pedidoRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
+        pedido.confirmar();
     }
-    public void entregar(Long id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new PedidoNotFoundException(id));
-        pedido.setStatus(StatusPedido.ENTREGUE);
-        pedido.setDataEntrega(OffsetDateTime.now());
-        pedidoDTOAssembler.toDTO(pedidoRepository.save(pedido));
+    @Transactional
+    public void entregar(String codigo) {
+        Pedido pedido = pedidoRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
+        pedido.entregar();
     }
-    public void cancelar(Long id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new PedidoNotFoundException(id));
-        pedido.setStatus(StatusPedido.CANCELADO);
-        pedido.setDataCancelamento(OffsetDateTime.now());
-        pedidoDTOAssembler.toDTO(pedidoRepository.save(pedido));
+    @Transactional
+    public void cancelar(String codigo) {
+        Pedido pedido = pedidoRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
+        pedido.cancelar();
     }
 
 }

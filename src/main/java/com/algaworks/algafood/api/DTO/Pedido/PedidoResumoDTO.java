@@ -11,11 +11,11 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
-@JsonPropertyOrder({"id", "usuario","itens", "subtotal", "taxaFrete", "valorTotal", "formaPagamentos", "endereco", "status"})
+@JsonPropertyOrder({"codigo", "usuario","itens", "subtotal", "taxaFrete", "valorTotal", "formaPagamentos", "endereco", "status"})
 @Data
 public class PedidoResumoDTO {
 
-    private Long id;
+    private String codigo;
     private BigDecimal taxaFrete;
     private BigDecimal valorTotal;
 

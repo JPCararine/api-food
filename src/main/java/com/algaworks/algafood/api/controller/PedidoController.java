@@ -22,9 +22,9 @@ public class PedidoController {
     public ResponseEntity<List<PedidoResumoAdminDTO>> listar() {
         return ResponseEntity.ok(pedidoService.listAll());
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<PedidoResumoDTO> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(pedidoService.findById(id));
+    @GetMapping("/{codigoPedido}")
+    public ResponseEntity<PedidoResumoDTO> buscar(@PathVariable String codigoPedido) {
+        return ResponseEntity.ok(pedidoService.findByCodigo(codigoPedido));
     }
 
 
