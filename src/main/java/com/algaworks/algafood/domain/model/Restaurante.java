@@ -71,6 +71,8 @@ public class Restaurante {
     private OffsetDateTime dataAtualizacao;
     public Restaurante() {
     }
+    @OneToMany(mappedBy = "restaurante")
+    private List<Pedido> pedidos;
 
 }
 

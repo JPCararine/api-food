@@ -1,0 +1,1 @@
+ALTER TABLE restaurante MODIFY endereco_cidade_id BIGINT NULL;

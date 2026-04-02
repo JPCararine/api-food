@@ -1,5 +1,6 @@
 package com.algaworks.algafood.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +26,8 @@ public class ItemPedido {
     private String observacao;
 
     @ManyToOne
+    @JsonIgnore
     private Pedido pedido;
-
     @ManyToOne
     private Produto produto;
 

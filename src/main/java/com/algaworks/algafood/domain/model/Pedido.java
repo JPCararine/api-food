@@ -35,6 +35,7 @@ public class Pedido {
     @ManyToOne(fetch = FetchType.LAZY)
     private Restaurante restaurante;
     @ManyToOne
+    @JoinColumn(name = "usuario_cliente_id")
     private Usuario usuario;
 
     @Embedded
@@ -43,7 +44,7 @@ public class Pedido {
     private List<ItemPedido> itens;
     @ManyToOne
     private FormaPagamento formaPagamento;
-
+    @Enumerated(EnumType.STRING)
     private StatusPedido status;
 
 

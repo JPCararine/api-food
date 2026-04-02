@@ -23,5 +23,5 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long>,
     boolean existsByFormaPagamentosId(Long formaPagamentosId);
 
     Optional<FormaPagamento> findByFormaPagamentos(Long id);
-    Long id(Long id);
+
 }

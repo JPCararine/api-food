@@ -1,15 +1,13 @@
 package com.algaworks.algafood.domain.service;
 
 import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoDTO;
+import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
 import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTOPut;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
 import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeDTO;
-import com.algaworks.algafood.api.assembler.ProdutoDTOAssembler;
-import com.algaworks.algafood.api.assembler.RestauranteDTOAssembler;
-import com.algaworks.algafood.api.assembler.RestauranteInputDisassembler;
-import com.algaworks.algafood.api.assembler.UsuarioDTOAssembler;
+import com.algaworks.algafood.api.assembler.*;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.*;
@@ -46,6 +44,7 @@ public class RestauranteService {
     private final ProdutoRepository produtoRepository;
     private final UsuarioDTOAssembler usuarioDTOAssembler;
     private final UsuarioRepository usuarioRepository;
+    private final PedidoDTOAssembler pedidoDTOAssembler;
 
 
     public List<RestauranteDTO> listAll() {
@@ -341,6 +340,22 @@ public class RestauranteService {
 
 
         restaurante.getResponsaveis().remove(usuario);
+    }
+    @Transactional
+    public void ativarVarios(List<Long> restauranteIds) {
+        restauranteIds.forEach(this::ativar);
+    }
+    @Transactional
+    public void desativarVarios(List<Long> restauranteIds) {
+        restauranteIds.forEach(this::desativar);
+    }
+    public List<PedidoResumoDTO> listarPedidos(Long restauranteId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        return restaurante.getPedidos().stream()
+                .map(pedidoDTOAssembler::toDTO)
+                .toList();
     }
 
 }
