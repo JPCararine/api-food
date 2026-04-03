@@ -9,6 +9,8 @@ import com.algaworks.algafood.infrastructure.repository.PedidoRepository;
 import com.algaworks.algafood.infrastructure.repository.filter.PedidoFilter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,7 @@ public class RestaurantePedidoController {
     public ResponseEntity<List<PedidoResumoDTO>> listar(@PathVariable Long restauranteId, PedidoFilter pedidoFilter) {
         return ResponseEntity.ok(restauranteService.consultaFiltro(restauranteId, pedidoFilter));
     }
+
     @PostMapping
     public ResponseEntity<PedidoResumoDTO> criar(@PathVariable Long restauranteId, @RequestBody @Valid PedidoInputDTO pedidoInputDTO) {
         return new ResponseEntity<>(pedidoService.criar(restauranteId, pedidoInputDTO), HttpStatus.CREATED);
@@ -45,6 +48,7 @@ public class RestaurantePedidoController {
         pedidoService.cancelar(codigoPedido);
         return ResponseEntity.noContent().build();
     }
+
 
 
 

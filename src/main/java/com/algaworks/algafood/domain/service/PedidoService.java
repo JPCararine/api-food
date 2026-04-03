@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.DTO.ItemPedido.ItemPedidoInputDTO;
 import com.algaworks.algafood.api.DTO.Pedido.PedidoInputDTO;
 import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoAdminDTO;
 import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
+import com.algaworks.algafood.api.DTO.Pedido.PedidoVendasDiariasDTO;
 import com.algaworks.algafood.api.assembler.ItemPedidoDTODisassembler;
 import com.algaworks.algafood.api.assembler.PedidoDTOAssembler;
 import com.algaworks.algafood.api.assembler.PedidoDTODisassembler;
@@ -194,5 +195,6 @@ public class PedidoService {
                 Map.entry("formaPagamentoDescricao", "formaPagamento.descricao"));
         return PageableTranslator.translate(pageable, mapeamento);
     }
+
 
 }
