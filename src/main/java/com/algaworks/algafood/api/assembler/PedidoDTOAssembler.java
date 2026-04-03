@@ -2,6 +2,7 @@ package com.algaworks.algafood.api.assembler;
 
 import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoAdminDTO;
 import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
+import com.algaworks.algafood.api.DTO.Pedido.PedidoVendasDiariasDTO;
 import com.algaworks.algafood.domain.model.Pedido;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +33,8 @@ public class PedidoDTOAssembler {
 
 
         return dto;
+    }
+    public PedidoVendasDiariasDTO toVendasDiariasDTO(Pedido pedido) {
+        return modelMapper.map(pedido, PedidoVendasDiariasDTO.class);
     }
 }
