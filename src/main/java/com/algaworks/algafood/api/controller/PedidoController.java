@@ -5,7 +5,10 @@ import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
 import com.algaworks.algafood.domain.service.PedidoService;
 import com.algaworks.algafood.domain.service.RestauranteService;
 import com.algaworks.algafood.infrastructure.repository.PedidoRepository;
+import com.algaworks.algafood.infrastructure.repository.filter.PedidoFilter;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +21,16 @@ public class PedidoController {
 
     private final PedidoService pedidoService;
 
-    @GetMapping
-    public ResponseEntity<List<PedidoResumoAdminDTO>> listar() {
-        return ResponseEntity.ok(pedidoService.listAll());
+
+    @GetMapping ResponseEntity<Page<PedidoResumoAdminDTO>>  pesquisar(PedidoFilter  pedidoFilter, Pageable pageable) {
+        return ResponseEntity.ok(pedidoService.consultaFiltro(pedidoFilter, pageable));
     }
     @GetMapping("/{codigoPedido}")
     public ResponseEntity<PedidoResumoDTO> buscar(@PathVariable String codigoPedido) {
         return ResponseEntity.ok(pedidoService.findByCodigo(codigoPedido));
     }
+
+
 
 
 

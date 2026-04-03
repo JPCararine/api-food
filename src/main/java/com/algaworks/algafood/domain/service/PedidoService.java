@@ -7,17 +7,23 @@ import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
 import com.algaworks.algafood.api.assembler.ItemPedidoDTODisassembler;
 import com.algaworks.algafood.api.assembler.PedidoDTOAssembler;
 import com.algaworks.algafood.api.assembler.PedidoDTODisassembler;
+import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.domain.exception.NotFound.*;
 import com.algaworks.algafood.domain.exception.NotFound.PedidoNotFoundExceptionId;
 import com.algaworks.algafood.domain.model.*;
 import com.algaworks.algafood.infrastructure.repository.*;
+import com.algaworks.algafood.infrastructure.repository.filter.PedidoFilter;
+import com.algaworks.algafood.infrastructure.spec.PedidoSpecs;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +43,11 @@ public class PedidoService {
                 .stream()
                 .map(pedidoDTOAssembler::toAdminDTO)
                 .toList();
+    }
+    public Page<PedidoResumoAdminDTO> consultaFiltro(PedidoFilter pedidoFilter, Pageable pageable) {
+        pageable = traduzirPageable(pageable);
+        return pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter), pageable)
+                .map(pedidoDTOAssembler::toAdminDTO);
     }
     public PedidoResumoDTO findByCodigo(String codigo) {
         Pedido pedido = pedidoRepository.findByCodigo(codigo)
@@ -151,6 +162,37 @@ public class PedidoService {
         Pedido pedido = pedidoRepository.findByCodigo(codigo)
                 .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
         pedido.cancelar();
+    }
+
+    private Pageable traduzirPageable(Pageable pageable) {
+        var mapeamento = Map.ofEntries(
+                Map.entry("id", "id"),
+                Map.entry("codigo", "codigo"),
+                Map.entry("subtotal", "subtotal"),
+                Map.entry("taxaFrete", "taxaFrete"),
+                Map.entry("valorTotal", "valorTotal"),
+
+
+                Map.entry("dataCriacao", "dataCriacao"),
+                Map.entry("dataConfirmacao", "dataConfirmacao"),
+                Map.entry("dataCancelamento", "dataCancelamento"),
+                Map.entry("dataEntrega", "dataEntrega"),
+
+
+                Map.entry("status", "status"),
+
+
+                Map.entry("restauranteId", "restaurante.id"),
+                Map.entry("restauranteNome", "restaurante.nome"),
+
+
+                Map.entry("usuarioId", "usuario.id"),
+                Map.entry("nomeUsuario", "usuario.nome"),
+
+
+                Map.entry("formaPagamentoId", "formaPagamento.id"),
+                Map.entry("formaPagamentoDescricao", "formaPagamento.descricao"));
+        return PageableTranslator.translate(pageable, mapeamento);
     }
 
 }

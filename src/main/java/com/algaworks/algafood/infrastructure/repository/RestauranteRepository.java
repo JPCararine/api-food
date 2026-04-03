@@ -26,6 +26,7 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long>,
 
     Optional<FormaPagamento> findByFormaPagamentos(Long id);
 
-
+    @Query("select r from Restaurante r where r.aberto = true")
+    List<Restaurante> findAbertosByRestaurante();
 
 }

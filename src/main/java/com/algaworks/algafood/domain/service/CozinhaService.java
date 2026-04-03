@@ -12,6 +12,8 @@ import com.algaworks.algafood.infrastructure.repository.CozinhaRepository;
 import com.algaworks.algafood.infrastructure.repository.RestauranteRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,22 +28,18 @@ public class CozinhaService {
     private final CozinhaInputDisassembler cozinhaInputDisassembler;
 
 
-    public List<CozinhaDTO> findAll() {
+    public Page<CozinhaDTO> findAll(Pageable pageable) {
 
-        return cozinhaRepository.findAll()
-                .stream()
-                .map(cozinhaDTOAssembler::toDto)
-                .toList();
+        return cozinhaRepository.findAll(pageable)
+                .map(cozinhaDTOAssembler::toDto);
     }
 
-    public List<CozinhaDTO> findByNome(String nome) {
+    public Page<CozinhaDTO> findByNome(String nome, Pageable pageable) {
         if(nome == null) {
-            return findAll();
+            return findAll(pageable);
         }
-        return cozinhaRepository.findByNome(nome)
-                .stream()
-                .map(cozinhaDTOAssembler::toDto)
-                .toList();
+        return cozinhaRepository.findByNomeContaining(nome, pageable)
+                .map(cozinhaDTOAssembler::toDto);
     }
     public List<CozinhaDTO> findByNomeContaningIgnoreCase(String nome) {
         return cozinhaRepository.findByNomeContainingIgnoreCase(nome)

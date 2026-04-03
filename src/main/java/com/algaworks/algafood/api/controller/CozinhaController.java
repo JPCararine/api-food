@@ -5,6 +5,8 @@ import com.algaworks.algafood.api.DTO.Restaurante.CozinhaDTO;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.service.CozinhaService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +24,17 @@ public class CozinhaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CozinhaDTO>> list() {
-        return ResponseEntity.ok(cozinhaService.findAll());
+    public ResponseEntity<Page<CozinhaDTO>> list(Pageable pageable) {
+
+        return ResponseEntity.ok(cozinhaService.findAll(pageable));
     }
     @GetMapping("/{id}")
     public ResponseEntity<CozinhaDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(cozinhaService.findById(id));
     }
     @GetMapping("/nomes")
-    public ResponseEntity<List<CozinhaDTO>> findByNome(@RequestParam String nome) {
-        return ResponseEntity.ok(cozinhaService.findByNome(nome));
+    public ResponseEntity<Page<CozinhaDTO>> findByNome(@RequestParam String nome, Pageable pageable) {
+        return ResponseEntity.ok(cozinhaService.findByNome(nome, pageable));
     }
     @GetMapping("/nomes/busca")
     public ResponseEntity<List<CozinhaDTO>> findByNomeBusca(@RequestParam String nome) {
