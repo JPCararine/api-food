@@ -30,6 +30,7 @@ public class PedidoDTOAssembler {
         PedidoResumoAdminDTO dto = modelMapper.map(pedido, PedidoResumoAdminDTO.class);
 
 
+
         return dto;
     }
 }

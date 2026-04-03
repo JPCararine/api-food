@@ -6,6 +6,7 @@ import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.BaseEntityNotFoundException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -59,12 +61,20 @@ GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     }
+
+
     protected ResponseEntity<Object>  handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
                                                                  HttpStatusCode status, WebRequest request) {
         List<String> paths = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> {
                     String path = error.getField();
-                    String message = messageSource.getMessage(error, LocaleContextHolder.getLocale());
+                    String message;
+                    if (error.getCode() != null && error.getCode().equals("typeMismatch")) {
+                        message = String.format("Valor '%s' é inválido para o campo '%s'",
+                                error.getRejectedValue(), path);
+                    } else {
+                        message = messageSource.getMessage(error, LocaleContextHolder.getLocale());
+                    }
                     return String.format("'%s': '%s'", path, message);
                         })
                 .collect(Collectors.toList());
@@ -143,6 +153,7 @@ GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Problem problem = createProblemBuilder(status, problemType, detail).build();
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }
+
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
                                                              HttpHeaders headers, HttpStatus status, WebRequest request) {
         if(body == null) {

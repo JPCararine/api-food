@@ -1,16 +1,12 @@
 package com.algaworks.algafood.api.DTO.Restaurante;
 
 import com.algaworks.algafood.api.DTO.Endereco.EnderecoDTO;
-import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoDTO;
 import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
-import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdInputDTO;
-import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeDTO;
-import com.algaworks.algafood.domain.model.*;
+import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeEmailDTO;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -35,7 +31,7 @@ public class RestauranteDetalhadoDTO {
 
     private List<ProdutoDTO> produtos;
 
-    private Set<UsuarioIdNomeDTO> responsaveis;
+    private Set<UsuarioIdNomeEmailDTO> responsaveis;
 
 
 }

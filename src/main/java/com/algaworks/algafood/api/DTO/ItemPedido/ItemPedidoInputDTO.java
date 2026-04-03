@@ -19,7 +19,7 @@ public class ItemPedidoInputDTO {
     @Min(1)
     private Integer quantidade;
 
-    @NotBlank
+
     private String observacao;
 
 

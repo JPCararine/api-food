@@ -3,6 +3,7 @@ package com.algaworks.algafood.api.controller;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTOPut;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
+import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.service.RestauranteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,10 @@ public class RestauranteController {
             @RequestParam String nome,
             @RequestParam Long id) {
         return ResponseEntity.ok(restauranteService.findByNome(nome));
+    }
+    @GetMapping("/abertos")
+    public ResponseEntity<List<RestauranteDTO>> consultaAbertos() {
+        return ResponseEntity.ok(restauranteService.listByAberto());
     }
 
     @GetMapping("/por-nome-e-frete")
@@ -103,6 +108,11 @@ public class RestauranteController {
     @DeleteMapping("/{id}/fechar")
     public ResponseEntity<Void> fechar(@PathVariable Long id) {
         restauranteService.fechar(id);
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/abrirVarios")
+    public ResponseEntity<Void> abrirVarios(@RequestBody List<Long> ids) {
+        restauranteService.abrirVarios(ids);
         return ResponseEntity.noContent().build();
     }
     @PutMapping("/ativacoes")

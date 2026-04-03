@@ -3,7 +3,7 @@ package com.algaworks.algafood.api.DTO.Pedido;
 import com.algaworks.algafood.api.DTO.Endereco.EnderecoSimplificadoDTO;
 
 import com.algaworks.algafood.api.DTO.ItemPedido.ItemPedidoResumoDTO;
-import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeDTO;
+import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeEmailDTO;
 import com.algaworks.algafood.domain.model.*;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
@@ -25,11 +25,7 @@ public class PedidoResumoDTO {
     private OffsetDateTime dataCancelamento;
     private OffsetDateTime dataEntrega;
 
-
-
-
-    private UsuarioIdNomeDTO usuario;
-
+    private UsuarioIdNomeEmailDTO usuario;
 
     private EnderecoSimplificadoDTO endereco;
 

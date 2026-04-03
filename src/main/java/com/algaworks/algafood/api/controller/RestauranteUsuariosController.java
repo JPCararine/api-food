@@ -1,9 +1,8 @@
 package com.algaworks.algafood.api.controller;
 
-import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeDTO;
+import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeEmailDTO;
 import com.algaworks.algafood.domain.service.RestauranteService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +16,7 @@ public class RestauranteUsuariosController {
     private final RestauranteService restauranteService;
 
     @GetMapping
-    public ResponseEntity<Set<UsuarioIdNomeDTO>> listarUsuarios(@PathVariable long restauranteId) {
+    public ResponseEntity<Set<UsuarioIdNomeEmailDTO>> listarUsuarios(@PathVariable long restauranteId) {
         return ResponseEntity.ok(restauranteService.listarUsuarios(restauranteId));
     }
     @PutMapping("/{responsavelId}")

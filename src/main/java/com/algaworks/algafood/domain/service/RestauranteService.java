@@ -1,18 +1,20 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoDTO;
+import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoAdminDTO;
 import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
 import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTOPut;
 import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
-import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeDTO;
+import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeEmailDTO;
 import com.algaworks.algafood.api.assembler.*;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.*;
 import com.algaworks.algafood.domain.model.*;
 import com.algaworks.algafood.infrastructure.repository.*;
+import com.algaworks.algafood.infrastructure.repository.filter.PedidoFilter;
+import com.algaworks.algafood.infrastructure.spec.PedidoSpecs;
 import com.algaworks.algafood.infrastructure.spec.RestauranteSpecs;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +47,7 @@ public class RestauranteService {
     private final UsuarioDTOAssembler usuarioDTOAssembler;
     private final UsuarioRepository usuarioRepository;
     private final PedidoDTOAssembler pedidoDTOAssembler;
+    private final PedidoRepository pedidoRepository;
 
 
     public List<RestauranteDTO> listAll() {
@@ -53,6 +56,16 @@ public class RestauranteService {
                 .map(restauranteDTOAssembler::toDTO)
                 .toList();
     }
+    public List<PedidoResumoDTO> consultaFiltro(Long restauranteId, PedidoFilter pedidoFilter) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        pedidoFilter.setRestauranteId(restauranteId);
+        return pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter))
+                .stream()
+                .map(pedidoDTOAssembler::toDTO)
+                .toList();
+        }
 
     public RestauranteDTO findById(Long id) {
         return restauranteRepository.findById(id)
@@ -63,6 +76,14 @@ public class RestauranteService {
          return restauranteRepository.findById(id)
                 .map(restauranteDTOAssembler::toDTODetalhado)
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
+
+    }
+    public List<RestauranteDTO> listByAberto() {
+
+        return restauranteRepository.findAbertosByRestaurante()
+                .stream()
+                .map(restauranteDTOAssembler::toDTO)
+                .toList();
 
     }
 
@@ -309,7 +330,7 @@ public class RestauranteService {
         restaurante.setAberto(false);
         restauranteRepository.save(restaurante);
     }
-    public Set<UsuarioIdNomeDTO> listarUsuarios(Long restauranteId) {
+    public Set<UsuarioIdNomeEmailDTO> listarUsuarios(Long restauranteId) {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
 
@@ -357,6 +378,10 @@ public class RestauranteService {
         return restaurante.getPedidos().stream()
                 .map(pedidoDTOAssembler::toDTO)
                 .toList();
+    }
+    @Transactional
+    public void abrirVarios(List<Long> restauranteIds) {
+        restauranteIds.forEach(this::abrir);
     }
 
 }
