@@ -1,4 +1,4 @@
-package com.algaworks.algafood.api.DTO.Pedido;
+package com.algaworks.algafood.api.DTO.Produto;
 
 import com.algaworks.algafood.core.validation.FileContentType;
 import com.algaworks.algafood.core.validation.FileSize;

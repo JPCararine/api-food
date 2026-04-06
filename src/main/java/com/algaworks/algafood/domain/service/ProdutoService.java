@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
 import com.algaworks.algafood.api.DTO.Produto.ProdutoInputDTO;
 import com.algaworks.algafood.api.assembler.ProdutoDTOAssembler;
 import com.algaworks.algafood.api.assembler.ProdutoInputDTODisassembler;
+import com.algaworks.algafood.domain.exception.NotFound.ProdutoAndRestauranteNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.Produto;
@@ -97,8 +98,8 @@ public class ProdutoService {
 
     }
     public ProdutoDTO findByRestaurante(Long restauranteId, Long produtoId) {
-        Produto produto = produtoRepository.findById(produtoId)
-                .orElseThrow(() -> new ProdutoNotFoundException(produtoId));
+        Produto produto = produtoRepository.findByRestauranteIdAndId(restauranteId, produtoId)
+                .orElseThrow(() -> new ProdutoAndRestauranteNotFoundException(restauranteId, produtoId));
 
         if(!produto.getRestaurante().getId().equals(restauranteId)) {
             throw new RuntimeException("Produto não pertence ao restaurante");
