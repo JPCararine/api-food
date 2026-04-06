@@ -9,11 +9,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -82,6 +80,7 @@ GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Problem problem = createProblemBuilder((HttpStatus) status, ProblemType.ATRIBUTO_FALTANDO, detail).build();
         return handleExceptionInternal(ex, problem, headers, status, request);
     }
+
 
 
     private ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex, HttpHeaders headers,
