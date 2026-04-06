@@ -24,12 +24,24 @@ public class VendaQueryServiceImpl implements VendaQueryService {
     @PersistenceContext
     private EntityManager manager;
     @Override
-    public List<PedidoVendasDiariasDTO> consultaVendasDiarias(PedidoVendasDiariasFilter filter) {
+    public List<PedidoVendasDiariasDTO> consultaVendasDiarias(PedidoVendasDiariasFilter filter, String timeOffset) {
         var builder = manager.getCriteriaBuilder();
         var query =  builder.createQuery(PedidoVendasDiariasDTO.class);
         var root = query.from(Pedido.class);
         var predicates = new ArrayList<Predicate>();
-        var functionDateDataCriacao = builder.function("date", LocalDate.class, root.get("dataCriacao"));
+        var dataConvertida = builder.function(
+                "coalesce",
+                Date.class,
+                builder.function(
+                "convert_tz",
+                Date.class,
+                root.get("dataCriacao"),
+                builder.literal("+00:00"),
+                builder.literal(timeOffset)
+                ),
+                root.get("dataCriacao")
+        );
+        var functionDateDataCriacao = builder.function("date", Date.class, dataConvertida);
 
         var selection = builder.construct(PedidoVendasDiariasDTO.class,
                 functionDateDataCriacao, builder.count(root.get("id")),

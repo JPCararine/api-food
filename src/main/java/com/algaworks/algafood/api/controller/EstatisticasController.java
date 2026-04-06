@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,7 +21,9 @@ public class EstatisticasController {
     private final VendaQueryService vendaQueryService;
 
     @GetMapping("/vendas-diarias")
-    public ResponseEntity<List<PedidoVendasDiariasDTO>> consultarVendasDiarias(PedidoVendasDiariasFilter filter) {
-        return ResponseEntity.ok(vendaQueryService.consultaVendasDiarias(filter));
+    public ResponseEntity<List<PedidoVendasDiariasDTO>> consultarVendasDiarias(PedidoVendasDiariasFilter filter,
+                                                                               @RequestParam(required = false,
+                                                                                       defaultValue = "+00:00") String timeOffset) {
+        return ResponseEntity.ok(vendaQueryService.consultaVendasDiarias(filter, timeOffset));
     }
 }
