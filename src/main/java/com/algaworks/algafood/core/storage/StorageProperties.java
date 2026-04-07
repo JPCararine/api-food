@@ -1,5 +1,6 @@
 package com.algaworks.algafood.core.storage;
 
+import com.amazonaws.regions.Regions;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ import java.nio.file.Path;
 @ConfigurationProperties("algafood.storage")
 @Data
 public class StorageProperties {
-
+    private TipoStorage tipo = TipoStorage.LOCAL;
     private Local local = new Local();
     private S3 s3 = new S3();
 
@@ -29,7 +30,10 @@ public class StorageProperties {
         private String idChaveAcesso;
         private String idChaveAcessoSecreta;
         private String bucket;
-        private String regiao;
+        private Regions regiao;
         private String diretorioFotos;
+    }
+    public enum TipoStorage {
+        LOCAL, S3
     }
 }

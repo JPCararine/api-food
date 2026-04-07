@@ -8,6 +8,7 @@ import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.service.FotoProdutoService;
 import com.algaworks.algafood.domain.service.ProdutoService;
 import com.algaworks.algafood.domain.service.RestauranteService;
+import com.algaworks.algafood.domain.service.StorageService;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -42,7 +43,7 @@ public class RestauranteProdutosController {
         return ResponseEntity.ok(produtoService.findByRestaurante(restauranteId, produtoId));
     }
     @GetMapping("/{produtoId}/foto")
-    public ResponseEntity<InputStreamResource> recuperar(@PathVariable Long restauranteId, @PathVariable Long produtoId,
+    public ResponseEntity<?> recuperar(@PathVariable Long restauranteId, @PathVariable Long produtoId,
                                                          @RequestHeader(name = "Accept") String accept) throws HttpMediaTypeNotAcceptableException {
         try {
             FotoProduto foto = fotoProdutoService.buscarOuFalhar(restauranteId, produtoId);
@@ -56,14 +57,19 @@ public class RestauranteProdutosController {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
             }
 
-            InputStream inputStream = fotoProdutoService.download(restauranteId, produtoId);
+            StorageService.FotoRecuperada fotoRecuperada = fotoProdutoService.download(restauranteId, produtoId);
 
-
-            return ResponseEntity.ok()
-                    .contentType(mediaType)
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "inline; filename=\"" + foto.getNomeArquivo() + "\"")
-                    .body(new InputStreamResource(inputStream));
+            if(fotoRecuperada.temUrl()) {
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .header(HttpHeaders.LOCATION, fotoRecuperada.getUrl())
+                        .build();
+            } else {
+                return ResponseEntity.ok()
+                        .contentType(mediaType)
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "inline; filename=\"" + foto.getNomeArquivo() + "\"")
+                        .body(new InputStreamResource(fotoRecuperada.getInputStream()));
+            }
         } catch (ProdutoAndRestauranteNotFoundException e) {
             return ResponseEntity.notFound().build();
         }

@@ -29,6 +29,7 @@ public class FotoProdutoService {
     private final FotoProdutoDTOAssembler fotoProdutoDTOAssembler;
     private final StorageService storageService;
 
+
     @Transactional
     public FotoProdutoDTO atualizarFoto(Long restauranteId, Long produtoId, FotoProdutoInput fotoProdutoInput) throws IOException {
         Produto produto = produtoRepository.findByRestauranteIdAndId(restauranteId, produtoId)
@@ -67,6 +68,7 @@ public class FotoProdutoService {
 
         StorageService.NovaFoto novaFoto = StorageService.NovaFoto.builder()
                 .nomeArquivo(fotoProduto.getNomeArquivo())
+                .contentType(fotoProduto.getContentType())
                 .inputStream(dadosArquivo)
                 .build();
 
@@ -76,13 +78,13 @@ public class FotoProdutoService {
 
 
     }
-    public InputStream download(Long restauranteId,  Long produtoId)  {
+    public StorageService.FotoRecuperada download(Long restauranteId,  Long produtoId)  {
         FotoProduto fotoProduto = buscarOuFalhar(restauranteId, produtoId);
         String nomeArquivo = fotoProduto.getNomeArquivo();
 
-        InputStream dados = storageService.recuperar(nomeArquivo);
+        StorageService.FotoRecuperada fotoRecuperada = storageService.recuperar(nomeArquivo);
 
-        return dados;
+        return fotoRecuperada;
 
     }
     public FotoProduto buscarOuFalhar(Long restauranteId, Long produtoId) {
