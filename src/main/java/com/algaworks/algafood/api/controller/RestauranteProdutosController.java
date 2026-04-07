@@ -3,17 +3,21 @@ package com.algaworks.algafood.api.controller;
 import com.algaworks.algafood.api.DTO.FotoProdutoDTO.FotoProdutoDTO;
 import com.algaworks.algafood.api.DTO.FotoProdutoDTO.FotoProdutoInput;
 import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
+import com.algaworks.algafood.domain.exception.NotFound.ProdutoAndRestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.service.FotoProdutoService;
 import com.algaworks.algafood.domain.service.ProdutoService;
 import com.algaworks.algafood.domain.service.RestauranteService;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -38,19 +42,31 @@ public class RestauranteProdutosController {
         return ResponseEntity.ok(produtoService.findByRestaurante(restauranteId, produtoId));
     }
     @GetMapping("/{produtoId}/foto")
-    public ResponseEntity<InputStreamResource> recuperar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
-        FotoProduto foto = fotoProdutoService.buscarOuFalhar(restauranteId, produtoId);
+    public ResponseEntity<InputStreamResource> recuperar(@PathVariable Long restauranteId, @PathVariable Long produtoId,
+                                                         @RequestHeader(name = "Accept") String accept) throws HttpMediaTypeNotAcceptableException {
+        try {
+            FotoProduto foto = fotoProdutoService.buscarOuFalhar(restauranteId, produtoId);
 
-        InputStream inputStream = fotoProdutoService.download(restauranteId, produtoId);
+            MediaType mediaType = MediaType.parseMediaType(foto.getContentType());
+            List<MediaType> mediaTypesAceitas = MediaType.parseMediaTypes(accept);
 
-        InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
+            boolean compativel = mediaTypesAceitas.stream()
+                    .anyMatch(m -> m.isCompatibleWith(mediaType));
+            if(!compativel) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+            }
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(foto.getContentType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "inline; filename=\"" + foto.getNomeArquivo() + "\"")
-                .body(inputStreamResource);
+            InputStream inputStream = fotoProdutoService.download(restauranteId, produtoId);
 
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=\"" + foto.getNomeArquivo() + "\"")
+                    .body(new InputStreamResource(inputStream));
+        } catch (ProdutoAndRestauranteNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
 
 
     }
@@ -66,6 +82,11 @@ public class RestauranteProdutosController {
     @DeleteMapping("/{produtoId}/remover")
     public ResponseEntity<Void> removerProduto(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
         restauranteService.removerProduto(restauranteId, produtoId);
+        return ResponseEntity.noContent().build();
+    }
+    @DeleteMapping("/{produtoId}/foto")
+    public ResponseEntity<Void> deletarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
+        fotoProdutoService.delete(restauranteId, produtoId);
         return ResponseEntity.noContent().build();
     }
 
