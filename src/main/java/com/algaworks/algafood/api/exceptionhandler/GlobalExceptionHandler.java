@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -78,6 +79,15 @@ GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .collect(Collectors.toList());
         String detail = String.format("Campos inválidos: '%s' ", String.join(", ", paths));
         Problem problem = createProblemBuilder((HttpStatus) status, ProblemType.ATRIBUTO_FALTANDO, detail).build();
+        return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
+    protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex, HttpHeaders headers,
+                                                                  HttpStatusCode status, WebRequest request) {
+
+        String detail = String.format("Tipo de mídia não aceitável. Tipos suportados: %s", ex.getSupportedMediaTypes());
+        ProblemType problemType = ProblemType.PROPRIEDADE_NAO_ACEITAVEL;
+        Problem problem = createProblemBuilder((HttpStatus) status, problemType, detail).build();
         return handleExceptionInternal(ex, problem, headers, status, request);
     }
 
@@ -153,21 +163,6 @@ GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }
 
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
-                                                             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        if(body == null) {
-            body = Problem.builder()
-                    .title(status.getReasonPhrase())
-                    .status(status.value())
-                    .build();
-        } else if(body instanceof String) {
-            body = Problem.builder()
-                    .title((String) body)
-                    .status(status.value())
-                    .build();
-        }
-        return super.handleExceptionInternal(ex, body, headers, status, request);
-    }
 
 
     private Problem.ProblemBuilder createProblemBuilder(HttpStatus status, ProblemType problemType, String detail) {

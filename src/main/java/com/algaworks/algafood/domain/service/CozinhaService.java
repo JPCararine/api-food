@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.DTO.Cozinha.CozinhaInputDTO;
 import com.algaworks.algafood.api.DTO.Restaurante.CozinhaDTO;
 import com.algaworks.algafood.api.assembler.CozinhaDTOAssembler;
 import com.algaworks.algafood.api.assembler.CozinhaInputDisassembler;
+import com.algaworks.algafood.core.storage.StorageProperties;
 import com.algaworks.algafood.domain.exception.EmUso.CozinhaEmUsoException;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.CozinhaNotFoundException;
@@ -26,6 +27,7 @@ public class CozinhaService {
     private final RestauranteRepository restauranteRepository;
     private final CozinhaDTOAssembler cozinhaDTOAssembler;
     private final CozinhaInputDisassembler cozinhaInputDisassembler;
+    private final StorageProperties storageProperties;
 
 
     public Page<CozinhaDTO> findAll(Pageable pageable) {
@@ -55,6 +57,7 @@ public class CozinhaService {
     @Transactional
     public CozinhaDTO save(CozinhaInputDTO cozinhaInputDTO) {
         ChecarSeExisteNome(cozinhaInputDTO.getNome(), null);
+
 
         Cozinha cozinha =  cozinhaInputDisassembler.toEntity(cozinhaInputDTO);
 
