@@ -5,8 +5,11 @@ import com.algaworks.algafood.domain.exception.NotFound.EmailException;
 import com.algaworks.algafood.domain.service.EnvioEmailService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -18,24 +21,16 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 public class SmtpEnvioEmailService implements EnvioEmailService {
-
+    @Getter
     private final EmailProperties emailProperties;
 
-    private final JavaMailSender mailSender;
-
-    protected final Configuration freeMarkerConfig;
+    protected final JavaMailSender mailSender;
+    @Getter
+    private final Configuration freeMarkerConfig;
 
     public void enviar(Mensagem mensagem) {
         try {
-            String corpo = processarTemplate(mensagem);
-
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
-            helper.setFrom(emailProperties.getRemetente());
-            helper.setTo(mensagem.getDestinatarios().toArray(new String[0]));
-            helper.setSubject(mensagem.getAssunto());
-            helper.setText(corpo, true);
+            MimeMessage mimeMessage = createMimeMessage(mensagem);
 
             mailSender.send(mimeMessage);
         } catch (Exception e) {
@@ -51,4 +46,21 @@ public class SmtpEnvioEmailService implements EnvioEmailService {
             throw new EmailException("Não foi possível montar o template do e-mail", e);
         }
     }
+
+    protected MimeMessage createMimeMessage(Mensagem mensagem) throws MessagingException {
+
+            String corpo = processarTemplate(mensagem);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+            helper.setFrom(emailProperties.getRemetente());
+            helper.setTo(mensagem.getDestinatarios().toArray(new String[0]));
+            helper.setSubject(mensagem.getAssunto());
+            helper.setText(corpo, true);
+
+            return mimeMessage;
+
+    }
+
 }

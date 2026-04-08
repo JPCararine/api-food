@@ -12,12 +12,18 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties("algafood.email")
 public class EmailProperties {
 
+    private SandBox sandBox;
+
     private Implementacao impl = Implementacao.FAKE;
 
     @NotNull
     private String remetente;
 
     public enum Implementacao {
-        SMTP, FAKE
+        SMTP, FAKE, SANDBOX
+    }
+    @Data
+    public static class SandBox {
+        private String destinatario;
     }
 }
