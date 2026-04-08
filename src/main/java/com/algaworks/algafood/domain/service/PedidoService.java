@@ -34,11 +34,10 @@ public class PedidoService {
     private final PedidoDTOAssembler pedidoDTOAssembler;
     private final PedidoDTODisassembler pedidoDTODisassembler;
     private final UsuarioRepository usuarioRepository;
-    private final ItemPedidoRepository itemPedidoRepository;
     private final FormaPagamentoRepository formaPagamentoRepository;
     private final RestauranteRepository restauranteRepository;
     private final ItemPedidoDTODisassembler  itemPedidoDTODisassembler;
-    private final EnvioEmailService envioEmailService;
+
 
 
     public List<PedidoResumoAdminDTO> listAll() {
@@ -153,7 +152,7 @@ public class PedidoService {
         Pedido pedido = pedidoRepository.findByCodigo(codigo)
                 .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
         pedido.confirmar();
-        enviarEmail(pedido, pedido.getUsuario());
+        pedidoRepository.save(pedido);
     }
     @Transactional
     public void entregar(String codigo) {
@@ -166,6 +165,7 @@ public class PedidoService {
         Pedido pedido = pedidoRepository.findByCodigo(codigo)
                 .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
         pedido.cancelar();
+        pedidoRepository.save(pedido);
     }
 
     private Pageable traduzirPageable(Pageable pageable) {
@@ -199,19 +199,6 @@ public class PedidoService {
         return PageableTranslator.translate(pageable, mapeamento);
     }
 
-    public void enviarEmail(Pedido pedido, Usuario usuario) {
-        if(StatusPedido.CONFIRMADO.equals(pedido.getStatus())) {
-            Set<String> emails = Collections.singleton(usuario.getEmail());
-            envioEmailService.enviar(
-                    new EnvioEmailService.Mensagem.MensagemBuilder()
-                            .destinatarios(emails)
-                            .assunto(pedido.getRestaurante().getNome() + "  - Pedido confirmado")
-                            .parametro("pedido", pedido)
-                            .mensagem("pedido-confirmado.ftl")
-                            .build());
 
-
-        }
-    }
 
 }

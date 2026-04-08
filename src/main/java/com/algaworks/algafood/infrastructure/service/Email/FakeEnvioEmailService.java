@@ -26,7 +26,7 @@ public class FakeEnvioEmailService extends SmtpEnvioEmailService{
     }
 
     @Override
-    protected String processarTemplate(Mensagem mensagem) {
+    public String processarTemplate(Mensagem mensagem) {
         return super.processarTemplate(mensagem);
     }
 }
