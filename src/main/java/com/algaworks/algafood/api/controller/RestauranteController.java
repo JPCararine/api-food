@@ -105,7 +105,7 @@ public class RestauranteController {
         restauranteService.abrir(id);
         return ResponseEntity.noContent().build();
     }
-    @DeleteMapping("/{id}/fechar")
+    @PutMapping("/{id}/fechar")
     public ResponseEntity<Void> fechar(@PathVariable Long id) {
         restauranteService.fechar(id);
         return ResponseEntity.noContent().build();
