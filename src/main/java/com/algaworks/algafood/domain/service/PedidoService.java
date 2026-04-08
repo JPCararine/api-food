@@ -14,6 +14,7 @@ import com.algaworks.algafood.domain.exception.NotFound.PedidoNotFoundExceptionI
 import com.algaworks.algafood.domain.model.*;
 import com.algaworks.algafood.infrastructure.repository.*;
 import com.algaworks.algafood.infrastructure.repository.filter.PedidoFilter;
+import com.algaworks.algafood.infrastructure.service.Email.SmtpEnvioEmailService;
 import com.algaworks.algafood.infrastructure.spec.PedidoSpecs;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +38,8 @@ public class PedidoService {
     private final FormaPagamentoRepository formaPagamentoRepository;
     private final RestauranteRepository restauranteRepository;
     private final ItemPedidoDTODisassembler  itemPedidoDTODisassembler;
+    private final EnvioEmailService envioEmailService;
+
 
     public List<PedidoResumoAdminDTO> listAll() {
         return pedidoRepository.findAll()
@@ -151,6 +153,7 @@ public class PedidoService {
         Pedido pedido = pedidoRepository.findByCodigo(codigo)
                 .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
         pedido.confirmar();
+        enviarEmail(pedido, pedido.getUsuario());
     }
     @Transactional
     public void entregar(String codigo) {
@@ -196,5 +199,19 @@ public class PedidoService {
         return PageableTranslator.translate(pageable, mapeamento);
     }
 
+    public void enviarEmail(Pedido pedido, Usuario usuario) {
+        if(StatusPedido.CONFIRMADO.equals(pedido.getStatus())) {
+            Set<String> emails = Collections.singleton(usuario.getEmail());
+            envioEmailService.enviar(
+                    new EnvioEmailService.Mensagem.MensagemBuilder()
+                            .destinatarios(emails)
+                            .assunto(pedido.getRestaurante().getNome() + "  - Pedido confirmado")
+                            .parametro("pedido", pedido)
+                            .mensagem("pedido-confirmado.ftl")
+                            .build());
+
+
+        }
+    }
 
 }
