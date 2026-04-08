@@ -14,6 +14,7 @@ import com.algaworks.algafood.domain.exception.NotFound.PedidoNotFoundExceptionI
 import com.algaworks.algafood.domain.model.*;
 import com.algaworks.algafood.infrastructure.repository.*;
 import com.algaworks.algafood.infrastructure.repository.filter.PedidoFilter;
+import com.algaworks.algafood.infrastructure.service.Email.SmtpEnvioEmailService;
 import com.algaworks.algafood.infrastructure.spec.PedidoSpecs;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +34,11 @@ public class PedidoService {
     private final PedidoDTOAssembler pedidoDTOAssembler;
     private final PedidoDTODisassembler pedidoDTODisassembler;
     private final UsuarioRepository usuarioRepository;
-    private final ItemPedidoRepository itemPedidoRepository;
     private final FormaPagamentoRepository formaPagamentoRepository;
     private final RestauranteRepository restauranteRepository;
     private final ItemPedidoDTODisassembler  itemPedidoDTODisassembler;
+
+
 
     public List<PedidoResumoAdminDTO> listAll() {
         return pedidoRepository.findAll()
@@ -151,6 +152,7 @@ public class PedidoService {
         Pedido pedido = pedidoRepository.findByCodigo(codigo)
                 .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
         pedido.confirmar();
+        pedidoRepository.save(pedido);
     }
     @Transactional
     public void entregar(String codigo) {
@@ -163,6 +165,7 @@ public class PedidoService {
         Pedido pedido = pedidoRepository.findByCodigo(codigo)
                 .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
         pedido.cancelar();
+        pedidoRepository.save(pedido);
     }
 
     private Pageable traduzirPageable(Pageable pageable) {
@@ -195,6 +198,7 @@ public class PedidoService {
                 Map.entry("formaPagamentoDescricao", "formaPagamento.descricao"));
         return PageableTranslator.translate(pageable, mapeamento);
     }
+
 
 
 }

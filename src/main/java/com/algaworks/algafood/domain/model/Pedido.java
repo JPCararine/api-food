@@ -1,11 +1,14 @@
 package com.algaworks.algafood.domain.model;
 
+import com.algaworks.algafood.domain.event.PedidoCanceladoEvent;
+import com.algaworks.algafood.domain.event.PedidoConfirmadoEvent;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -16,7 +19,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @Entity
-public class Pedido {
+public class Pedido extends AbstractAggregateRoot<Pedido> {
     public Pedido() {
     }
 
@@ -58,6 +61,8 @@ public class Pedido {
 
         this.status = StatusPedido.CONFIRMADO;
         this.dataConfirmacao = OffsetDateTime.now();
+        registerEvent(new PedidoConfirmadoEvent(this));
+
     }
 
     public void entregar() {
@@ -76,6 +81,7 @@ public class Pedido {
 
         this.status = StatusPedido.CANCELADO;
         this.dataCancelamento = OffsetDateTime.now();
+        registerEvent(new PedidoCanceladoEvent(this));
     }
 
     @PrePersist
