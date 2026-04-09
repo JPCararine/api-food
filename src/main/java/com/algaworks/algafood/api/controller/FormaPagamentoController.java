@@ -6,11 +6,13 @@ import com.algaworks.algafood.domain.model.FormaPagamento;
 import com.algaworks.algafood.domain.service.FormaPagamentoService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("formas")
@@ -21,7 +23,9 @@ public class FormaPagamentoController {
 
     @GetMapping
     public ResponseEntity<List<FormaPagamentoDTO>> findAll(){
-        return ResponseEntity.ok(formaPagamentoService.findAll());
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS))
+                .body(formaPagamentoService.findAll());
     }
 
     @PostMapping
@@ -30,7 +34,9 @@ public class FormaPagamentoController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<FormaPagamentoDTO> findById(@PathVariable Long id){
-        return  ResponseEntity.ok(formaPagamentoService.findById(id));
+        return  ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS))
+                .body(formaPagamentoService.findById(id));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
