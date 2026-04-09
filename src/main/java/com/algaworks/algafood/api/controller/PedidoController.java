@@ -23,7 +23,7 @@ public class PedidoController {
 
 
     @GetMapping ResponseEntity<Page<PedidoResumoAdminDTO>>  pesquisar(PedidoFilter  pedidoFilter, Pageable pageable) {
-        return ResponseEntity.ok(pedidoService.consultaFiltro(pedidoFilter, pageable));
+        return ResponseEntity.ok(pedidoService.consultaFiltroAdmin(pedidoFilter, pageable));
     }
     @GetMapping("/{codigoPedido}")
     public ResponseEntity<PedidoResumoDTO> buscar(@PathVariable String codigoPedido) {

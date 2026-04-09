@@ -27,7 +27,6 @@ import java.util.Map;
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
-    private final RestauranteRepository restauranteRepository;
     private final ProdutoDTOAssembler produtoDTOAssembler;
     private final ProdutoInputDTODisassembler produtoInputDTODisassembler;
 
@@ -86,17 +85,6 @@ public class ProdutoService {
         });
         return produtoDTOAssembler.toDTO(produtoRepository.save(produto));
     }
-    public void corrigirRelacionamento(Produto produto) {
-
-        if(produto.getRestaurante() != null) {
-            Long restauranteId = produto.getRestaurante().getId();
-
-            Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                    .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
-            produto.setRestaurante(restaurante);
-        }
-
-    }
     public ProdutoDTO findByRestaurante(Long restauranteId, Long produtoId) {
         Produto produto = produtoRepository.findByRestauranteIdAndId(restauranteId, produtoId)
                 .orElseThrow(() -> new ProdutoAndRestauranteNotFoundException(restauranteId, produtoId));
@@ -104,7 +92,7 @@ public class ProdutoService {
         if(!produto.getRestaurante().getId().equals(restauranteId)) {
             throw new RuntimeException("Produto não pertence ao restaurante");
         }
-        return produtoDTOAssembler.toDTO(produtoRepository.save(produto));
+        return produtoDTOAssembler.toDTO(produto);
 
     }
 

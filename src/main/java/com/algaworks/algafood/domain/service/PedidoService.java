@@ -46,10 +46,29 @@ public class PedidoService {
                 .map(pedidoDTOAssembler::toAdminDTO)
                 .toList();
     }
-    public Page<PedidoResumoAdminDTO> consultaFiltro(PedidoFilter pedidoFilter, Pageable pageable) {
+    public Page<PedidoResumoAdminDTO> consultaFiltroAdmin(PedidoFilter pedidoFilter, Pageable pageable) {
         pageable = traduzirPageable(pageable);
         return pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter), pageable)
                 .map(pedidoDTOAssembler::toAdminDTO);
+    }
+    public List<PedidoResumoDTO> listarPedidos(Long restauranteId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+
+        return restaurante.getPedidos().stream()
+                .map(pedidoDTOAssembler::toDTO)
+                .toList();
+    }
+    public List<PedidoResumoDTO> consultaFiltroNormal(Long restauranteId, PedidoFilter pedidoFilter) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+
+        pedidoFilter.setRestauranteId(restauranteId);
+        return pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter))
+                .stream()
+                .map(pedidoDTOAssembler::toDTO)
+                .toList();
     }
     public PedidoResumoDTO findByCodigo(String codigo) {
         Pedido pedido = pedidoRepository.findByCodigo(codigo)

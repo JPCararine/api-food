@@ -23,10 +23,10 @@ import java.util.List;
 public class RestaurantePedidoController {
 
     private final PedidoService pedidoService;
-    private final RestauranteService restauranteService;
+
     @GetMapping
     public ResponseEntity<List<PedidoResumoDTO>> listar(@PathVariable Long restauranteId, PedidoFilter pedidoFilter) {
-        return ResponseEntity.ok(restauranteService.consultaFiltro(restauranteId, pedidoFilter));
+        return ResponseEntity.ok(pedidoService.consultaFiltroNormal(restauranteId, pedidoFilter));
     }
 
     @PostMapping

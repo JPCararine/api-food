@@ -37,17 +37,9 @@ public class RestauranteService {
 
     private final RestauranteRepository restauranteRepository;
     private final CozinhaRepository cozinhaRepository;
-    private final FormaPagamentoRepository formaPagamentoRepository;
     private final RestauranteDTOAssembler restauranteDTOAssembler;
     private final RestauranteInputDisassembler restauranteInputDisassembler;
     private final CidadeRepository cidadeRepository;
-    private final EstadoRepository estadoRepository;
-    private final ProdutoDTOAssembler produtoDTOAssembler;
-    private final ProdutoRepository produtoRepository;
-    private final UsuarioDTOAssembler usuarioDTOAssembler;
-    private final UsuarioRepository usuarioRepository;
-    private final PedidoDTOAssembler pedidoDTOAssembler;
-    private final PedidoRepository pedidoRepository;
 
 
     public List<RestauranteDTO> listAll() {
@@ -56,16 +48,7 @@ public class RestauranteService {
                 .map(restauranteDTOAssembler::toDTO)
                 .toList();
     }
-    public List<PedidoResumoDTO> consultaFiltro(Long restauranteId, PedidoFilter pedidoFilter) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
 
-        pedidoFilter.setRestauranteId(restauranteId);
-        return pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter))
-                .stream()
-                .map(pedidoDTOAssembler::toDTO)
-                .toList();
-        }
 
     public RestauranteDTO findById(Long id) {
         return restauranteRepository.findById(id)
@@ -215,20 +198,6 @@ public class RestauranteService {
             restaurante.setCozinha(cozinha);
         }
 
-        if (restaurante.getFormaPagamentos() != null) {
-            List<Long> ids = restaurante.getFormaPagamentos()
-                    .stream()
-                    .map(FormaPagamento::getId)
-                    .toList();
-
-            List<FormaPagamento> formas = formaPagamentoRepository.findAllById(ids);
-
-            if (formas.size() != ids.size()) {
-                throw new BaseEntityNotFoundException("Uma ou mais formas de pagamento não existem");
-            }
-
-            restaurante.setFormaPagamentos(formas);
-        }
     }
     @Transactional
     public void ativar(Long id) {
@@ -247,77 +216,7 @@ public class RestauranteService {
 
     }
 
-    @Transactional
-    public void removerFormaPagamento(Long restauranteId, Long formaPagamentoId) {
 
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
-
-        FormaPagamento formaPagamento = formaPagamentoRepository.findById(formaPagamentoId)
-                .orElseThrow(() -> new FormaPagamentoNotFoundException(formaPagamentoId));
-
-        restaurante.getFormaPagamentos().remove(formaPagamento);
-
-    }
-    @Transactional
-    public void adicionarFormaPagamento(Long restauranteId, Long formaPagamentoId) {
-
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
-
-        FormaPagamento formaPagamento = formaPagamentoRepository.findById(formaPagamentoId)
-                .orElseThrow(() -> new FormaPagamentoNotFoundException(formaPagamentoId));
-
-        if(restaurante.getFormaPagamentos().contains(formaPagamento)) {
-            throw new FormaPagamentoJaExistente();
-        }
-        restaurante.getFormaPagamentos().add(formaPagamento);
-    }
-    public List<String> listarFormaPagamentos(Long restauranteId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
-
-
-        return restaurante.getFormaPagamentos()
-                .stream()
-                .map(f -> f.getDescricao())
-                .toList();
-
-    }
-    public List<ProdutoDTO> listarProdutos(Long restauranteId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
-
-        return restaurante.getProdutos()
-                .stream()
-                .map(produtoDTOAssembler::toDTO)
-                .toList();
-
-    }
-    public void adicionarProduto(Long restauranteId, Long produtoId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
-
-        Produto produto = produtoRepository.findById(produtoId)
-                .orElseThrow(() -> new FormaPagamentoNotFoundException(produtoId));
-
-        if(restaurante.getProdutos().contains(produto)) {
-            throw new FormaPagamentoJaExistente();
-        }
-        restaurante.getProdutos().add(produto);
-
-    }
-    public void removerProduto(Long restauranteId, Long produtoId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
-
-        Produto produto = produtoRepository.findById(produtoId)
-                .orElseThrow(() -> new FormaPagamentoNotFoundException(produtoId));
-
-
-        restaurante.getProdutos().remove(produto);
-
-    }
     public void abrir(Long id) {
         Restaurante restaurante = restauranteRepository.findById(id)
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
@@ -330,38 +229,7 @@ public class RestauranteService {
         restaurante.setAberto(false);
         restauranteRepository.save(restaurante);
     }
-    public Set<UsuarioIdNomeEmailDTO> listarUsuarios(Long restauranteId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
 
-        return restaurante.getResponsaveis().stream()
-                .map(usuarioDTOAssembler::toDTOIdNome)
-                .collect(Collectors.toSet());
-    }
-    @Transactional
-    public void adicionarResponsavel(Long restauranteId, Long responsavelId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
-
-        Usuario usuario = usuarioRepository.findById(responsavelId)
-                .orElseThrow(() -> new UsuarioNotFoundException(responsavelId));
-
-        if(restaurante.getResponsaveis().contains(usuario)) {
-            throw new RuntimeException("Usuário já é responsável por este restaurante");
-        }
-        restaurante.getResponsaveis().add(usuario);
-    }
-    @Transactional
-    public void removerResponsavel(Long restauranteId, Long responsavelId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
-
-        Usuario usuario = usuarioRepository.findById(responsavelId)
-                .orElseThrow(() -> new UsuarioNotFoundException(responsavelId));
-
-
-        restaurante.getResponsaveis().remove(usuario);
-    }
     @Transactional
     public void ativarVarios(List<Long> restauranteIds) {
         restauranteIds.forEach(this::ativar);
@@ -370,15 +238,7 @@ public class RestauranteService {
     public void desativarVarios(List<Long> restauranteIds) {
         restauranteIds.forEach(this::desativar);
     }
-    public List<PedidoResumoDTO> listarPedidos(Long restauranteId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
 
-
-        return restaurante.getPedidos().stream()
-                .map(pedidoDTOAssembler::toDTO)
-                .toList();
-    }
     @Transactional
     public void abrirVarios(List<Long> restauranteIds) {
         restauranteIds.forEach(this::abrir);

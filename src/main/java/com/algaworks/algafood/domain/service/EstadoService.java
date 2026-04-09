@@ -24,7 +24,6 @@ public class EstadoService {
 
     private final EstadoRepository estadoRepository;
     private final CidadeRepository cidadeRepository;
-    private final CozinhaRepository cozinhaRepository;
     private final EstadoDTOAssembler estadoDTOAssembler;
     private final EstadoInputDisassembler estadoInputDisassembler;
 

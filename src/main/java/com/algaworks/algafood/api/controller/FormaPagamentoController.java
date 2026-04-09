@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoDTO;
 import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoInputDTO;
 import com.algaworks.algafood.domain.model.FormaPagamento;
 import com.algaworks.algafood.domain.service.FormaPagamentoService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class FormaPagamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<FormaPagamentoDTO> save(@RequestBody FormaPagamentoInputDTO formaPagamentoInputDTO){
+    public ResponseEntity<FormaPagamentoDTO> save(@RequestBody @Valid FormaPagamentoInputDTO formaPagamentoInputDTO){
         return new ResponseEntity<>(formaPagamentoService.save(formaPagamentoInputDTO), HttpStatus.CREATED);
     }
     @GetMapping("/{id}")
@@ -37,7 +38,7 @@ public class FormaPagamentoController {
         return ResponseEntity.noContent().build();
     }
     @PutMapping("/{id}")
-    public ResponseEntity<FormaPagamentoDTO> put(@PathVariable Long id, @RequestBody FormaPagamentoInputDTO formaPagamentoInputDTO){
+    public ResponseEntity<FormaPagamentoDTO> put(@PathVariable Long id, @RequestBody @Valid FormaPagamentoInputDTO formaPagamentoInputDTO){
         return new ResponseEntity<>(formaPagamentoService.update(formaPagamentoInputDTO, id), HttpStatus.OK);
     }
 

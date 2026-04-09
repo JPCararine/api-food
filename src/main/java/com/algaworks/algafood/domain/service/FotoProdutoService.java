@@ -25,7 +25,6 @@ import java.util.UUID;
 public class FotoProdutoService {
 
     private final ProdutoRepository produtoRepository;
-    private final RestauranteRepository restauranteRepository;
     private final FotoProdutoDTOAssembler fotoProdutoDTOAssembler;
     private final StorageService storageService;
 

@@ -31,10 +31,8 @@ public class GrupoService {
     private final GrupoRepository grupoRepository;
     private final GrupoDTOAssembler grupoDTOAssembler;
     private final GrupoInputDTODisassembler grupoInputDTODisassembler;
-    private final ProdutoDTOAssembler produtoDTOAssembler;
     private final PermissaoDTOAssembler  permissaoDTOAssembler;
-    private final UsuarioRepository usuarioRepository;
-    private final UsuarioDTOAssembler usuarioDTOAssembler;
+
 
 
     public List<GrupoDTO> listAll() {

@@ -27,7 +27,6 @@ public class CozinhaService {
     private final RestauranteRepository restauranteRepository;
     private final CozinhaDTOAssembler cozinhaDTOAssembler;
     private final CozinhaInputDisassembler cozinhaInputDisassembler;
-    private final StorageProperties storageProperties;
 
 
     public Page<CozinhaDTO> findAll(Pageable pageable) {

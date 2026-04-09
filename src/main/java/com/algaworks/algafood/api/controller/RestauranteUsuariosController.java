@@ -2,6 +2,7 @@ package com.algaworks.algafood.api.controller;
 
 import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeEmailDTO;
 import com.algaworks.algafood.domain.service.RestauranteService;
+import com.algaworks.algafood.domain.service.RestauranteUsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,20 +14,20 @@ import java.util.Set;
 @AllArgsConstructor
 public class RestauranteUsuariosController {
 
-    private final RestauranteService restauranteService;
+    private final RestauranteUsuarioService restauranteUsuarioService;
 
     @GetMapping
     public ResponseEntity<Set<UsuarioIdNomeEmailDTO>> listarUsuarios(@PathVariable long restauranteId) {
-        return ResponseEntity.ok(restauranteService.listarUsuarios(restauranteId));
+        return ResponseEntity.ok(restauranteUsuarioService.listarUsuarios(restauranteId));
     }
     @PutMapping("/{responsavelId}")
     public ResponseEntity<String> adicionarResponsavel(@PathVariable Long restauranteId, @PathVariable Long responsavelId) {
-        restauranteService.adicionarResponsavel(restauranteId, responsavelId);
+        restauranteUsuarioService.adicionarResponsavel(restauranteId, responsavelId);
         return ResponseEntity.ok("Usuário adicionado com sucesso.");
     }
     @DeleteMapping("/{responsavelId}")
     public ResponseEntity<String> removerResponsavel(@PathVariable Long restauranteId, @PathVariable Long responsavelId) {
-        restauranteService.removerResponsavel(restauranteId, responsavelId);
+        restauranteUsuarioService.removerResponsavel(restauranteId, responsavelId);
         return ResponseEntity.ok("Usuário removido com sucesso.");
 
 
