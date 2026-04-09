@@ -27,8 +27,7 @@ public class PermissaoService {
                 .toList();
     }
     public PermissaoDTO findById(Long id) {
-        Permissao permissao = permissaoRepository.findById(id)
-                .orElseThrow(() -> new PermissaoNotFoundException(id));
+        Permissao permissao = buscarPermissaoOuFalhar(id);
         return permissaoDTOAssembler.toDTO(permissao);
     }
     public PermissaoDTO save(UsuarioInputDTO permissaoInputDTO) {
@@ -39,16 +38,18 @@ public class PermissaoService {
     }
     public PermissaoDTO update(UsuarioInputDTO permissaoInputDTO, Long id) {
 
-        Permissao permissao = permissaoRepository.findById(id)
-                .orElseThrow(() -> new PermissaoNotFoundException(id));
+        Permissao permissao = buscarPermissaoOuFalhar(id);
 
         permissaoInputDTODisassembler.copyToEntity(permissaoInputDTO, permissao);
 
         return permissaoDTOAssembler.toDTO(permissaoRepository.save(permissao));
     }
     public void delete(Long id) {
-        Permissao permissao = permissaoRepository.findById(id)
-                .orElseThrow(() -> new PermissaoNotFoundException(id));
+        Permissao permissao = buscarPermissaoOuFalhar(id);
         permissaoRepository.delete(permissao);
+    }
+    private Permissao buscarPermissaoOuFalhar(Long id) {
+        return permissaoRepository.findById(id)
+                .orElseThrow(() -> new PermissaoNotFoundException(id));
     }
 }

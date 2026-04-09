@@ -12,7 +12,7 @@ public class CidadeInputDisassembler {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Cidade toEntity(CidadeInputDTO cidadeInputDTO, Estado estado) {
+    public Cidade toEntity(CidadeInputDTO cidadeInputDTO) {
         return modelMapper.map(cidadeInputDTO, Cidade.class);
     }
     public void copyToEntity(CidadeInputDTO cidadeInputDTO, Cidade cidade) {

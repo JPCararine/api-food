@@ -40,8 +40,7 @@ public class FormaPagamentoService {
     }
 
     public FormaPagamentoDTO findById(Long id) {
-        FormaPagamento formaPagamento = formaPagamentoRepository.findById(id)
-                .orElseThrow(() -> new FormaPagamentoNotFoundException(id));
+        FormaPagamento formaPagamento = buscarFormaPagamentoOuFalhar(id);
         return formaPagamentoDTOAssembler.toDTO(formaPagamento);
     }
     @Transactional
@@ -50,16 +49,18 @@ public class FormaPagamentoService {
         if(restauranteRepository.existsByFormaPagamentosId(id)) {
             throw new FormaEmUsoException(id);
         }
-        FormaPagamento formaPagamento = formaPagamentoRepository.findById(id)
-                        .orElseThrow(() -> new FormaPagamentoNotFoundException(id));
+        FormaPagamento formaPagamento = buscarFormaPagamentoOuFalhar(id);
         formaPagamentoRepository.delete(formaPagamento);
     }
     @Transactional
     public FormaPagamentoDTO update(FormaPagamentoInputDTO formaPagamentoInputDTO, Long id) {
-        FormaPagamento formaPagamento = formaPagamentoRepository.findById(id)
-                        .orElseThrow(() -> new FormaPagamentoNotFoundException(id));
+        FormaPagamento formaPagamento = buscarFormaPagamentoOuFalhar(id);
         formaPagamentoInputDTODisassembler.copyToEntity(formaPagamentoInputDTO, formaPagamento);
 
         return formaPagamentoDTOAssembler.toDTO(formaPagamentoRepository.save(formaPagamento));
+    }
+    private FormaPagamento buscarFormaPagamentoOuFalhar(Long id) {
+        return formaPagamentoRepository.findById(id)
+                .orElseThrow(() -> new FormaPagamentoNotFoundException(id));
     }
 }

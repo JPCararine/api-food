@@ -42,9 +42,8 @@ public class GrupoService {
                 .toList();
     }
     public GrupoDTO findById(Long id) {
-        Grupo grupo = grupoRepository.findById(id)
-                .orElseThrow(() -> new GrupoNotFoundException(id));
-                return grupoDTOAssembler.toDTO(grupo);
+        Grupo grupo = buscarGrupoOuFalhar(id);
+        return grupoDTOAssembler.toDTO(grupo);
 
     }
     @Transactional
@@ -70,15 +69,13 @@ public class GrupoService {
 
     }
     public void delete(Long id) {
-        Grupo grupo = grupoRepository.findById(id)
-                .orElseThrow(() -> new GrupoNotFoundException(id));
+        Grupo grupo = buscarGrupoOuFalhar(id);
         grupoRepository.delete(grupo);
     }
     @Transactional
     public GrupoDTO update(GrupoInputDTO grupoInputDTO, Long id) {
 
-        Grupo grupo = grupoRepository.findById(id)
-                .orElseThrow(() -> new GrupoNotFoundException(id));
+        Grupo grupo = buscarGrupoOuFalhar(id);
 
         grupoInputDTODisassembler.copyToEntity(grupoInputDTO, grupo);
 
@@ -96,8 +93,7 @@ public class GrupoService {
         return  grupoDTOAssembler.toDTO(grupoRepository.save(grupo));
     }
     public List<PermissaoDTO> listarPermissoes(Long grupoId) {
-        Grupo grupo = grupoRepository.findById(grupoId)
-                .orElseThrow(() -> new GrupoNotFoundException(grupoId));
+        Grupo grupo = buscarGrupoOuFalhar(grupoId);
 
         return grupo.getPermissoes()
                 .stream()
@@ -106,11 +102,9 @@ public class GrupoService {
     }
     @Transactional
     public void adicionarPermissao(Long grupoId, Long permissaoId) {
-        Grupo grupo = grupoRepository.findById(grupoId)
-                .orElseThrow(() -> new GrupoNotFoundException(grupoId));
+        Grupo grupo = buscarGrupoOuFalhar(grupoId);
 
-        Permissao permissao = permissaoRepository.findById(permissaoId)
-                .orElseThrow(() -> new PermissaoNotFoundException(permissaoId));
+        Permissao permissao = buscarPermissaoOuFalhar(permissaoId);
 
         if(grupo.getPermissoes().contains(permissao)) {
             throw new RuntimeException("Grupo já possui essa permissão");
@@ -119,15 +113,22 @@ public class GrupoService {
     }
     @Transactional
     public void removerPermissao(Long grupoId, Long permissaoId) {
-        Grupo grupo = grupoRepository.findById(grupoId)
-                .orElseThrow(() -> new GrupoNotFoundException(grupoId));
+        Grupo grupo = buscarGrupoOuFalhar(grupoId);
 
-        Permissao permissao = permissaoRepository.findById(permissaoId)
-                .orElseThrow(() -> new PermissaoNotFoundException(permissaoId));
+        Permissao permissao = buscarPermissaoOuFalhar(permissaoId);
 
 
         grupo.getPermissoes().remove(permissao);
 
+    }
+
+    private Grupo buscarGrupoOuFalhar(Long id) {
+        return grupoRepository.findById(id)
+                .orElseThrow(() -> new GrupoNotFoundException(id));
+    }
+    private Permissao buscarPermissaoOuFalhar(Long id) {
+        return permissaoRepository.findById(id)
+                .orElseThrow(() -> new PermissaoNotFoundException(id));
     }
 
 }

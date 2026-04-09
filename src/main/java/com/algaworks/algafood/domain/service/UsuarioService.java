@@ -38,8 +38,7 @@ public class UsuarioService {
                 .toList();
     }
     public UsuarioDTO findById(Long id) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException(id));
+        Usuario usuario = buscarUsuarioOuFalhar(id);
         return usuarioDTOAssembler.toDTO(usuario);
     }
     @Transactional
@@ -66,15 +65,13 @@ public class UsuarioService {
         return  usuarioDTOAssembler.toDTO(usuarioRepository.save(usuario));
     }
     public void delete(Long id) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException(id));
+        Usuario usuario = buscarUsuarioOuFalhar(id);
         usuarioRepository.delete(usuario);
     }
     @Transactional
     public UsuarioDTO update(UsuarioInputDTO usuarioInputDTO, Long id) {
         validarEmail(usuarioInputDTO.getEmail(), id);
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException(id));
+        Usuario usuario = buscarUsuarioOuFalhar(id);
 
         usuarioInputDTODisassambler.copyToEntity(usuarioInputDTO, usuario);
 
@@ -103,8 +100,7 @@ public class UsuarioService {
     }
     @Transactional
     public void alterarSenha(Long id, String senhaAtual, String senhaNova) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException(id));
+        Usuario usuario = buscarUsuarioOuFalhar(id);
         if(!usuario.getSenha().equals(senhaAtual)) {
             throw new RuntimeException("Senha atual não coincide com a senha do usuário");
         }
@@ -120,8 +116,7 @@ public class UsuarioService {
 
     }
     public List<GrupoDTO> listarGrupos(Long usuarioId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
+        Usuario usuario = buscarUsuarioOuFalhar(usuarioId);
 
         return usuario.getGrupos()
                 .stream()
@@ -130,11 +125,9 @@ public class UsuarioService {
     }
     @Transactional
     public void adicionarGrupo(Long usuarioId, Long grupoId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
+        Usuario usuario = buscarUsuarioOuFalhar(usuarioId);
 
-        Grupo grupo = grupoRepository.findById(grupoId)
-                .orElseThrow(() -> new GrupoNotFoundException(grupoId));
+        Grupo grupo = buscarGrupoOuFalhar(grupoId);
 
         if(usuario.getGrupos().contains(grupo)) {
             throw new RuntimeException("Usuário já está nesse grupo");
@@ -144,14 +137,21 @@ public class UsuarioService {
     }
     @Transactional
     public void removerGrupo(Long usuarioId, Long grupoId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
+        Usuario usuario = buscarUsuarioOuFalhar(usuarioId);
 
-        Grupo grupo = grupoRepository.findById(grupoId)
-                .orElseThrow(() -> new GrupoNotFoundException(grupoId));
+        Grupo grupo = buscarGrupoOuFalhar(grupoId);
 
 
         usuario.getGrupos().remove(grupo);
+    }
+
+    private Grupo buscarGrupoOuFalhar(Long id) {
+        return grupoRepository.findById(id)
+                .orElseThrow(() -> new GrupoNotFoundException(id));
+    }
+    private Usuario buscarUsuarioOuFalhar(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNotFoundException(id));
     }
 
 

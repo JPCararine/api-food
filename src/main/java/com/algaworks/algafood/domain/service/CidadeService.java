@@ -37,37 +37,33 @@ public class CidadeService {
     }
 
     public CidadeDTO findById(Long id) {
-        Cidade cidade = cidadeRepository.findById(id)
-                .orElseThrow(() -> new CidadeNotFoundException(id));
+        Cidade cidade = buscarCidadeOuFalhar(id);
         return cidadeDTOAssembler.toDto(cidade);
     }
     @Transactional
     public CidadeDTO save(CidadeInputDTO cidadeInputDTO) {
         checarSeExisteNome(cidadeInputDTO.getNome(), null);
 
-        Estado estado = estadoRepository.findById(cidadeInputDTO.getEstado().getId())
-                .orElseThrow(() -> new EstadoNotFoundException(cidadeInputDTO.getEstado().getId()));
+        Estado estado = buscarEstadoOuFalhar(cidadeInputDTO.getEstado().getId());
 
-        Cidade cidade = cidadeInputDisassembler.toEntity(cidadeInputDTO, estado);
+        Cidade cidade = cidadeInputDisassembler.toEntity(cidadeInputDTO);
+        cidade.setEstado(estado);
 
 
         return cidadeDTOAssembler.toDto(cidadeRepository.save(cidade));
     }
     @Transactional
     public void delete(long id) {
-        Cidade cidade = cidadeRepository.findById(id)
-                        .orElseThrow(() -> new CidadeNotFoundException(id));
+        Cidade cidade = buscarCidadeOuFalhar(id);
         cidadeRepository.delete(cidade);
     }
     @Transactional
     public CidadeDTO replace(Long id, CidadeInputDTO cidadeInputDTO) {
 
-        Cidade cidade = cidadeRepository.findById(id)
-                .orElseThrow(() -> new CidadeNotFoundException(id));
+        Cidade cidade = buscarCidadeOuFalhar(id);
         checarSeExisteNome(cidadeInputDTO.getNome(), cidade.getId());
 
-        Estado estado = estadoRepository.findById(cidadeInputDTO.getEstado().getId())
-                .orElseThrow(() -> new EstadoNotFoundException(cidadeInputDTO.getEstado().getId()));
+        Estado estado = buscarEstadoOuFalhar(cidadeInputDTO.getEstado().getId());
         cidade.setEstado(estado);
 
         cidadeInputDisassembler.copyToEntity(cidadeInputDTO, cidade);
@@ -85,6 +81,14 @@ public class CidadeService {
                         }
                     });
         }
+    private Cidade buscarCidadeOuFalhar(Long id) {
+        return cidadeRepository.findById(id)
+                .orElseThrow(() -> new CidadeNotFoundException(id));
+    }
+    private Estado buscarEstadoOuFalhar(Long id) {
+        return estadoRepository.findById(id)
+                .orElseThrow(() -> new EstadoNotFoundException(id));
+    }
 
     }
 

@@ -24,8 +24,7 @@ public class RestauranteUsuarioService {
     private final UsuarioDTOAssembler usuarioDTOAssembler;
 
     public Set<UsuarioIdNomeEmailDTO> listarUsuarios(Long restauranteId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
         return restaurante.getResponsaveis().stream()
                 .map(usuarioDTOAssembler::toDTOIdNome)
@@ -33,11 +32,9 @@ public class RestauranteUsuarioService {
     }
     @Transactional
     public void adicionarResponsavel(Long restauranteId, Long responsavelId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
-        Usuario usuario = usuarioRepository.findById(responsavelId)
-                .orElseThrow(() -> new UsuarioNotFoundException(responsavelId));
+        Usuario usuario = buscarUsuarioOuFalhar(responsavelId);
 
         if(restaurante.getResponsaveis().contains(usuario)) {
             throw new RuntimeException("Usuário já é responsável por este restaurante");
@@ -46,13 +43,18 @@ public class RestauranteUsuarioService {
     }
     @Transactional
     public void removerResponsavel(Long restauranteId, Long responsavelId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
-        Usuario usuario = usuarioRepository.findById(responsavelId)
-                .orElseThrow(() -> new UsuarioNotFoundException(responsavelId));
-
+        Usuario usuario = buscarUsuarioOuFalhar(responsavelId);
 
         restaurante.getResponsaveis().remove(usuario);
+    }
+    private Restaurante buscarRestauranteOuFalhar(Long id) {
+        return restauranteRepository.findById(id)
+                .orElseThrow(() -> new RestauranteNotFoundException(id));
+    }
+    private Usuario buscarUsuarioOuFalhar(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNotFoundException(id));
     }
 }

@@ -49,8 +49,7 @@ public class CozinhaService {
                 .toList();
     }
     public CozinhaDTO findById(Long id) {
-        Cozinha cozinha = cozinhaRepository.findById(id)
-                .orElseThrow(() -> new CozinhaNotFoundException(id));
+        Cozinha cozinha = buscarCozinhaOuFalhar(id);
         return cozinhaDTOAssembler.toDto(cozinha);
     }
     @Transactional
@@ -75,8 +74,7 @@ public class CozinhaService {
     }
     @Transactional
     public CozinhaDTO replace(Long id, CozinhaInputDTO cozinhaInputDTO) {
-        Cozinha cozinha = cozinhaRepository.findById(id)
-                .orElseThrow(() -> new CozinhaNotFoundException(id));
+        Cozinha cozinha = buscarCozinhaOuFalhar(id);
 
         ChecarSeExisteNome(cozinhaInputDTO.getNome(), cozinha.getId());
 
@@ -93,5 +91,10 @@ public class CozinhaService {
                 });
 
 
+    }
+
+    private Cozinha buscarCozinhaOuFalhar(Long id) {
+        return cozinhaRepository.findById(id)
+                .orElseThrow(() -> new CozinhaNotFoundException(id));
     }
 }

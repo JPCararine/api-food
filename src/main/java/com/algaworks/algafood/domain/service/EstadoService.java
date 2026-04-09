@@ -38,14 +38,12 @@ public class EstadoService {
     }
 
     public EstadoDTO findById(Long id) {
-         Estado estado = estadoRepository.findById(id)
-                .orElseThrow(() -> new EstadoNotFoundException(id));
+        Estado estado = buscarEstadoOuFalhar(id);
          return estadoDTOAssembler.toDTO(estado);
     }
     public EstadoDTODetalhado findByIdDetalhado(Long id) {
-        return estadoRepository.findById(id)
-                .map(estadoDTOAssembler::toDTODetalhado)
-                .orElseThrow(() -> new EstadoNotFoundException(id));
+        Estado estado = buscarEstadoOuFalhar(id);
+        return estadoDTOAssembler.toDTODetalhado(estado);
 
 
     }
@@ -62,14 +60,12 @@ public class EstadoService {
         if(cidadeRepository.existsByEstadoId(id)) {
             throw new EstadoEmUsoException(id);
         }
-        Estado estado =  estadoRepository.findById(id)
-                .orElseThrow(() -> new EstadoNotFoundException(id));
+        Estado estado = buscarEstadoOuFalhar(id);
         estadoRepository.delete(estado);
     }
     @Transactional
     public EstadoDTO put(Long id, EstadoInputDTO estadoInputDTO) {
-        Estado estado = estadoRepository.findById(id)
-                .orElseThrow(() -> new EstadoNotFoundException(id));
+        Estado estado = buscarEstadoOuFalhar(id);
         checarSeExiste(estadoInputDTO.getNome(), estado.getId());
 
         estadoInputDisassembler.copyToEntity(estadoInputDTO, estado);
@@ -83,6 +79,10 @@ public class EstadoService {
                     throw new EntidadeJaExistente();
                     }
                 });
-                }
+    }
 
+    private Estado buscarEstadoOuFalhar(Long id) {
+        return estadoRepository.findById(id)
+                .orElseThrow(() -> new EstadoNotFoundException(id));
+    }
 }

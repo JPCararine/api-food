@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
 import com.algaworks.algafood.api.assembler.ProdutoDTOAssembler;
 import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.FormaPagamentoNotFoundException;
+import com.algaworks.algafood.domain.exception.NotFound.ProdutoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.domain.model.Restaurante;
@@ -24,8 +25,7 @@ public class RestauranteProdutoService {
 
 
     public List<ProdutoDTO> listarProdutos(Long restauranteId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
         return restaurante.getProdutos()
                 .stream()
@@ -34,11 +34,9 @@ public class RestauranteProdutoService {
 
     }
     public void adicionarProduto(Long restauranteId, Long produtoId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
-        Produto produto = produtoRepository.findById(produtoId)
-                .orElseThrow(() -> new FormaPagamentoNotFoundException(produtoId));
+        Produto produto = buscarProdutoOuFalhar(produtoId);
 
         if(restaurante.getProdutos().contains(produto)) {
             throw new FormaPagamentoJaExistente();
@@ -47,14 +45,22 @@ public class RestauranteProdutoService {
 
     }
     public void removerProduto(Long restauranteId, Long produtoId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
-        Produto produto = produtoRepository.findById(produtoId)
-                .orElseThrow(() -> new FormaPagamentoNotFoundException(produtoId));
+        Produto produto = buscarProdutoOuFalhar(produtoId);
 
 
         restaurante.getProdutos().remove(produto);
 
     }
+
+    private Restaurante buscarRestauranteOuFalhar(Long id) {
+        return restauranteRepository.findById(id)
+                .orElseThrow(() -> new RestauranteNotFoundException(id));
+    }
+    private Produto buscarProdutoOuFalhar(Long id) {
+        return produtoRepository.findById(id)
+                .orElseThrow(() -> new ProdutoNotFoundException(id));
+    }
+
 }

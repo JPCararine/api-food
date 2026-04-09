@@ -45,8 +45,7 @@ public class ProdutoService {
                 .toList();
     }
     public ProdutoDTO findById(Long id) {
-        Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new ProdutoNotFoundException(id));
+        Produto produto = buscarProdutoOuFalhar(id);
         return produtoDTOAssembler.toDTO(produto);
     }
     @Transactional
@@ -59,14 +58,12 @@ public class ProdutoService {
     }
 
     public void delete(long id){
-        Produto produto = produtoRepository.findById(id)
-                        .orElseThrow(() -> new ProdutoNotFoundException(id));
+        Produto produto = buscarProdutoOuFalhar(id);
         produtoRepository.delete(produto);
     }
     @Transactional
     public ProdutoDTO merge(Map<String, Object> camposPassados, Long id) {
-        Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new ProdutoNotFoundException(id));
+        Produto produto = buscarProdutoOuFalhar(id);
         ObjectMapper mapper = new ObjectMapper();
         Produto produtoAtual = mapper.convertValue(camposPassados, Produto.class);
 
@@ -95,5 +92,10 @@ public class ProdutoService {
         return produtoDTOAssembler.toDTO(produto);
 
     }
+    private Produto buscarProdutoOuFalhar(Long id) {
+        return produtoRepository.findById(id)
+                .orElseThrow(() -> new ProdutoNotFoundException(id));
+    }
+
 
 }

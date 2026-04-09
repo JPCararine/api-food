@@ -51,14 +51,12 @@ public class RestauranteService {
 
 
     public RestauranteDTO findById(Long id) {
-        return restauranteRepository.findById(id)
-                .map(restauranteDTOAssembler::toDTO)
-                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        Restaurante restaurante = buscarRestauranteOuFalhar(id);
+        return restauranteDTOAssembler.toDTO(restaurante);
     }
     public RestauranteDetalhadoDTO findByIdDetalhado(Long id) {
-         return restauranteRepository.findById(id)
-                .map(restauranteDTOAssembler::toDTODetalhado)
-                .orElseThrow(() -> new RestauranteNotFoundException(id));
+         Restaurante restaurante = buscarRestauranteOuFalhar(id);
+         return restauranteDTOAssembler.toDTODetalhado(restaurante);
 
     }
     public List<RestauranteDTO> listByAberto() {
@@ -114,13 +112,9 @@ public class RestauranteService {
     public RestauranteDTO save(RestauranteDTOPut restauranteDTOPut) {
         checarSeExisteNome(restauranteDTOPut.getNome(), null);
 
-        Cozinha cozinha = cozinhaRepository.findById(restauranteDTOPut.getCozinha().getId())
-                .orElseThrow(() -> new CozinhaNotFoundException(restauranteDTOPut.getCozinha().getId()));
+        Cozinha cozinha = buscarCozinhaOuFalhar(restauranteDTOPut.getCozinha().getId());
 
-        Cidade cidade = cidadeRepository.findById(restauranteDTOPut.getEndereco().getCidade().getId())
-                .orElseThrow(() -> new CidadeNotFoundException(restauranteDTOPut.getEndereco().getCidade().getId()));
-
-
+        Cidade cidade = buscarCidadeOuFalhar(restauranteDTOPut.getEndereco().getCidade().getId());
 
         Restaurante restaurante = restauranteInputDisassembler.toEntity(restauranteDTOPut);
         restaurante.setCozinha(cozinha);
@@ -134,20 +128,17 @@ public class RestauranteService {
     @Transactional
     public RestauranteDTO update(Long id, RestauranteDTOPut dto) {
 
-        Restaurante restaurante = restauranteRepository.findById(id)
-                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        Restaurante restaurante = buscarRestauranteOuFalhar(id);
 
         checarSeExisteNome(dto.getNome(), restaurante.getId());
 
         restauranteInputDisassembler.copyToEntity(dto, restaurante);
 
-        Cozinha cozinha = cozinhaRepository.findById(dto.getCozinha().getId())
-                .orElseThrow(() -> new CozinhaNotFoundException(dto.getCozinha().getId()));
+        Cozinha cozinha = buscarCozinhaOuFalhar(dto.getCozinha().getId());
 
         restaurante.setCozinha(cozinha);
 
-        Cidade cidade = cidadeRepository.findById(dto.getEndereco().getCidade().getId())
-                .orElseThrow(() -> new CidadeNotFoundException(dto.getEndereco().getCidade().getId()));
+        Cidade cidade = buscarCidadeOuFalhar(dto.getEndereco().getCidade().getId());
 
         restaurante.getEndereco().setCidade(cidade);
 
@@ -156,8 +147,7 @@ public class RestauranteService {
 
     @Transactional
     public RestauranteDTO patch(Long id, Map<String, Object> campos) {
-        Restaurante restaurante = restauranteRepository.findById(id)
-                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        Restaurante restaurante = buscarRestauranteOuFalhar(id);
 
         ObjectMapper mapper = new ObjectMapper();
         Restaurante restauranteAtualizado = mapper.convertValue(campos, Restaurante.class);
@@ -176,8 +166,7 @@ public class RestauranteService {
 
     @Transactional
     public void delete(Long id) {
-        Restaurante restaurante = restauranteRepository.findById(id)
-                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        Restaurante restaurante = buscarRestauranteOuFalhar(id);
         restauranteRepository.delete(restaurante);
     }
 
@@ -193,39 +182,35 @@ public class RestauranteService {
     public void corrigirRelacionamentos(Restaurante restaurante) {
         if (restaurante.getCozinha() != null) {
             Long cozinhaId = restaurante.getCozinha().getId();
-            Cozinha cozinha = cozinhaRepository.findById(cozinhaId)
-                    .orElseThrow(() -> new CozinhaNotFoundException(cozinhaId));
+            Cozinha cozinha = buscarCozinhaOuFalhar(cozinhaId);
             restaurante.setCozinha(cozinha);
         }
 
     }
     @Transactional
     public void ativar(Long id) {
-        Restaurante restaurante = restauranteRepository.findById(id)
-                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        Restaurante restaurante = buscarRestauranteOuFalhar(id);
         restaurante.setAtivo(true);
         restauranteRepository.save(restaurante);
 
     }
     @Transactional
     public void desativar(Long id) {
-        Restaurante restaurante = restauranteRepository.findById(id)
-                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        Restaurante restaurante = buscarRestauranteOuFalhar(id);
         restaurante.setAtivo(false);
         restauranteRepository.save(restaurante);
 
     }
 
-
+    @Transactional
     public void abrir(Long id) {
-        Restaurante restaurante = restauranteRepository.findById(id)
-                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        Restaurante restaurante = buscarRestauranteOuFalhar(id);
         restaurante.setAberto(true);
         restauranteRepository.save(restaurante);
     }
+    @Transactional
     public void fechar(Long id) {
-        Restaurante restaurante = restauranteRepository.findById(id)
-                .orElseThrow(() -> new RestauranteNotFoundException(id));
+        Restaurante restaurante = buscarRestauranteOuFalhar(id);
         restaurante.setAberto(false);
         restauranteRepository.save(restaurante);
     }
@@ -242,6 +227,19 @@ public class RestauranteService {
     @Transactional
     public void abrirVarios(List<Long> restauranteIds) {
         restauranteIds.forEach(this::abrir);
+    }
+
+    private Restaurante buscarRestauranteOuFalhar(Long id) {
+        return restauranteRepository.findById(id)
+                .orElseThrow(() -> new RestauranteNotFoundException(id));
+    }
+    private Cozinha buscarCozinhaOuFalhar(Long id) {
+        return cozinhaRepository.findById(id)
+                .orElseThrow(() -> new CozinhaNotFoundException(id));
+    }
+    private Cidade buscarCidadeOuFalhar(Long id) {
+        return cidadeRepository.findById(id)
+                .orElseThrow(() -> new CidadeNotFoundException(id));
     }
 
 }

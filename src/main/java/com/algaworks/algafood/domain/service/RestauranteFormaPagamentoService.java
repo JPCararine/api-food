@@ -24,11 +24,9 @@ public class RestauranteFormaPagamentoService {
     @Transactional
     public void removerFormaPagamento(Long restauranteId, Long formaPagamentoId) {
 
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
-        FormaPagamento formaPagamento = formaPagamentoRepository.findById(formaPagamentoId)
-                .orElseThrow(() -> new FormaPagamentoNotFoundException(formaPagamentoId));
+        FormaPagamento formaPagamento = buscarFormaPagamentoOuFalhar(formaPagamentoId);
 
         restaurante.getFormaPagamentos().remove(formaPagamento);
 
@@ -36,11 +34,9 @@ public class RestauranteFormaPagamentoService {
     @Transactional
     public void adicionarFormaPagamento(Long restauranteId, Long formaPagamentoId) {
 
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
-        FormaPagamento formaPagamento = formaPagamentoRepository.findById(formaPagamentoId)
-                .orElseThrow(() -> new FormaPagamentoNotFoundException(formaPagamentoId));
+        FormaPagamento formaPagamento = buscarFormaPagamentoOuFalhar(formaPagamentoId);
 
         if(restaurante.getFormaPagamentos().contains(formaPagamento)) {
             throw new FormaPagamentoJaExistente();
@@ -48,8 +44,7 @@ public class RestauranteFormaPagamentoService {
         restaurante.getFormaPagamentos().add(formaPagamento);
     }
     public List<String> listarFormaPagamentos(Long restauranteId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new RestauranteNotFoundException(restauranteId));
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
 
         return restaurante.getFormaPagamentos()
@@ -57,5 +52,13 @@ public class RestauranteFormaPagamentoService {
                 .map(f -> f.getDescricao())
                 .toList();
 
+    }
+    private Restaurante buscarRestauranteOuFalhar(Long id) {
+        return restauranteRepository.findById(id)
+                .orElseThrow(() -> new RestauranteNotFoundException(id));
+    }
+    private FormaPagamento buscarFormaPagamentoOuFalhar(Long id) {
+        return formaPagamentoRepository.findById(id)
+                .orElseThrow(() -> new FormaPagamentoNotFoundException(id));
     }
 }
