@@ -13,7 +13,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long>, JpaSpecif
     @EntityGraph(attributePaths = "itens")
     List<Pedido> findByRestauranteId(Long restauranteId);
 
-    boolean isPedidoGerenciadoPor(String codigoPedido, Long usuarioId);
+
 
     Optional<Pedido> findByCodigo(String codigo);
 
