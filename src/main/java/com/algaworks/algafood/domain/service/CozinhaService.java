@@ -1,10 +1,9 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.Cozinha.CozinhaInputDTO;
-import com.algaworks.algafood.api.DTO.Restaurante.CozinhaDTO;
-import com.algaworks.algafood.api.assembler.CozinhaDTOAssembler;
-import com.algaworks.algafood.api.assembler.CozinhaInputDisassembler;
-import com.algaworks.algafood.core.storage.StorageProperties;
+import com.algaworks.algafood.api.v1.DTO.Cozinha.CozinhaInputDTO;
+import com.algaworks.algafood.api.v1.DTO.Restaurante.CozinhaDTO;
+import com.algaworks.algafood.api.v1.assembler.CozinhaDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.CozinhaInputDisassembler;
 import com.algaworks.algafood.domain.exception.EmUso.CozinhaEmUsoException;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.CozinhaNotFoundException;

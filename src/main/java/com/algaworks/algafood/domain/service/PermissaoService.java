@@ -1,9 +1,9 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.Permissao.PermissaoDTO;
-import com.algaworks.algafood.api.DTO.Permissao.UsuarioInputDTO;
-import com.algaworks.algafood.api.assembler.PermissaoDTOAssembler;
-import com.algaworks.algafood.api.assembler.PermissaoInputDTODisassembler;
+import com.algaworks.algafood.api.v1.DTO.Permissao.PermissaoDTO;
+import com.algaworks.algafood.api.v1.DTO.Permissao.UsuarioInputDTO;
+import com.algaworks.algafood.api.v1.assembler.PermissaoDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.PermissaoInputDTODisassembler;
 import com.algaworks.algafood.domain.exception.NotFound.PermissaoNotFoundException;
 import com.algaworks.algafood.domain.model.Permissao;
 import com.algaworks.algafood.infrastructure.repository.PermissaoRepository;

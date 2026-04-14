@@ -1,16 +1,14 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.FotoProdutoDTO.FotoProdutoDTO;
-import com.algaworks.algafood.api.DTO.FotoProdutoDTO.FotoProdutoInput;
-import com.algaworks.algafood.api.assembler.FotoProdutoDTOAssembler;
+import com.algaworks.algafood.api.v1.DTO.FotoProdutoDTO.FotoProdutoDTO;
+import com.algaworks.algafood.api.v1.DTO.FotoProdutoDTO.FotoProdutoInput;
+import com.algaworks.algafood.api.v1.assembler.FotoProdutoDTOAssembler;
 import com.algaworks.algafood.core.validation.ImageValidator;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoAndRestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.infrastructure.repository.ProdutoRepository;
-import com.algaworks.algafood.infrastructure.repository.RestauranteRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor

@@ -1,16 +1,13 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
-import com.algaworks.algafood.api.DTO.Produto.ProdutoInputDTO;
-import com.algaworks.algafood.api.assembler.ProdutoDTOAssembler;
-import com.algaworks.algafood.api.assembler.ProdutoInputDTODisassembler;
+import com.algaworks.algafood.api.v1.DTO.Produto.ProdutoDTO;
+import com.algaworks.algafood.api.v1.DTO.Produto.ProdutoInputDTO;
+import com.algaworks.algafood.api.v1.assembler.ProdutoDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.ProdutoInputDTODisassembler;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoAndRestauranteNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoNotFoundException;
-import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.Produto;
-import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.infrastructure.repository.ProdutoRepository;
-import com.algaworks.algafood.infrastructure.repository.RestauranteRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

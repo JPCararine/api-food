@@ -27,5 +27,6 @@ public class NotificacaoClientePedidoConfirmadoListener {
                 .parametro("pedido", pedido)
                 .mensagem("pedido-confirmado.ftl")
                 .build());
+
     }
 }

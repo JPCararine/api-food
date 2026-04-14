@@ -1,7 +1,7 @@
 package com.algaworks.algafood.infrastructure.service;
 
 
-import com.algaworks.algafood.api.DTO.Pedido.PedidoVendasDiariasDTO;
+import com.algaworks.algafood.api.v1.DTO.Pedido.PedidoVendasDiariasDTO;
 import com.algaworks.algafood.domain.model.Pedido;
 import com.algaworks.algafood.domain.model.StatusPedido;
 import com.algaworks.algafood.domain.service.VendaQueryService;
@@ -9,11 +9,8 @@ import com.algaworks.algafood.infrastructure.repository.filter.PedidoVendasDiari
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

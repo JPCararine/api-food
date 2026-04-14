@@ -1,13 +1,12 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.Grupo.GrupoDTO;
-import com.algaworks.algafood.api.DTO.Usuario.UsuarioDTO;
-import com.algaworks.algafood.api.DTO.Usuario.UsuarioInputDTO;
-import com.algaworks.algafood.api.assembler.GrupoDTOAssembler;
-import com.algaworks.algafood.api.assembler.UsuarioDTOAssembler;
-import com.algaworks.algafood.api.assembler.UsuarioInputDTODisassambler;
+import com.algaworks.algafood.api.v1.DTO.Grupo.GrupoDTO;
+import com.algaworks.algafood.api.v1.DTO.Usuario.UsuarioDTO;
+import com.algaworks.algafood.api.v1.DTO.Usuario.UsuarioInputDTO;
+import com.algaworks.algafood.api.v1.assembler.GrupoDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.UsuarioDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.UsuarioInputDTODisassambler;
 import com.algaworks.algafood.domain.exception.JaExistente.EmailJaExistente;
-import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.GrupoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.UsuarioNotFoundException;
 import com.algaworks.algafood.domain.model.Grupo;
@@ -15,7 +14,6 @@ import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.infrastructure.repository.GrupoRepository;
 import com.algaworks.algafood.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.ColumnTransformers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
