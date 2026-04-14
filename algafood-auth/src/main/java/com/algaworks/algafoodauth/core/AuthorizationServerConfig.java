@@ -11,8 +11,13 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
@@ -22,6 +27,8 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
@@ -31,6 +38,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Configuration
@@ -57,29 +65,73 @@ public class AuthorizationServerConfig {
                         authorize.anyRequest().authenticated()
                 );
 
-        return http.build();
+        return http.formLogin(Customizer.withDefaults()).build();
     }
 
     @Bean
     public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder) {
         RegisteredClient client = RegisteredClient
                 .withId(UUID.randomUUID().toString())
-                .clientId("algafood-web")
-                .clientSecret(encoder.encode("web123"))
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://localhost:8080/authorized")
+                .clientId("algafood")
+                .clientSecret(encoder.encode("norm123"))
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .scope("READ")
                 .scope("WRITE")
                 .clientSettings(ClientSettings.builder()
                         .requireProofKey(false)
                         .build())
                 .tokenSettings(TokenSettings.builder()
-                        .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
+                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED )
                         .accessTokenTimeToLive(Duration.ofMinutes(30))
                         .build())
                 .build();
-        return new InMemoryRegisteredClientRepository(client);
+
+        RegisteredClient algafoodWeb = RegisteredClient
+                .withId("2")
+                .clientId("algafood-web")
+                .clientSecret(encoder.encode("web123"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .scope("READ")
+                .scope("WRITE")
+                .tokenSettings(TokenSettings.builder()
+                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+                        .accessTokenTimeToLive(Duration.ofMinutes(15))
+                        .reuseRefreshTokens(false)
+                        .refreshTokenTimeToLive(Duration.ofDays(1))
+                        .build())
+                .redirectUri("http://localhost:8080/authorized")
+                .redirectUri("http://localhost:8080/swagger-ui/oauth2-redirect.html")
+                .clientSettings(ClientSettings.builder()
+                        .requireAuthorizationConsent(true)
+                        .build())
+                .build();
+
+
+
+        RegisteredClient foodanalytics = RegisteredClient
+                .withId("3")
+                .clientId("foodanalytics")
+                .clientSecret(encoder.encode("web123"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .scope("READ")
+                .scope("WRITE")
+                .tokenSettings(TokenSettings.builder()
+                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+                        .accessTokenTimeToLive(Duration.ofMinutes(15))
+                        .build())
+                .redirectUri("http://www.foodanalytics.local:8082")
+                .redirectUri("http://localhost:8080/swagger-ui/oauth2-redirect.html")
+                .clientSettings(ClientSettings.builder()
+                        .requireAuthorizationConsent(false)
+                        .build())
+                .build();
+
+
+        return new InMemoryRegisteredClientRepository(Arrays.asList(client, algafoodWeb, foodanalytics));
     }
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
@@ -95,7 +147,6 @@ public class AuthorizationServerConfig {
 
 
     }
-
 
     @Bean
     public JWKSource<SecurityContext> jwkSource() throws NoSuchAlgorithmException {
@@ -113,5 +164,23 @@ public class AuthorizationServerConfig {
                 .privateKey(privateKey)
                 .keyID(UUID.randomUUID().toString())
                 .build();
+    }
+
+    @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> oauth2TokenCustomizer() {
+        return context -> {
+            Authentication authentication = context.getPrincipal();
+
+            if (authentication.getPrincipal() instanceof UserDetails userDetails) {
+
+                var authorities = userDetails.getAuthorities()
+                        .stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .toList();
+
+                context.getClaims().claim("authorities", authorities);
+
+            }
+        };
     }
 }

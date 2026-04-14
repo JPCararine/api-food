@@ -21,25 +21,6 @@ public class SecurityConfigAuth {
 
 
     @Bean
-    public UserDetailsService configure() throws Exception {
-
-        UserDetails user = User
-                .withUsername("user")
-                .password(passwordEncoder().encode("user"))
-                .roles("USER")
-                .build();
-
-        UserDetails admin = User
-                .withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-
-
-        return new InMemoryUserDetailsManager(user, admin);
-
-    }
-    @Bean
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
