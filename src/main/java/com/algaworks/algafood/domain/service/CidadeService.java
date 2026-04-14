@@ -1,9 +1,9 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.Cidade.CidadeDTO;
-import com.algaworks.algafood.api.DTO.Cidade.CidadeInputDTO;
-import com.algaworks.algafood.api.assembler.CidadeDTOAssembler;
-import com.algaworks.algafood.api.assembler.CidadeInputDisassembler;
+import com.algaworks.algafood.api.v1.DTO.Cidade.CidadeDTO;
+import com.algaworks.algafood.api.v1.DTO.Cidade.CidadeInputDTO;
+import com.algaworks.algafood.api.v1.assembler.CidadeDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.CidadeInputDisassembler;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.CidadeNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.EstadoNotFoundException;

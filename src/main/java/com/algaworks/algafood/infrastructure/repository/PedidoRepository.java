@@ -14,6 +14,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long>, JpaSpecif
     List<Pedido> findByRestauranteId(Long restauranteId);
 
 
+
     Optional<Pedido> findByCodigo(String codigo);
 
 }

@@ -1,7 +1,7 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeEmailDTO;
-import com.algaworks.algafood.api.assembler.UsuarioDTOAssembler;
+import com.algaworks.algafood.api.v1.DTO.Usuario.UsuarioIdNomeEmailDTO;
+import com.algaworks.algafood.api.v1.assembler.UsuarioDTOAssembler;
 import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.UsuarioNotFoundException;
 import com.algaworks.algafood.domain.model.Restaurante;

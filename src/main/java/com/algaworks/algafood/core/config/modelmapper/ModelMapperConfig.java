@@ -1,9 +1,7 @@
 package com.algaworks.algafood.core.config.modelmapper;
 
-import com.algaworks.algafood.api.DTO.Cidade.CidadeResumoDTO;
-import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
-import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
-import com.algaworks.algafood.domain.model.Cidade;
+import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDTO;
+import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDetalhadoDTO;
 import com.algaworks.algafood.domain.model.Restaurante;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

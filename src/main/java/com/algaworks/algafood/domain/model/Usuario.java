@@ -29,8 +29,8 @@ public class Usuario {
     private OffsetDateTime dataCadastro;
     @ManyToMany
     @JoinTable(name = "usuario_grupo",
-                joinColumns = @JoinColumn(name = "grupo_id"),
-                inverseJoinColumns = @JoinColumn(name = "usuario_id"))
+                joinColumns = @JoinColumn(name = "usuario_id"),
+                inverseJoinColumns = @JoinColumn(name = "grupo_id"))
 
     private List<Grupo> grupos = new ArrayList<>();
 

@@ -1,9 +1,8 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
-import com.algaworks.algafood.api.assembler.ProdutoDTOAssembler;
+import com.algaworks.algafood.api.v1.DTO.Produto.ProdutoDTO;
+import com.algaworks.algafood.api.v1.assembler.ProdutoDTOAssembler;
 import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
-import com.algaworks.algafood.domain.exception.NotFound.FormaPagamentoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.Produto;

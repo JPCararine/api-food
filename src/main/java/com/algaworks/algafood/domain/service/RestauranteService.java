@@ -1,20 +1,14 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoAdminDTO;
-import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
-import com.algaworks.algafood.api.DTO.Produto.ProdutoDTO;
-import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTO;
-import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDTOPut;
-import com.algaworks.algafood.api.DTO.Restaurante.RestauranteDetalhadoDTO;
-import com.algaworks.algafood.api.DTO.Usuario.UsuarioIdNomeEmailDTO;
-import com.algaworks.algafood.api.assembler.*;
+import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDTO;
+import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDTOPut;
+import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDetalhadoDTO;
+import com.algaworks.algafood.api.v1.assembler.RestauranteDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.RestauranteInputDisassembler;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
-import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.*;
 import com.algaworks.algafood.domain.model.*;
 import com.algaworks.algafood.infrastructure.repository.*;
-import com.algaworks.algafood.infrastructure.repository.filter.PedidoFilter;
-import com.algaworks.algafood.infrastructure.spec.PedidoSpecs;
 import com.algaworks.algafood.infrastructure.spec.RestauranteSpecs;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +22,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

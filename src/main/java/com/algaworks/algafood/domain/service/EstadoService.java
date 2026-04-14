@@ -1,16 +1,15 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.Estado.EstadoDTO;
-import com.algaworks.algafood.api.DTO.Estado.EstadoDTODetalhado;
-import com.algaworks.algafood.api.DTO.Estado.EstadoInputDTO;
-import com.algaworks.algafood.api.assembler.EstadoDTOAssembler;
-import com.algaworks.algafood.api.assembler.EstadoInputDisassembler;
+import com.algaworks.algafood.api.v1.DTO.Estado.EstadoDTO;
+import com.algaworks.algafood.api.v1.DTO.Estado.EstadoDTODetalhado;
+import com.algaworks.algafood.api.v1.DTO.Estado.EstadoInputDTO;
+import com.algaworks.algafood.api.v1.assembler.EstadoDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.EstadoInputDisassembler;
 import com.algaworks.algafood.domain.exception.EmUso.EstadoEmUsoException;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.EstadoNotFoundException;
 import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.infrastructure.repository.CidadeRepository;
-import com.algaworks.algafood.infrastructure.repository.CozinhaRepository;
 import com.algaworks.algafood.infrastructure.repository.EstadoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

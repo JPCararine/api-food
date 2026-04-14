@@ -1,20 +1,17 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.ItemPedido.ItemPedidoInputDTO;
-import com.algaworks.algafood.api.DTO.Pedido.PedidoInputDTO;
-import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoAdminDTO;
-import com.algaworks.algafood.api.DTO.Pedido.PedidoResumoDTO;
-import com.algaworks.algafood.api.DTO.Pedido.PedidoVendasDiariasDTO;
-import com.algaworks.algafood.api.assembler.ItemPedidoDTODisassembler;
-import com.algaworks.algafood.api.assembler.PedidoDTOAssembler;
-import com.algaworks.algafood.api.assembler.PedidoDTODisassembler;
+import com.algaworks.algafood.api.v1.DTO.Pedido.PedidoInputDTO;
+import com.algaworks.algafood.api.v1.DTO.Pedido.PedidoResumoAdminDTO;
+import com.algaworks.algafood.api.v1.DTO.Pedido.PedidoResumoDTO;
+import com.algaworks.algafood.api.v1.assembler.ItemPedidoDTODisassembler;
+import com.algaworks.algafood.api.v1.assembler.PedidoDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.PedidoDTODisassembler;
 import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.domain.exception.NotFound.*;
 import com.algaworks.algafood.domain.exception.NotFound.PedidoNotFoundExceptionId;
 import com.algaworks.algafood.domain.model.*;
 import com.algaworks.algafood.infrastructure.repository.*;
 import com.algaworks.algafood.infrastructure.repository.filter.PedidoFilter;
-import com.algaworks.algafood.infrastructure.service.Email.SmtpEnvioEmailService;
 import com.algaworks.algafood.infrastructure.spec.PedidoSpecs;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 import java.util.*;
 
 @Service

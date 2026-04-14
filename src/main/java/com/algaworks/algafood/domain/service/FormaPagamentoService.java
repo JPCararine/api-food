@@ -1,9 +1,9 @@
 package com.algaworks.algafood.domain.service;
 
-import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoDTO;
-import com.algaworks.algafood.api.DTO.FormaPagamento.FormaPagamentoInputDTO;
-import com.algaworks.algafood.api.assembler.FormaPagamentoDTOAssembler;
-import com.algaworks.algafood.api.assembler.FormaPagamentoInputDTODisassembler;
+import com.algaworks.algafood.api.v1.DTO.FormaPagamento.FormaPagamentoDTO;
+import com.algaworks.algafood.api.v1.DTO.FormaPagamento.FormaPagamentoInputDTO;
+import com.algaworks.algafood.api.v1.assembler.FormaPagamentoDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.FormaPagamentoInputDTODisassembler;
 import com.algaworks.algafood.domain.exception.EmUso.FormaEmUsoException;
 import com.algaworks.algafood.domain.exception.NotFound.FormaPagamentoNotFoundException;
 import com.algaworks.algafood.domain.model.FormaPagamento;
