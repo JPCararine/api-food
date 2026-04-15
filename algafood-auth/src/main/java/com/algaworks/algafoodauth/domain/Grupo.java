@@ -20,4 +20,7 @@ public class Grupo {
 
 
     private String nome;
+
+    @ManyToMany
+    private List<Permissao> permissoes;
 }

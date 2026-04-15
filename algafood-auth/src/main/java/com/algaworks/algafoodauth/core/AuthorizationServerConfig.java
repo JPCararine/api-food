@@ -3,10 +3,12 @@ package com.algaworks.algafoodauth.core;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.encrypt.KeyStoreKeyFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -32,6 +35,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -40,7 +44,10 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @Configuration
+@RequiredArgsConstructor
 public class AuthorizationServerConfig {
+
+    private final JwtKeyStoreProperties jwtKeyStoreProperties;
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -92,27 +99,54 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    public JWKSource<SecurityContext> jwkSource() throws NoSuchAlgorithmException {
+    public JWKSource<SecurityContext> jwkSource() {
         RSAKey rsaKey = gerarChave();
         return (jwkSelector, securityContext) -> jwkSelector.select(new com.nimbusds.jose.jwk.JWKSet(rsaKey));
     }
 
-    private RSAKey gerarChave() throws NoSuchAlgorithmException {
-        KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+    private RSAKey gerarChave() {
+        try {
+            var resource = new ClassPathResource(jwtKeyStoreProperties.getPath());
 
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+            var keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(resource.getInputStream(),
+                    jwtKeyStoreProperties.getPassword().toCharArray());
 
-        return new RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
-                .build();
+            var privateKey = (RSAPrivateKey) keyStore.getKey(
+                    jwtKeyStoreProperties.getKeypairAlias(),
+                    jwtKeyStoreProperties.getPassword().toCharArray()
+            );
+
+            var publicKey = (RSAPublicKey) keyStore.getCertificate(
+                    jwtKeyStoreProperties.getKeypairAlias()
+            ).getPublicKey();
+
+            return new RSAKey.Builder(publicKey)
+                    .privateKey(privateKey)
+                    .keyID(jwtKeyStoreProperties.getKeypairAlias())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao carregar keystore", e);
+        }
     }
+
+
 
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> oauth2TokenCustomizer() {
         return context -> {
             Authentication authentication = context.getPrincipal();
+
+            if(context.getTokenType().getValue().equals("access_token")) {
+
+                String grantType = context.getAuthorizationGrantType().getValue();
+
+                if("client_credentials".equals(grantType)) {
+                    context.getClaims().claim("type", "client");
+                } else {
+                    context.getClaims().claim("type", "user");
+                }
+            }
 
             if (authentication.getPrincipal() instanceof UserDetails userDetails) {
 
@@ -122,6 +156,7 @@ public class AuthorizationServerConfig {
                         .toList();
 
                 context.getClaims().claim("authorities", authorities);
+                context.getClaims().claim("email", userDetails.getUsername());
 
             }
         };
