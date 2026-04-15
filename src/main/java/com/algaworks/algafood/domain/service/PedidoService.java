@@ -7,6 +7,7 @@ import com.algaworks.algafood.api.v1.assembler.ItemPedidoDTODisassembler;
 import com.algaworks.algafood.api.v1.assembler.PedidoDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.PedidoDTODisassembler;
 import com.algaworks.algafood.core.data.PageableTranslator;
+import com.algaworks.algafood.core.security.AlgaSecurity;
 import com.algaworks.algafood.domain.exception.NotFound.*;
 import com.algaworks.algafood.domain.exception.NotFound.PedidoNotFoundExceptionId;
 import com.algaworks.algafood.domain.model.*;
@@ -33,6 +34,7 @@ public class PedidoService {
     private final FormaPagamentoRepository formaPagamentoRepository;
     private final RestauranteRepository restauranteRepository;
     private final ItemPedidoDTODisassembler  itemPedidoDTODisassembler;
+    private final AlgaSecurity algaSecurity;
 
 
 
@@ -91,7 +93,8 @@ public class PedidoService {
 
         pedido.setRestaurante(restaurante);
 
-        Usuario usuario = buscarUsuarioOuFalhar(pedidoInputDTO.getUsuario().getId());
+        Usuario usuario = usuarioRepository.findByEmail(algaSecurity.getUsuarioEmail())
+                        .orElseThrow(() -> new UsuarioEmailNotFound(algaSecurity.getUsuarioEmail()));
 
         pedido.setUsuario(usuario);
 

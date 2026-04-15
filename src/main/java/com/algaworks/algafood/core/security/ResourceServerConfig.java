@@ -8,14 +8,23 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -31,7 +40,8 @@ public class ResourceServerConfig {
                 )
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2
-                        -> oauth2.jwt(jwt -> {}));
+                        -> oauth2.jwt(jwt ->
+                        jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
 
 
@@ -45,6 +55,30 @@ public class ResourceServerConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
         return JwtDecoders.fromIssuerLocation("http://localhost:8081");
+    }
+
+    private JwtAuthenticationConverter  jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+
+            Collection<GrantedAuthority> grantedAuthorities = authoritiesConverter.convert(jwt);
+                List<String> authorities = jwt.getClaimAsStringList("authorities");
+                if(authorities == null) {
+                    return grantedAuthorities;
+                }
+
+                grantedAuthorities.addAll(authorities
+                        .stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .toList());
+
+                return grantedAuthorities;
+
+        });
+
+        return converter;
     }
 
 

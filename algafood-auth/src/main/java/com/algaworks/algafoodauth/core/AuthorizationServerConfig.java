@@ -3,24 +3,25 @@ package com.algaworks.algafoodauth.core;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.encrypt.KeyStoreKeyFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.*;
+import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
@@ -34,6 +35,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -42,7 +44,10 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @Configuration
+@RequiredArgsConstructor
 public class AuthorizationServerConfig {
+
+    private final JwtKeyStoreProperties jwtKeyStoreProperties;
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -54,84 +59,29 @@ public class AuthorizationServerConfig {
         http
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, (authorizationServer) -> {
-                    authorizationServer.oidc(Customizer.withDefaults());
+                    authorizationServer
+                            .oidc(Customizer.withDefaults())
+                            .authorizationEndpoint(authorizationEndpoint ->
+                                    authorizationEndpoint.consentPage("/oauth2/consent"));
                 })
                 .exceptionHandling(exceptions ->
                         exceptions.authenticationEntryPoint(
                                 new LoginUrlAuthenticationEntryPoint("/login")
                         )
                 )
-                .authorizeHttpRequests((authorize) ->
-                        authorize.anyRequest().authenticated()
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/login").permitAll()
+                        .anyRequest().authenticated()
                 );
 
-        return http.formLogin(Customizer.withDefaults()).build();
+        return http.formLogin(customizer -> customizer.loginPage("/login")).build();
     }
 
     @Bean
-    public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder) {
-        RegisteredClient client = RegisteredClient
-                .withId(UUID.randomUUID().toString())
-                .clientId("algafood")
-                .clientSecret(encoder.encode("norm123"))
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .scope("READ")
-                .scope("WRITE")
-                .clientSettings(ClientSettings.builder()
-                        .requireProofKey(false)
-                        .build())
-                .tokenSettings(TokenSettings.builder()
-                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED )
-                        .accessTokenTimeToLive(Duration.ofMinutes(30))
-                        .build())
-                .build();
-
-        RegisteredClient algafoodWeb = RegisteredClient
-                .withId("2")
-                .clientId("algafood-web")
-                .clientSecret(encoder.encode("web123"))
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .scope("READ")
-                .scope("WRITE")
-                .tokenSettings(TokenSettings.builder()
-                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
-                        .accessTokenTimeToLive(Duration.ofMinutes(15))
-                        .reuseRefreshTokens(false)
-                        .refreshTokenTimeToLive(Duration.ofDays(1))
-                        .build())
-                .redirectUri("http://localhost:8080/authorized")
-                .redirectUri("http://localhost:8080/swagger-ui/oauth2-redirect.html")
-                .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(true)
-                        .build())
-                .build();
+    public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder, JdbcOperations jdbcOperations) {
 
 
-
-        RegisteredClient foodanalytics = RegisteredClient
-                .withId("3")
-                .clientId("foodanalytics")
-                .clientSecret(encoder.encode("web123"))
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .scope("READ")
-                .scope("WRITE")
-                .tokenSettings(TokenSettings.builder()
-                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
-                        .accessTokenTimeToLive(Duration.ofMinutes(15))
-                        .build())
-                .redirectUri("http://www.foodanalytics.local:8082")
-                .redirectUri("http://localhost:8080/swagger-ui/oauth2-redirect.html")
-                .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(false)
-                        .build())
-                .build();
-
-
-        return new InMemoryRegisteredClientRepository(Arrays.asList(client, algafoodWeb, foodanalytics));
+        return new JdbcRegisteredClientRepository(jdbcOperations);
     }
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
@@ -149,27 +99,54 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    public JWKSource<SecurityContext> jwkSource() throws NoSuchAlgorithmException {
+    public JWKSource<SecurityContext> jwkSource() {
         RSAKey rsaKey = gerarChave();
         return (jwkSelector, securityContext) -> jwkSelector.select(new com.nimbusds.jose.jwk.JWKSet(rsaKey));
     }
 
-    private RSAKey gerarChave() throws NoSuchAlgorithmException {
-        KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+    private RSAKey gerarChave() {
+        try {
+            var resource = new ClassPathResource(jwtKeyStoreProperties.getPath());
 
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+            var keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(resource.getInputStream(),
+                    jwtKeyStoreProperties.getPassword().toCharArray());
 
-        return new RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
-                .build();
+            var privateKey = (RSAPrivateKey) keyStore.getKey(
+                    jwtKeyStoreProperties.getKeypairAlias(),
+                    jwtKeyStoreProperties.getPassword().toCharArray()
+            );
+
+            var publicKey = (RSAPublicKey) keyStore.getCertificate(
+                    jwtKeyStoreProperties.getKeypairAlias()
+            ).getPublicKey();
+
+            return new RSAKey.Builder(publicKey)
+                    .privateKey(privateKey)
+                    .keyID(jwtKeyStoreProperties.getKeypairAlias())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao carregar keystore", e);
+        }
     }
+
+
 
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> oauth2TokenCustomizer() {
         return context -> {
             Authentication authentication = context.getPrincipal();
+
+            if(context.getTokenType().getValue().equals("access_token")) {
+
+                String grantType = context.getAuthorizationGrantType().getValue();
+
+                if("client_credentials".equals(grantType)) {
+                    context.getClaims().claim("type", "client");
+                } else {
+                    context.getClaims().claim("type", "user");
+                }
+            }
 
             if (authentication.getPrincipal() instanceof UserDetails userDetails) {
 
@@ -179,8 +156,17 @@ public class AuthorizationServerConfig {
                         .toList();
 
                 context.getClaims().claim("authorities", authorities);
+                context.getClaims().claim("email", userDetails.getUsername());
 
             }
         };
+
     }
+    @Bean
+    public OAuth2AuthorizationConsentService consentService(JdbcOperations jdbcOperations, RegisteredClientRepository registeredClientRepository) {
+
+        return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, registeredClientRepository);
+    }
+
 }
+

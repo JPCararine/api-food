@@ -1,5 +1,6 @@
 package com.algaworks.algafoodauth.core;
 
+import com.algaworks.algafoodauth.domain.Permissao;
 import com.algaworks.algafoodauth.domain.Usuario;
 import com.algaworks.algafoodauth.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +35,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 usuario.getEmail(),
                 usuario.getSenha(),
                 usuario.getGrupo().stream()
-                        .map(grupo -> new SimpleGrantedAuthority(grupo.getNome()))
+                        .flatMap(grupo -> grupo.getPermissoes().stream())
+                        .map(permissao -> new SimpleGrantedAuthority(permissao.getNome()))
                         .toList()
         );
     }

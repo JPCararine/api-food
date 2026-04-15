@@ -56,7 +56,7 @@ public class UsuarioService {
                 .map(g -> g.getId())
                 .toList();
         List<Grupo> grupos = grupoRepository.findAllById(ids);
-        System.out.println("IDS: " + ids);
+
 
         if(grupos.size() != ids.size()) {
             throw new RuntimeException("Grupos não encontrados");
