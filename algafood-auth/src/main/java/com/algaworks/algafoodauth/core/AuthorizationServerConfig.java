@@ -13,14 +13,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.*;
+import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
@@ -54,84 +52,29 @@ public class AuthorizationServerConfig {
         http
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, (authorizationServer) -> {
-                    authorizationServer.oidc(Customizer.withDefaults());
+                    authorizationServer
+                            .oidc(Customizer.withDefaults())
+                            .authorizationEndpoint(authorizationEndpoint ->
+                                    authorizationEndpoint.consentPage("/oauth2/consent"));
                 })
                 .exceptionHandling(exceptions ->
                         exceptions.authenticationEntryPoint(
                                 new LoginUrlAuthenticationEntryPoint("/login")
                         )
                 )
-                .authorizeHttpRequests((authorize) ->
-                        authorize.anyRequest().authenticated()
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/login").permitAll()
+                        .anyRequest().authenticated()
                 );
 
-        return http.formLogin(Customizer.withDefaults()).build();
+        return http.formLogin(customizer -> customizer.loginPage("/login")).build();
     }
 
     @Bean
-    public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder) {
-        RegisteredClient client = RegisteredClient
-                .withId(UUID.randomUUID().toString())
-                .clientId("algafood")
-                .clientSecret(encoder.encode("norm123"))
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .scope("READ")
-                .scope("WRITE")
-                .clientSettings(ClientSettings.builder()
-                        .requireProofKey(false)
-                        .build())
-                .tokenSettings(TokenSettings.builder()
-                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED )
-                        .accessTokenTimeToLive(Duration.ofMinutes(30))
-                        .build())
-                .build();
-
-        RegisteredClient algafoodWeb = RegisteredClient
-                .withId("2")
-                .clientId("algafood-web")
-                .clientSecret(encoder.encode("web123"))
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .scope("READ")
-                .scope("WRITE")
-                .tokenSettings(TokenSettings.builder()
-                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
-                        .accessTokenTimeToLive(Duration.ofMinutes(15))
-                        .reuseRefreshTokens(false)
-                        .refreshTokenTimeToLive(Duration.ofDays(1))
-                        .build())
-                .redirectUri("http://localhost:8080/authorized")
-                .redirectUri("http://localhost:8080/swagger-ui/oauth2-redirect.html")
-                .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(true)
-                        .build())
-                .build();
+    public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder, JdbcOperations jdbcOperations) {
 
 
-
-        RegisteredClient foodanalytics = RegisteredClient
-                .withId("3")
-                .clientId("foodanalytics")
-                .clientSecret(encoder.encode("web123"))
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .scope("READ")
-                .scope("WRITE")
-                .tokenSettings(TokenSettings.builder()
-                        .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
-                        .accessTokenTimeToLive(Duration.ofMinutes(15))
-                        .build())
-                .redirectUri("http://www.foodanalytics.local:8082")
-                .redirectUri("http://localhost:8080/swagger-ui/oauth2-redirect.html")
-                .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(false)
-                        .build())
-                .build();
-
-
-        return new InMemoryRegisteredClientRepository(Arrays.asList(client, algafoodWeb, foodanalytics));
+        return new JdbcRegisteredClientRepository(jdbcOperations);
     }
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
@@ -182,5 +125,13 @@ public class AuthorizationServerConfig {
 
             }
         };
+
     }
+    @Bean
+    public OAuth2AuthorizationConsentService consentService(JdbcOperations jdbcOperations, RegisteredClientRepository registeredClientRepository) {
+
+        return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, registeredClientRepository);
+    }
+
 }
+

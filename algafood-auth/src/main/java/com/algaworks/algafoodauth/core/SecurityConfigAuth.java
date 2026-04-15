@@ -24,8 +24,11 @@ public class SecurityConfigAuth {
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .formLogin(withDefaults());
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/oauth2/consent").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(form -> form.loginPage("/login"));
 
         return http.build();
     }
