@@ -123,8 +123,17 @@ insert into forma_pagamento (id, descricao) values (1, 'Cartão de crédito');
 insert into forma_pagamento (id, descricao) values (2, 'Cartão de débito');
 insert into forma_pagamento (id, descricao) values (3, 'Dinheiro');
 
-insert into permissao (id, nome, descricao) values (1, 'CONSULTAR_COZINHAS', 'Permite consultar cozinhas');
+
 insert into permissao (id, nome, descricao) values (2, 'EDITAR_COZINHAS', 'Permite editar cozinhas');
+insert into permissao (id, nome, descricao) values (4, 'EDITAR_FORMAS_PAGAMENTO', 'Permite criar ou editar formas de pagamento');
+insert into permissao (id, nome, descricao) values (6, 'EDITAR_CIDADES', 'Permite criar ou editar cidades');
+insert into permissao (id, nome, descricao) values (8, 'EDITAR_ESTADOS', 'Permite criar ou editar estados');
+insert into permissao (id, nome, descricao) values (9, 'CONSULTAR_USUARIOS', 'Permite consultar usuários');
+insert into permissao (id, nome, descricao) values (10, 'EDITAR_USUARIOS', 'Permite criar ou editar usuários');
+insert into permissao (id, nome, descricao) values (12, 'EDITAR_RESTAURANTES', 'Permite criar, editar ou gerenciar restaurantes');
+insert into permissao (id, nome, descricao) values (15, 'CONSULTAR_PEDIDOS', 'Permite consultar pedidos');
+insert into permissao (id, nome, descricao) values (16, 'GERENCIAR_PEDIDOS', 'Permite gerenciar pedidos');
+insert into permissao (id, nome, descricao) values (17, 'GERAR_RELATORIOS', 'Permite gerar relatórios');
 
 insert into restaurante_forma_pagamento (restaurante_id, forma_pagamento_id) values (1, 1), (1, 2), (1, 3), (2, 3), (3, 2), (3, 3), (4, 1), (4, 2), (5, 1), (5, 2), (6, 3);
 
@@ -145,16 +154,17 @@ insert into produto (nome, descricao, preco,  restaurante_id) values ('Espetinho
 
 insert into grupo (nome) values ('Gerente'), ('Vendedor'), ('Secretária'), ('Cadastrador');
 
-insert into grupo_permissao (grupo_id, permissao_id) values (1, 1), (1, 2), (2, 1), (2, 2), (3, 1);
+
 
 insert into usuario (id, nome, email, senha, data_cadastro) values
-                                                                (1, 'João da Silva', 'joao.ger@algafood.com', '123', utc_timestamp),
-                                                                (2, 'Maria Joaquina', 'maria.vnd@algafood.com', '123', utc_timestamp),
-                                                                (3, 'José Souza', 'jose.aux@algafood.com', '123', utc_timestamp),
-                                                                (4, 'Sebastião Martins', 'sebastiao.cad@algafood.com', '123', utc_timestamp),
-                                                                (5, 'Manoel Lima', 'manoel.loja@gmail.com', '123', utc_timestamp),
+                                                                (1, 'João da Silva', 'joao.ger@algafood.com', '$2a$10$oYD5niccsxIG9mrkGNyt3OZCm9ph7G9TzlJW57gKg/6BIz7S.vvZ.', utc_timestamp),
+                                                                (2, 'Maria Joaquina', 'maria.vnd@algafood.com', '$2a$10$oYD5niccsxIG9mrkGNyt3OZCm9ph7G9TzlJW57gKg/6BIz7S.vvZ.', utc_timestamp),
+                                                                (3, 'José Souza', 'jose.aux@algafood.com', '$2a$10$oYD5niccsxIG9mrkGNyt3OZCm9ph7G9TzlJW57gKg/6BIz7S.vvZ.', utc_timestamp),
+                                                                (4, 'Sebastião Martins', 'sebastiao.cad@algafood.com', '$2a$10$oYD5niccsxIG9mrkGNyt3OZCm9ph7G9TzlJW57gKg/6BIz7S.vvZ.', utc_timestamp),
+                                                                (5, 'Manoel Lima', 'manoel.loja@gmail.com', '$2a$10$oYD5niccsxIG9mrkGNyt3OZCm9ph7G9TzlJW57gKg/6BIz7S.vvZ.', utc_timestamp),
                                                                 (6, 'Teste', 'email.testecsk@gmail.com', '$2a$10$oYD5niccsxIG9mrkGNyt3OZCm9ph7G9TzlJW57gKg/6BIz7S.vvZ.', utc_timestamp);
 
+insert into usuario_grupo (usuario_id, grupo_id) values (1, 1), (1, 2), (2, 2), (3, 3), (4, 4);
 
 insert into restaurante_usuario_responsavel (restaurante_id, usuario_id) values (1, 5), (3, 5);
 
@@ -212,5 +222,21 @@ values (6, 5, 3, 1, 87.2, 87.2, null);
 
 INSERT INTO oauth2_registered_client (id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings) VALUES ('3e287f50-afb0-4829-a1eb-ae3d9fac9eaa', 'algafood-web', '2026-04-15 15:52:10', '$2a$10$BQrA3D85eaPYLbDLn8./m.IZT4mMAGSBfymIyGL3iktlTOvsUZD6u', null, '3e287f50-afb0-4829-a1eb-ae3d9fac9eaa', 'client_secret_basic', 'refresh_token,authorization_code', 'http://localhost:8080/swagger-ui/oauth2-redirect.html,http://localhost:8080/authorized', '', 'READ,WRITE', '{"@class":"java.util.Collections$UnmodifiableMap","settings.client.require-proof-key":true,"settings.client.require-authorization-consent":true}', '{"@class":"java.util.Collections$UnmodifiableMap","settings.token.reuse-refresh-tokens":false,"settings.token.x509-certificate-bound-access-tokens":false,"settings.token.id-token-signature-algorithm":["org.springframework.security.oauth2.jose.jws.SignatureAlgorithm","RS256"],"settings.token.access-token-time-to-live":["java.time.Duration","PT15M"],"settings.token.access-token-format":{"@class":"org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat","value":"self-contained"},"settings.token.refresh-token-time-to-live":["java.time.Duration","PT24H"],"settings.token.authorization-code-time-to-live":["java.time.Duration","PT5M"],"settings.token.device-code-time-to-live":["java.time.Duration","PT5M"]}');
 INSERT INTO oauth2_registered_client (id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings) VALUES ('df91300b-4dfa-45f4-9179-232257752a0b', 'algafood', '2026-04-15 15:52:10', '$2a$10$VwEpGvhCB4uFS6DpMnvaO.eQkKU58crKhKZVK6ZOdISa0SV2chbmy', null, 'df91300b-4dfa-45f4-9179-232257752a0b', 'client_secret_basic', 'client_credentials', '', '', 'READ,WRITE', '{"@class":"java.util.Collections$UnmodifiableMap","settings.client.require-proof-key":false,"settings.client.require-authorization-consent":false}', '{"@class":"java.util.Collections$UnmodifiableMap","settings.token.reuse-refresh-tokens":true,"settings.token.x509-certificate-bound-access-tokens":false,"settings.token.id-token-signature-algorithm":["org.springframework.security.oauth2.jose.jws.SignatureAlgorithm","RS256"],"settings.token.access-token-time-to-live":["java.time.Duration","PT30M"],"settings.token.access-token-format":{"@class":"org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat","value":"self-contained"},"settings.token.refresh-token-time-to-live":["java.time.Duration","PT1H"],"settings.token.authorization-code-time-to-live":["java.time.Duration","PT5M"],"settings.token.device-code-time-to-live":["java.time.Duration","PT5M"]}');
-INSERT INTO oauth2_registered_client (id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings) VALUES ('f801f1a4-9a91-4d18-90de-3235eac9507c', 'foodanalytics', '2026-04-15 15:52:10', '$2a$10$ScD/V7B4Qnv27NUsIlimL.Fh8rR8/IvJZKFqE69k1zVE2j54HWy7q', null, 'f801f1a4-9a91-4d18-90de-3235eac9507c', 'client_secret_basic', 'client_credentials', 'http://localhost:8080/swagger-ui/oauth2-redirect.html,http://www.foodanalytics.local:8082', '', 'READ,WRITE', '{"@class":"java.util.Collections$UnmodifiableMap","settings.client.require-proof-key":true,"settings.client.require-authorization-consent":false}', '{"@class":"java.util.Collections$UnmodifiableMap","settings.token.reuse-refresh-tokens":true,"settings.token.x509-certificate-bound-access-tokens":false,"settings.token.id-token-signature-algorithm":["org.springframework.security.oauth2.jose.jws.SignatureAlgorithm","RS256"],"settings.token.access-token-time-to-live":["java.time.Duration","PT15M"],"settings.token.access-token-format":{"@class":"org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat","value":"self-contained"},"settings.token.refresh-token-time-to-live":["java.time.Duration","PT1H"],"settings.token.authorization-code-time-to-live":["java.time.Duration","PT5M"],"settings.token.device-code-time-to-live":["java.time.Duration","PT5M"]}');
+INSERT INTO oauth2_registered_client (id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings) VALUES ('f801f1a4-9a91-4d18-90de-3235eac9507c', 'foodanalytics', '2026-04-15 15:52:10', '$2a$10$ScD/V7B4Qnv27NUsIlimL.Fh8rR8/IvJZKFqE69k1zVE2j54HWy7q', null, 'f801f1a4-9a91-4d18-90de-3235eac9507c', 'client_secret_basic', 'client_credentials', 'http://localhost:8080/swagger-ui/oauth2-redirect.html,http://www.foodanalytics.local:8082', '', 'READ', '{"@class":"java.util.Collections$UnmodifiableMap","settings.client.require-proof-key":true,"settings.client.require-authorization-consent":false}', '{"@class":"java.util.Collections$UnmodifiableMap","settings.token.reuse-refresh-tokens":true,"settings.token.x509-certificate-bound-access-tokens":false,"settings.token.id-token-signature-algorithm":["org.springframework.security.oauth2.jose.jws.SignatureAlgorithm","RS256"],"settings.token.access-token-time-to-live":["java.time.Duration","PT15M"],"settings.token.access-token-format":{"@class":"org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat","value":"self-contained"},"settings.token.refresh-token-time-to-live":["java.time.Duration","PT1H"],"settings.token.authorization-code-time-to-live":["java.time.Duration","PT5M"],"settings.token.device-code-time-to-live":["java.time.Duration","PT5M"]}');
 
+# Adiciona todas as permissoes no grupo do gerente
+insert into grupo_permissao (grupo_id, permissao_id)
+select 1, id from permissao;
+
+# Adiciona permissoes no grupo do vendedor
+insert into grupo_permissao (grupo_id, permissao_id)
+select 2, id from permissao where nome like 'CONSULTAR_%';
+
+
+# Adiciona permissoes no grupo do auxiliar
+insert into grupo_permissao (grupo_id, permissao_id)
+select 3, id from permissao where nome like 'CONSULTAR_%';
+
+# Adiciona permissoes no grupo cadastrador
+insert into grupo_permissao (grupo_id, permissao_id)
+select 4, id from permissao where nome like '%_RESTAURANTES' or nome like '%_PRODUTOS';

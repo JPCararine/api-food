@@ -1,5 +1,8 @@
 package com.algaworks.algafoodauth.core;
 
+import com.algaworks.algafoodauth.domain.Usuario;
+import com.algaworks.algafoodauth.domain.UsuarioPrincipal;
+import com.algaworks.algafoodauth.repository.UsuarioRepository;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
@@ -9,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,12 +22,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.encrypt.KeyStoreKeyFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.jackson2.CoreJackson2Module;
+import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.*;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
@@ -32,6 +39,8 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -41,6 +50,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Configuration
@@ -48,6 +58,8 @@ import java.util.UUID;
 public class AuthorizationServerConfig {
 
     private final JwtKeyStoreProperties jwtKeyStoreProperties;
+
+    private final UsuarioRepository usuarioRepository;
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -133,7 +145,7 @@ public class AuthorizationServerConfig {
 
 
     @Bean
-    public OAuth2TokenCustomizer<JwtEncodingContext> oauth2TokenCustomizer() {
+    public OAuth2TokenCustomizer<JwtEncodingContext> oauth2TokenCustomizer(UsuarioRepository usuarioRepository) {
         return context -> {
             Authentication authentication = context.getPrincipal();
 
@@ -149,7 +161,7 @@ public class AuthorizationServerConfig {
             }
 
             if (authentication.getPrincipal() instanceof UserDetails userDetails) {
-
+                Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername());
                 var authorities = userDetails.getAuthorities()
                         .stream()
                         .map(GrantedAuthority::getAuthority)
@@ -157,6 +169,8 @@ public class AuthorizationServerConfig {
 
                 context.getClaims().claim("authorities", authorities);
                 context.getClaims().claim("email", userDetails.getUsername());
+                context.getClaims().claim("user_id", usuario.getId());
+
 
             }
         };
@@ -167,6 +181,8 @@ public class AuthorizationServerConfig {
 
         return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, registeredClientRepository);
     }
+
+
 
 }
 

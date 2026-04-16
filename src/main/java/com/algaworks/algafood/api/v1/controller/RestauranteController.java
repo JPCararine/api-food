@@ -3,6 +3,7 @@ package com.algaworks.algafood.api.v1.controller;
 import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDTO;
 import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDTOPut;
 import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDetalhadoDTO;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.service.RestauranteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,27 +26,32 @@ public class RestauranteController {
     }
 
     @GetMapping
+    @CheckSecurity.Restaurantes.PodeConsultar
     public ResponseEntity<List<RestauranteDTO>> list() {
         return ResponseEntity.ok(restauranteService.listAll());
     }
 
     @GetMapping("/{id}")
+    @CheckSecurity.Restaurantes.PodeConsultar
     public ResponseEntity<RestauranteDetalhadoDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(restauranteService.findByIdDetalhado(id));
     }
 
     @GetMapping("/busca")
+    @CheckSecurity.Restaurantes.PodeConsultar
     public ResponseEntity<List<RestauranteDTO>> consultaPorNomeEId(
             @RequestParam String nome,
             @RequestParam Long id) {
         return ResponseEntity.ok(restauranteService.findByNome(nome));
     }
     @GetMapping("/abertos")
+    @CheckSecurity.Restaurantes.PodeConsultar
     public ResponseEntity<List<RestauranteDTO>> consultaAbertos() {
         return ResponseEntity.ok(restauranteService.listByAberto());
     }
 
     @GetMapping("/por-nome-e-frete")
+    @CheckSecurity.Restaurantes.PodeConsultar
     public ResponseEntity<List<RestauranteDTO>> find(
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) BigDecimal taxaFreteInicial,
@@ -54,29 +60,34 @@ public class RestauranteController {
     }
 
     @GetMapping("/com-frete-gratis")
+    @CheckSecurity.Restaurantes.PodeConsultar
     public ResponseEntity<List<RestauranteDTO>> findFreteGratis(
             @RequestParam(required = false) String nome) {
         return ResponseEntity.ok(restauranteService.findTaxaGratis(nome));
     }
 
     @GetMapping("/primeiro")
+    @CheckSecurity.Restaurantes.PodeConsultar
     public ResponseEntity<Optional<RestauranteDTO>> primeiroRestaurante() {
         return ResponseEntity.ok(restauranteService.primeiroRestaurante());
     }
 
     @PostMapping
+    @CheckSecurity.Restaurantes.PodeEditar
     public ResponseEntity<RestauranteDTO> save(
             @RequestBody @Valid RestauranteDTOPut dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(restauranteService.save(dto));
     }
 
     @DeleteMapping("/{id}")
+    @CheckSecurity.Restaurantes.PodeEditar
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         restauranteService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
+    @CheckSecurity.Restaurantes.PodeEditar
     public ResponseEntity<RestauranteDTO> put(
             @PathVariable Long id,
             @RequestBody @Valid RestauranteDTOPut dto) {
@@ -84,42 +95,50 @@ public class RestauranteController {
     }
 
     @PatchMapping("/{id}")
+    @CheckSecurity.Restaurantes.PodeEditar
     public ResponseEntity<RestauranteDTO> patch(
             @PathVariable Long id,
             @RequestBody Map<String, Object> campos) {
         return ResponseEntity.ok(restauranteService.patch(id, campos));
     }
-    @PutMapping("/{id}/ativar")
-    public ResponseEntity<Void> ativar(@PathVariable Long id) {
-        restauranteService.ativar(id);
+    @PutMapping("/{restauranteId}/ativar")
+    @CheckSecurity.Restaurantes.PodeEditar
+    public ResponseEntity<Void> ativar(@PathVariable Long restauranteId) {
+        restauranteService.ativar(restauranteId);
         return ResponseEntity.noContent().build();
     }
-    @DeleteMapping("/{id}/desativar")
-    public ResponseEntity<Void> desativar(@PathVariable Long id) {
-        restauranteService.desativar(id);
+    @PutMapping("/{restauranteId}/desativar")
+    @CheckSecurity.Restaurantes.PodeEditar
+    public ResponseEntity<Void> desativar(@PathVariable Long restauranteId) {
+        restauranteService.desativar(restauranteId);
         return ResponseEntity.noContent().build();
     }
-    @PutMapping("/{id}/abrir")
-    public ResponseEntity<Void> abrir(@PathVariable Long id) {
-        restauranteService.abrir(id);
+    @PutMapping("/{restauranteId}/abrir")
+    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
+    public ResponseEntity<Void> abrir(@PathVariable Long restauranteId) {
+        restauranteService.abrir(restauranteId);
         return ResponseEntity.noContent().build();
     }
-    @PutMapping("/{id}/fechar")
-    public ResponseEntity<Void> fechar(@PathVariable Long id) {
-        restauranteService.fechar(id);
+    @PutMapping("/{restauranteId}/fechar")
+    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
+    public ResponseEntity<Void> fechar(@PathVariable Long restauranteId) {
+        restauranteService.fechar(restauranteId);
         return ResponseEntity.noContent().build();
     }
     @PutMapping("/abrirVarios")
+    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
     public ResponseEntity<Void> abrirVarios(@RequestBody List<Long> ids) {
         restauranteService.abrirVarios(ids);
         return ResponseEntity.noContent().build();
     }
     @PutMapping("/ativacoes")
+    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
     public ResponseEntity<Void> ativarVarios(@RequestBody List<Long> ids) {
         restauranteService.ativarVarios(ids);
         return ResponseEntity.noContent().build();
     }
     @DeleteMapping("/desativacoes")
+    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
     public ResponseEntity<Void> desativarVarios(@RequestBody List<Long> ids) {
         restauranteService.desativarVarios(ids);
         return ResponseEntity.noContent().build();

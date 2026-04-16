@@ -2,6 +2,7 @@ package com.algaworks.algafoodauth.core;
 
 import com.algaworks.algafoodauth.domain.Permissao;
 import com.algaworks.algafoodauth.domain.Usuario;
+import com.algaworks.algafoodauth.domain.UsuarioPrincipal;
 import com.algaworks.algafoodauth.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -38,8 +39,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                             grupo.getPermissoes().size();
                         });
 
-        System.out.println("Usuario encontrado com o email: " + username);
-        System.out.println(usuario.getGrupo());
 
 
         return new User(

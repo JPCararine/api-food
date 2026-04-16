@@ -93,8 +93,7 @@ public class PedidoService {
 
         pedido.setRestaurante(restaurante);
 
-        Usuario usuario = usuarioRepository.findByEmail(algaSecurity.getUsuarioEmail())
-                        .orElseThrow(() -> new UsuarioEmailNotFound(algaSecurity.getUsuarioEmail()));
+        Usuario usuario = buscarUsuarioOuFalhar(algaSecurity.getUsuarioId());
 
         pedido.setUsuario(usuario);
 
@@ -156,19 +155,19 @@ public class PedidoService {
 
     }
     @Transactional
-    public void confirmar(String codigo) {
-        Pedido pedido = buscarOuFalharCodigo(codigo);
+    public void confirmar(Long restauranteId, String codigo) {
+        Pedido pedido = buscarOuFalharCodigoAndRestauranteId(codigo, restauranteId);
         pedido.confirmar();
         pedidoRepository.save(pedido);
     }
     @Transactional
-    public void entregar(String codigo) {
-        Pedido pedido = buscarOuFalharCodigo(codigo);
+    public void entregar(Long restauranteId, String codigo) {
+        Pedido pedido = buscarOuFalharCodigoAndRestauranteId(codigo, restauranteId);
         pedido.entregar();
     }
     @Transactional
-    public void cancelar(String codigo) {
-        Pedido pedido = buscarOuFalharCodigo(codigo);
+    public void cancelar(Long restauranteId, String codigo) {
+        Pedido pedido = buscarOuFalharCodigoAndRestauranteId(codigo, restauranteId);
         pedido.cancelar();
         pedidoRepository.save(pedido);
     }
@@ -218,6 +217,10 @@ public class PedidoService {
     }
     private Pedido buscarOuFalharCodigo(String codigo) {
         return pedidoRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
+    }
+    private Pedido buscarOuFalharCodigoAndRestauranteId(String codigo,  Long restauranteId) {
+        return pedidoRepository.findByCodigoAndRestauranteId(codigo, restauranteId)
                 .orElseThrow(() -> new PedidoNotFoundExceptionCodigo(codigo));
     }
     private Pedido buscarOuFalharId(Long id) {

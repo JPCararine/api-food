@@ -3,6 +3,7 @@ package com.algaworks.algafood.api.v1.controller;
 import com.algaworks.algafood.api.v1.DTO.FotoProdutoDTO.FotoProdutoDTO;
 import com.algaworks.algafood.api.v1.DTO.FotoProdutoDTO.FotoProdutoInput;
 import com.algaworks.algafood.api.v1.DTO.Produto.ProdutoDTO;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoAndRestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.service.*;
@@ -29,10 +30,12 @@ public class RestauranteProdutosController {
     private FotoProdutoService fotoProdutoService;
 
     @GetMapping
+    @CheckSecurity.Restaurantes.PodeConsultar
     public ResponseEntity<List<ProdutoDTO>> listar(@PathVariable Long restauranteId) {
         return ResponseEntity.ok(restauranteProdutoService.listarProdutos(restauranteId));
     }
     @GetMapping("{produtoId}")
+    @CheckSecurity.Restaurantes.PodeConsultar
     public ResponseEntity<ProdutoDTO> findById(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
         return ResponseEntity.ok(produtoService.findByRestaurante(restauranteId, produtoId));
     }
@@ -70,21 +73,25 @@ public class RestauranteProdutosController {
 
 
     }
+    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
     @PutMapping(value = "/{produtoId}/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FotoProdutoDTO> atualizarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId, @ModelAttribute @Valid FotoProdutoInput fotoProdutoInput) throws IOException {
         return ResponseEntity.ok(fotoProdutoService.atualizarFoto(restauranteId, produtoId, fotoProdutoInput));
     }
     @PutMapping("/{produtoId}/adicionar")
+    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
     public ResponseEntity<Void> adicionarProduto(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
         restauranteProdutoService.adicionarProduto(restauranteId, produtoId);
         return ResponseEntity.noContent().build();
     }
     @DeleteMapping("/{produtoId}/remover")
+    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
     public ResponseEntity<Void> removerProduto(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
         restauranteProdutoService.removerProduto(restauranteId, produtoId);
         return ResponseEntity.noContent().build();
     }
     @DeleteMapping("/{produtoId}/foto")
+    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
     public ResponseEntity<Void> deletarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
         fotoProdutoService.delete(restauranteId, produtoId);
         return ResponseEntity.noContent().build();

@@ -4,6 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum ProblemType {
+
+    ACESSO_NEGADO("Acesso negado", "/acesso-negado"),
     PROPRIEDADE_NAO_ACEITAVEL("Propriedade não aceitável", "/propriedade-nao-aceitavel"),
     PROPRIEDADE_NAO_RECONHECIDA("Propriedade não reconhecida ", "/propriedade-nao-reconhecida"),
     ATRIBUTO_FALTANDO("Está faltando atributos no body", "/atributos-faltando"),
