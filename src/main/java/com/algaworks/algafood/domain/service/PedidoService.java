@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 @Service
@@ -35,6 +36,7 @@ public class PedidoService {
     private final RestauranteRepository restauranteRepository;
     private final ItemPedidoDTODisassembler  itemPedidoDTODisassembler;
     private final AlgaSecurity algaSecurity;
+    private final ProdutoRepository produtoRepository;
 
 
 
@@ -86,27 +88,39 @@ public class PedidoService {
                 .toList();
     }
     @Transactional
-    public PedidoResumoDTO criar(Long restauranteId, PedidoInputDTO pedidoInputDTO) {
-        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
+    public PedidoResumoDTO criar(PedidoInputDTO pedidoInputDTO) {
+        Restaurante restaurante = buscarRestauranteOuFalhar(pedidoInputDTO.getRestauranteId());
+
+        Usuario usuario = buscarUsuarioOuFalhar(algaSecurity.getUsuarioId());
 
         Pedido pedido = pedidoDTODisassembler.toEntity(pedidoInputDTO);
 
-        pedido.setRestaurante(restaurante);
 
-        Usuario usuario = buscarUsuarioOuFalhar(algaSecurity.getUsuarioId());
+        pedido.setRestaurante(restaurante);
 
         pedido.setUsuario(usuario);
 
 
         List<ItemPedido> itens = pedidoInputDTO.getItens().stream()
                         .map(itemPedidoDTODisassembler::toEntity)
-                .peek(item -> {
+                .map(item -> {
+                    Produto produto = buscarProdutoOuFalhar(item.getProduto().getId());
+                    if(!produto.getRestaurante().getId().equals(restaurante.getId())) {
+                        throw new RuntimeException("Produto não pertence ao restaurante");
+                    }
+                    if(!produto.isAtivo()) {
+                        throw new RuntimeException("Produto não está mais disponível");
+                    }
+                    item.setProduto(produto);
                     item.setPedido(pedido);
                     item.setPrecoUnitario(item.getProduto().getPreco());
-                        })
+
+                    return item;
+                })
                         .toList();
 
         pedido.setItens(itens);
+
 
         FormaPagamento formaPagamento = buscarFormaPagamentoOuFalhar(pedidoInputDTO.getFormaPagamento().getId());
 
@@ -119,6 +133,8 @@ public class PedidoService {
         calculoTotal(pedido);
 
         pedido.setStatus(StatusPedido.CRIADO);
+        pedido.setCodigo(UUID.randomUUID().toString());
+        pedido.setDataCriacao(OffsetDateTime.now());
 
 
         return pedidoDTOAssembler.toDTO(pedidoRepository.save(pedido));
@@ -226,6 +242,10 @@ public class PedidoService {
     private Pedido buscarOuFalharId(Long id) {
         return pedidoRepository.findById(id)
                 .orElseThrow(() -> new PedidoNotFoundExceptionId(id));
+    }
+    private Produto buscarProdutoOuFalhar(Long id) {
+        return produtoRepository.findById(id)
+                .orElseThrow(() -> new ProdutoNotFoundException(id));
     }
 
 

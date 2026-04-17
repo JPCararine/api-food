@@ -17,7 +17,5 @@ public class UsuarioInputDTO {
     private String email;
     @NotBlank
     private String senha;
-    @Valid
-    @NotNull
-    private List<GrupoIdInputDTO> grupos;
+
 }

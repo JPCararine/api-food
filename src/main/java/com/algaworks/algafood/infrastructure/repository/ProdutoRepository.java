@@ -2,6 +2,7 @@ package com.algaworks.algafood.infrastructure.repository;
 
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.model.Produto;
+import com.algaworks.algafood.domain.model.Restaurante;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,6 +12,11 @@ import java.util.Optional;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long>,  ProdutoRepositoryQueries{
 
+    List<Produto> findByRestauranteAndAtivoTrue(Restaurante restaurante);
+
+    List<Produto> findProdutoByAtivoIsTrue();
+
+    List<Produto> findByNomeContainingAndPrecoBetweenAndAtivoIsTrue(String nome, BigDecimal precoInicial, BigDecimal precoFinal);
 
     List<Produto> preco(BigDecimal preco);
 

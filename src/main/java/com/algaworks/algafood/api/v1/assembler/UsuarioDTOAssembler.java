@@ -2,6 +2,8 @@ package com.algaworks.algafood.api.v1.assembler;
 
 import com.algaworks.algafood.api.v1.DTO.Usuario.UsuarioDTO;
 import com.algaworks.algafood.api.v1.DTO.Usuario.UsuarioIdNomeEmailDTO;
+import com.algaworks.algafood.api.v1.DTO.Usuario.UsuarioNomeEmailDTO;
+import com.algaworks.algafood.api.v1.DTO.UsuarioRestaurante.UsuarioRestauranteResumoDTO;
 import com.algaworks.algafood.domain.model.Usuario;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,4 +21,8 @@ public class UsuarioDTOAssembler {
     public UsuarioIdNomeEmailDTO toDTOIdNome(Usuario usuario) {
         return modelMapper.map(usuario, UsuarioIdNomeEmailDTO.class);
     }
+    public UsuarioNomeEmailDTO toNomeEmailDTO(Usuario usuario) {
+        return modelMapper.map(usuario, UsuarioNomeEmailDTO.class);
+    }
+
 }

@@ -23,13 +23,13 @@ public class RestauranteFormaPagamentoController {
     }
 
     @DeleteMapping("/{formaPagamentoId}")
-    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
+    @CheckSecurity.Restaurantes.PodeGerenciar
     public ResponseEntity<Void> removerFormas(@PathVariable Long restauranteId, @PathVariable Long formaPagamentoId) {
         restauranteFormaPagamentoServiceService.removerFormaPagamento(restauranteId, formaPagamentoId);
         return ResponseEntity.noContent().build();
     }
     @PutMapping("/{formaPagamentoId}")
-    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
+    @CheckSecurity.Restaurantes.PodeGerenciar
     public ResponseEntity<Void> adicionarFormas(@PathVariable Long restauranteId, @PathVariable Long formaPagamentoId) {
         restauranteFormaPagamentoServiceService.adicionarFormaPagamento(restauranteId, formaPagamentoId);
         return ResponseEntity.noContent().build();

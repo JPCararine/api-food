@@ -12,11 +12,11 @@ delete from restaurante;
 delete from restaurante_forma_pagamento;
 delete from usuario;
 delete from usuario_grupo;
-delete from restaurante_usuario_responsavel;
 delete from pedido;
 delete from item_pedido;
 delete from foto_produto;
 delete from oauth2_registered_client;
+delete from usuario_restaurante;
 
 set foreign_key_checks = 1;
 
@@ -152,7 +152,7 @@ insert into produto (nome, descricao, preco,  restaurante_id) values ('Sanduích
 
 insert into produto (nome, descricao, preco,  restaurante_id) values ('Espetinho de Cupim', 'Acompanha farinha, mandioca e vinagrete', 8,  6);
 
-insert into grupo (nome) values ('Gerente'), ('Vendedor'), ('Secretária'), ('Cadastrador');
+insert into grupo (nome) values ('ADMIN');
 
 
 
@@ -164,9 +164,8 @@ insert into usuario (id, nome, email, senha, data_cadastro) values
                                                                 (5, 'Manoel Lima', 'manoel.loja@gmail.com', '$2a$10$oYD5niccsxIG9mrkGNyt3OZCm9ph7G9TzlJW57gKg/6BIz7S.vvZ.', utc_timestamp),
                                                                 (6, 'Teste', 'email.testecsk@gmail.com', '$2a$10$oYD5niccsxIG9mrkGNyt3OZCm9ph7G9TzlJW57gKg/6BIz7S.vvZ.', utc_timestamp);
 
-insert into usuario_grupo (usuario_id, grupo_id) values (1, 1), (1, 2), (2, 2), (3, 3), (4, 4);
+insert into usuario_grupo (usuario_id, grupo_id) values (1, 1);
 
-insert into restaurante_usuario_responsavel (restaurante_id, usuario_id) values (1, 5), (3, 5);
 
 insert into pedido (id, codigo, restaurante_id, usuario_cliente_id, forma_pagamento_id, endereco_cidade_id, endereco_cep,
                     endereco_logradouro, endereco_numero, endereco_complemento, endereco_bairro,
@@ -224,19 +223,9 @@ INSERT INTO oauth2_registered_client (id, client_id, client_id_issued_at, client
 INSERT INTO oauth2_registered_client (id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings) VALUES ('df91300b-4dfa-45f4-9179-232257752a0b', 'algafood', '2026-04-15 15:52:10', '$2a$10$VwEpGvhCB4uFS6DpMnvaO.eQkKU58crKhKZVK6ZOdISa0SV2chbmy', null, 'df91300b-4dfa-45f4-9179-232257752a0b', 'client_secret_basic', 'client_credentials', '', '', 'READ,WRITE', '{"@class":"java.util.Collections$UnmodifiableMap","settings.client.require-proof-key":false,"settings.client.require-authorization-consent":false}', '{"@class":"java.util.Collections$UnmodifiableMap","settings.token.reuse-refresh-tokens":true,"settings.token.x509-certificate-bound-access-tokens":false,"settings.token.id-token-signature-algorithm":["org.springframework.security.oauth2.jose.jws.SignatureAlgorithm","RS256"],"settings.token.access-token-time-to-live":["java.time.Duration","PT30M"],"settings.token.access-token-format":{"@class":"org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat","value":"self-contained"},"settings.token.refresh-token-time-to-live":["java.time.Duration","PT1H"],"settings.token.authorization-code-time-to-live":["java.time.Duration","PT5M"],"settings.token.device-code-time-to-live":["java.time.Duration","PT5M"]}');
 INSERT INTO oauth2_registered_client (id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings) VALUES ('f801f1a4-9a91-4d18-90de-3235eac9507c', 'foodanalytics', '2026-04-15 15:52:10', '$2a$10$ScD/V7B4Qnv27NUsIlimL.Fh8rR8/IvJZKFqE69k1zVE2j54HWy7q', null, 'f801f1a4-9a91-4d18-90de-3235eac9507c', 'client_secret_basic', 'client_credentials', 'http://localhost:8080/swagger-ui/oauth2-redirect.html,http://www.foodanalytics.local:8082', '', 'READ', '{"@class":"java.util.Collections$UnmodifiableMap","settings.client.require-proof-key":true,"settings.client.require-authorization-consent":false}', '{"@class":"java.util.Collections$UnmodifiableMap","settings.token.reuse-refresh-tokens":true,"settings.token.x509-certificate-bound-access-tokens":false,"settings.token.id-token-signature-algorithm":["org.springframework.security.oauth2.jose.jws.SignatureAlgorithm","RS256"],"settings.token.access-token-time-to-live":["java.time.Duration","PT15M"],"settings.token.access-token-format":{"@class":"org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat","value":"self-contained"},"settings.token.refresh-token-time-to-live":["java.time.Duration","PT1H"],"settings.token.authorization-code-time-to-live":["java.time.Duration","PT5M"],"settings.token.device-code-time-to-live":["java.time.Duration","PT5M"]}');
 
-# Adiciona todas as permissoes no grupo do gerente
+# Adiciona todas as permissoes no grupo do ADMIN
 insert into grupo_permissao (grupo_id, permissao_id)
 select 1, id from permissao;
 
-# Adiciona permissoes no grupo do vendedor
-insert into grupo_permissao (grupo_id, permissao_id)
-select 2, id from permissao where nome like 'CONSULTAR_%';
-
-
-# Adiciona permissoes no grupo do auxiliar
-insert into grupo_permissao (grupo_id, permissao_id)
-select 3, id from permissao where nome like 'CONSULTAR_%';
-
-# Adiciona permissoes no grupo cadastrador
-insert into grupo_permissao (grupo_id, permissao_id)
-select 4, id from permissao where nome like '%_RESTAURANTES' or nome like '%_PRODUTOS';
+insert into usuario_restaurante values (1, 5, 1, 'COLABORADOR');
+insert into usuario_restaurante values (2, 3, 2, 'COLABORADOR');

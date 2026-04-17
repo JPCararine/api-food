@@ -1,6 +1,7 @@
 package com.algaworks.algafood.api.v1.controller;
 
 import com.algaworks.algafood.api.v1.DTO.Usuario.UsuarioIdNomeEmailDTO;
+import com.algaworks.algafood.api.v1.DTO.UsuarioRestaurante.UsuarioRestauranteResumoDTO;
 import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.service.RestauranteUsuarioService;
 import lombok.AllArgsConstructor;
@@ -18,19 +19,19 @@ public class RestauranteUsuariosController {
     private final RestauranteUsuarioService restauranteUsuarioService;
 
     @GetMapping
-    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
-    public ResponseEntity<Set<UsuarioIdNomeEmailDTO>> listarUsuarios(@PathVariable long restauranteId) {
+    @CheckSecurity.Restaurantes.PodeGerenciar
+    public ResponseEntity<Set<UsuarioRestauranteResumoDTO>> listarUsuarios(@PathVariable long restauranteId) {
         return ResponseEntity.ok(restauranteUsuarioService.listarUsuarios(restauranteId));
     }
     @PutMapping("/{responsavelId}")
-    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
-    public ResponseEntity<String> adicionarResponsavel(@PathVariable Long restauranteId, @PathVariable Long responsavelId) {
-        restauranteUsuarioService.adicionarResponsavel(restauranteId, responsavelId);
-        return ResponseEntity.ok("Usuario adicionado com sucesso");
+    @CheckSecurity.Restaurantes.PodeAdicionarCargos
+    public ResponseEntity<String> adicionarCOHOST(@PathVariable Long restauranteId, @PathVariable Long responsavelId) {
+        restauranteUsuarioService.adicionarCOHOST(restauranteId, responsavelId);
+        return ResponseEntity.ok("Usuário adicionado com sucesso");
     }
     @DeleteMapping("/{responsavelId}")
-    @CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
-    public ResponseEntity<String> removerResponsavel(@PathVariable Long restauranteId, @PathVariable Long responsavelId) {
+    @CheckSecurity.Restaurantes.PodeGerenciar
+    public ResponseEntity<String> removerCOHOST(@PathVariable Long restauranteId, @PathVariable Long responsavelId) {
         restauranteUsuarioService.removerResponsavel(restauranteId, responsavelId);
         return ResponseEntity.ok("Usuário removido com sucesso.");
 

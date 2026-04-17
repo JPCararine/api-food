@@ -1,5 +1,6 @@
 package com.algaworks.algafood.api.v1.DTO.Produto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
@@ -12,4 +13,6 @@ public class ProdutoDTO {
     private String nome;
     private String descricao;
     private BigDecimal preco;
+    @JsonProperty("restaurante")
+    private String nomeRestaurante;
 }

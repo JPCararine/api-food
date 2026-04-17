@@ -35,11 +35,27 @@ public @interface CheckSecurity {
         public @interface PodeConsultar { }
 
         @PreAuthorize("hasAuthority('SCOPE_WRITE') and "
-                        + "(hasAuthority('EDITAR_RESTAURANTES') or "
-                        + "@algaSecurity.gerenciaRestaurante(#restauranteId))")
+                + " (hasAuthority('EDITAR_RESTAURANTES') or "
+                + "@algaSecurity.podeGerenciarRestaurante(#restauranteId))")
         @Retention(RetentionPolicy.RUNTIME)
         @Target(ElementType.METHOD)
-        public @interface PodeGerenciarFuncionamento { }
+        public @interface PodeGerenciar { }
+
+        @PreAuthorize("hasAuthority('SCOPE_WRITE') and "
+                + " (hasAuthority('EDITAR_RESTAURANTES') or "
+                + "@algaSecurity.hostRestaurante(#restauranteId))")
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.METHOD)
+        public @interface PodeAdicionarCargos { }
+
+        @PreAuthorize("hasAuthority('SCOPE_WRITE') and "
+                + " (hasAuthority('EDITAR_RESTAURANTES') or "
+                + "@algaSecurity.hostRestaurante(#restauranteId))")
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.METHOD)
+        public @interface PodeDeletarRestaurante { }
+
+
 
     }
     public @interface Pedidos {
@@ -48,6 +64,22 @@ public @interface CheckSecurity {
         @Retention(RetentionPolicy.RUNTIME)
         @Target(ElementType.METHOD)
         public @interface PodeCriar { }
+
+        @PreAuthorize("hasAuthority('SCOPE_READ') and "
+                + "(hasAuthority('CONSULTAR_PEDIDOS') or "
+                + "@algaSecurity.podeConsultarEGerenciarPedidos(#restauranteId))")
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.METHOD)
+        public @interface PodeConsultar { }
+
+        @PreAuthorize("hasAuthority('SCOPE_WRITE') and "
+                + " (hasAuthority('GERENCIAR_PEDIDOS') or "
+                + "@algaSecurity.podeConsultarEGerenciarPedidos(#restauranteId))")
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.METHOD)
+        public @interface PodeGerenciar { }
+
+
 
     }
 }

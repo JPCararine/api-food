@@ -1,0 +1,1 @@
+DROP TABLE restaurante_usuario_responsavel

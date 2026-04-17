@@ -1,25 +1,28 @@
 package com.algaworks.algafood.domain.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Data
+
 @Builder
 @AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Usuario {
     public Usuario() {
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     private String nome;
@@ -42,6 +45,9 @@ public class Usuario {
     }
     @OneToMany
     private List<Pedido> pedidos;
+
+    @OneToMany(mappedBy = "usuario")
+    private Set<UsuarioRestaurante> restaurantes;
 
 
 

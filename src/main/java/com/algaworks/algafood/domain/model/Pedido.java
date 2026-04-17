@@ -32,7 +32,7 @@ public class Pedido extends AbstractAggregateRoot<Pedido> {
     private BigDecimal subtotal;
     private BigDecimal taxaFrete;
     private BigDecimal valorTotal;
-    @CreationTimestamp
+
     private OffsetDateTime dataCriacao;
 
     private OffsetDateTime dataConfirmacao;
@@ -82,11 +82,6 @@ public class Pedido extends AbstractAggregateRoot<Pedido> {
         this.status = StatusPedido.CANCELADO;
         this.dataCancelamento = OffsetDateTime.now();
         registerEvent(new PedidoCanceladoEvent(this));
-    }
-
-    @PrePersist
-    private void gerarCodigo() {
-        setCodigo(UUID.randomUUID().toString());
     }
 
 

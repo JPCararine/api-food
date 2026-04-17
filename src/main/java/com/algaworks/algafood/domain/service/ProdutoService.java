@@ -30,13 +30,13 @@ public class ProdutoService {
 
     public List<ProdutoDTO> findAll() {
 
-        return produtoRepository.findAll()
+        return produtoRepository.findProdutoByAtivoIsTrue()
                 .stream()
                 .map(produtoDTOAssembler::toDTO)
                 .toList();
     }
     public List<ProdutoDTO> find(String nome, BigDecimal precoInicial, BigDecimal precoFinal) {
-        return produtoRepository.find(nome, precoInicial, precoFinal)
+        return produtoRepository.findByNomeContainingAndPrecoBetweenAndAtivoIsTrue(nome, precoInicial, precoFinal)
                 .stream()
                 .map(produtoDTOAssembler::toDTO)
                 .toList();

@@ -5,6 +5,7 @@ import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDTOPut;
 import com.algaworks.algafood.api.v1.DTO.Restaurante.RestauranteDetalhadoDTO;
 import com.algaworks.algafood.api.v1.assembler.RestauranteDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.RestauranteInputDisassembler;
+import com.algaworks.algafood.core.security.AlgaSecurity;
 import com.algaworks.algafood.domain.exception.JaExistente.EntidadeJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.*;
 import com.algaworks.algafood.domain.model.*;
@@ -32,6 +33,9 @@ public class RestauranteService {
     private final RestauranteDTOAssembler restauranteDTOAssembler;
     private final RestauranteInputDisassembler restauranteInputDisassembler;
     private final CidadeRepository cidadeRepository;
+    private final UsuarioRestauranteRepository usuarioRestauranteRepository;
+    private final AlgaSecurity algaSecurity;
+    private final UsuarioRepository usuarioRepository;
 
 
     public List<RestauranteDTO> listAll() {
@@ -103,18 +107,15 @@ public class RestauranteService {
     @Transactional
     public RestauranteDTO save(RestauranteDTOPut restauranteDTOPut) {
         checarSeExisteNome(restauranteDTOPut.getNome(), null);
+        Usuario usuario = buscarUsuarioOuFalhar(algaSecurity.getUsuarioId());
 
-        Cozinha cozinha = buscarCozinhaOuFalhar(restauranteDTOPut.getCozinha().getId());
+        Restaurante restaurante = montarRestaurante(restauranteDTOPut);
 
-        Cidade cidade = buscarCidadeOuFalhar(restauranteDTOPut.getEndereco().getCidade().getId());
+        Restaurante restauranteSalvo = restauranteRepository.save(restaurante);
 
-        Restaurante restaurante = restauranteInputDisassembler.toEntity(restauranteDTOPut);
-        restaurante.setCozinha(cozinha);
-        restaurante.getEndereco().setCidade(cidade);
+        vincularResponsavel(usuario, restauranteSalvo);
 
-
-
-        return restauranteDTOAssembler.toDTO(restauranteRepository.save(restaurante));
+        return restauranteDTOAssembler.toDTO(restauranteSalvo);
     }
 
     @Transactional
@@ -232,6 +233,30 @@ public class RestauranteService {
     private Cidade buscarCidadeOuFalhar(Long id) {
         return cidadeRepository.findById(id)
                 .orElseThrow(() -> new CidadeNotFoundException(id));
+    }
+    private Usuario buscarUsuarioOuFalhar(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNotFoundException(id));
+    }
+    private Restaurante montarRestaurante(RestauranteDTOPut dtoPut) {
+        Cozinha cozinha = buscarCozinhaOuFalhar(dtoPut.getCozinha().getId());
+        Cidade cidade = buscarCidadeOuFalhar(dtoPut.getEndereco().getCidade().getId());
+
+        Restaurante restaurante = restauranteInputDisassembler.toEntity(dtoPut);
+        restaurante.setCozinha(cozinha);
+        restaurante.getEndereco().setCidade(cidade);
+
+        return restaurante;
+    }
+    private void vincularResponsavel(Usuario usuario, Restaurante restaurante) {
+
+         UsuarioRestaurante usuarioRestaurante = UsuarioRestaurante.builder()
+                 .usuario(usuario)
+                 .restaurante(restaurante)
+                 .funcao(Funcao.HOST)
+                 .build();
+
+         usuarioRestauranteRepository.save(usuarioRestaurante);
     }
 
 }

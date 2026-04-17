@@ -1,8 +1,11 @@
 package com.algaworks.algafood.domain.service;
 
 import com.algaworks.algafood.api.v1.DTO.Produto.ProdutoDTO;
+import com.algaworks.algafood.api.v1.DTO.Produto.ProdutoInputDTO;
 import com.algaworks.algafood.api.v1.assembler.ProdutoDTOAssembler;
+import com.algaworks.algafood.api.v1.assembler.ProdutoInputDTODisassembler;
 import com.algaworks.algafood.domain.exception.JaExistente.FormaPagamentoJaExistente;
+import com.algaworks.algafood.domain.exception.JaExistente.ProdutoJaExistente;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafood.domain.model.Produto;
@@ -21,35 +24,41 @@ public class RestauranteProdutoService {
     private final ProdutoRepository produtoRepository;
     private final RestauranteRepository restauranteRepository;
     private final ProdutoDTOAssembler produtoDTOAssembler;
+    private final ProdutoInputDTODisassembler  produtoInputDTODisassembler;
 
 
     public List<ProdutoDTO> listarProdutos(Long restauranteId) {
         Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
-        return restaurante.getProdutos()
+        return produtoRepository.findByRestauranteAndAtivoTrue(restaurante)
                 .stream()
                 .map(produtoDTOAssembler::toDTO)
                 .toList();
 
     }
-    public void adicionarProduto(Long restauranteId, Long produtoId) {
+    public void adicionarProduto(Long restauranteId, ProdutoInputDTO dto) {
         Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
-        Produto produto = buscarProdutoOuFalhar(produtoId);
+        Produto produto = produtoInputDTODisassembler.toEntity(dto);
 
         if(restaurante.getProdutos().contains(produto)) {
-            throw new FormaPagamentoJaExistente();
+            throw new ProdutoJaExistente();
         }
-        restaurante.getProdutos().add(produto);
+        produto.setRestaurante(restaurante);
+
+        produtoRepository.save(produto);
+
 
     }
     public void removerProduto(Long restauranteId, Long produtoId) {
         Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
 
         Produto produto = buscarProdutoOuFalhar(produtoId);
+        produto.setAtivo(false);
+
+        produtoRepository.save(produto);
 
 
-        restaurante.getProdutos().remove(produto);
 
     }
 

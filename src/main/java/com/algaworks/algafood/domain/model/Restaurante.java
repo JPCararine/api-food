@@ -15,14 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Data
+
 @Entity
 @Builder
 @AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Restaurante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotBlank
@@ -56,11 +60,6 @@ public class Restaurante {
     @Embedded
     private Endereco endereco;
 
-    @ManyToMany
-    @JoinTable(name = "restaurante_usuario_responsavel",
-                joinColumns = @JoinColumn(name = "restaurante_id"),
-                inverseJoinColumns = @JoinColumn(name = "usuario_id"))
-    private Set<Usuario> responsaveis;
 
     @CreationTimestamp
     @Column(columnDefinition = "datetime")
@@ -73,6 +72,9 @@ public class Restaurante {
     }
     @OneToMany(mappedBy = "restaurante")
     private List<Pedido> pedidos;
+
+    @OneToMany(mappedBy = "restaurante")
+    private Set<UsuarioRestaurante> usuarios;
 
 }
 

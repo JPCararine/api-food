@@ -46,24 +46,9 @@ public class UsuarioService {
 
         validarEmail(usuarioInputDTO.getEmail(), null);
 
-
         Usuario usuario = usuarioInputDTODisassambler.toEntity(usuarioInputDTO);
 
         usuario.setSenha(passwordEncoder.encode(usuarioInputDTO.getSenha()));
-
-        List<Long> ids = usuarioInputDTO.getGrupos()
-                .stream()
-                .map(g -> g.getId())
-                .toList();
-        List<Grupo> grupos = grupoRepository.findAllById(ids);
-
-
-        if(grupos.size() != ids.size()) {
-            throw new RuntimeException("Grupos não encontrados");
-        }
-
-        usuario.getGrupos().clear();
-        usuario.getGrupos().addAll(grupos);
 
         return  usuarioDTOAssembler.toDTO(usuarioRepository.save(usuario));
     }
@@ -82,17 +67,7 @@ public class UsuarioService {
         if(usuarioInputDTO.getSenha() != null && !usuarioInputDTO.getSenha().isBlank()) {
             usuario.setSenha(passwordEncoder.encode(usuarioInputDTO.getSenha()));
         }
-        List<Long> ids = usuarioInputDTO.getGrupos()
-                .stream()
-                .map(g -> g.getId())
-                .toList();
-        List<Grupo> grupos = grupoRepository.findAllById(ids);
-        if(grupos.size() != ids.size()) {
-            throw new RuntimeException("Grupos não encontrados");
-        }
 
-        usuario.getGrupos().clear();
-        usuario.getGrupos().addAll(grupos);
 
         return usuarioDTOAssembler.toDTO(usuarioRepository.save(usuario));
     }

@@ -11,8 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ItemPedidoDTODisassembler {
-    @Autowired
-    private ModelMapper modelMapper;
+
     @Autowired
     private ProdutoRepository produtoRepository;
 
@@ -20,9 +19,11 @@ public class ItemPedidoDTODisassembler {
         Produto produto = produtoRepository.findById(itemPedidoInputDTO.getProduto().getId())
                 .orElseThrow(()-> new ProdutoNotFoundException(itemPedidoInputDTO.getProduto().getId()));
 
-        ItemPedido itemPedido = modelMapper.map(itemPedidoInputDTO, ItemPedido.class);
-
+        ItemPedido itemPedido = new ItemPedido();
         itemPedido.setProduto(produto);
+        itemPedido.setQuantidade(itemPedidoInputDTO.getQuantidade());
+        itemPedido.setObservacao(itemPedidoInputDTO.getObservacao());
+
         return itemPedido;
     }
 }
