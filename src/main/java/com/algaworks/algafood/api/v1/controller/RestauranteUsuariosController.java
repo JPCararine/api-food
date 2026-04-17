@@ -23,19 +23,29 @@ public class RestauranteUsuariosController {
     public ResponseEntity<Set<UsuarioRestauranteResumoDTO>> listarUsuarios(@PathVariable long restauranteId) {
         return ResponseEntity.ok(restauranteUsuarioService.listarUsuarios(restauranteId));
     }
-    @PutMapping("/{responsavelId}")
-    @CheckSecurity.Restaurantes.PodeAdicionarCargos
-    public ResponseEntity<String> adicionarCOHOST(@PathVariable Long restauranteId, @PathVariable Long responsavelId) {
-        restauranteUsuarioService.adicionarCOHOST(restauranteId, responsavelId);
+    @PutMapping("/{usuarioId}/cohost")
+    @CheckSecurity.Restaurantes.PodeGerenciarTodosCargos
+    public ResponseEntity<String> adicionarCohost(@PathVariable Long restauranteId, @PathVariable Long usuarioId) {
+        restauranteUsuarioService.adicionarCOHOST(restauranteId, usuarioId);
         return ResponseEntity.ok("Usuário adicionado com sucesso");
     }
-    @DeleteMapping("/{responsavelId}")
-    @CheckSecurity.Restaurantes.PodeGerenciar
-    public ResponseEntity<String> removerCOHOST(@PathVariable Long restauranteId, @PathVariable Long responsavelId) {
-        restauranteUsuarioService.removerResponsavel(restauranteId, responsavelId);
+    @DeleteMapping("/{usuarioId}/cohost")
+    @CheckSecurity.Restaurantes.PodeGerenciarTodosCargos
+    public ResponseEntity<String> removerCohostOuColaborador(@PathVariable Long restauranteId, @PathVariable Long usuarioId) {
+        restauranteUsuarioService.removerCOHOSTOuColaborador(restauranteId, usuarioId);
         return ResponseEntity.ok("Usuário removido com sucesso.");
-
-
-
     }
+    @PutMapping("/{usuarioId}/colaborador")
+    @CheckSecurity.Restaurantes.PodeGerenciarColaboradores
+    public ResponseEntity<String> adicionarColaborador(@PathVariable Long restauranteId, @PathVariable Long usuarioId) {
+        restauranteUsuarioService.adicionarCOLABORADOR(restauranteId, usuarioId);
+        return ResponseEntity.ok("Usuário adicionado com sucesso");
+    }
+    @DeleteMapping("/{usuarioId}/colaborador")
+    @CheckSecurity.Restaurantes.PodeGerenciarColaboradores
+    public ResponseEntity<String> removerColaborador(@PathVariable Long restauranteId, @PathVariable Long usuarioId) {
+        restauranteUsuarioService.removerCOLABORADOR(restauranteId, usuarioId);
+        return ResponseEntity.ok("Usuário removido com sucesso.");
+    }
+
 }

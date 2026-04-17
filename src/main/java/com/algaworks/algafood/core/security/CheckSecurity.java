@@ -46,7 +46,16 @@ public @interface CheckSecurity {
                 + "@algaSecurity.hostRestaurante(#restauranteId))")
         @Retention(RetentionPolicy.RUNTIME)
         @Target(ElementType.METHOD)
-        public @interface PodeAdicionarCargos { }
+        public @interface PodeGerenciarTodosCargos { }
+
+        @PreAuthorize("hasAuthority('SCOPE_WRITE') and "
+                + " (hasAuthority('EDITAR_RESTAURANTES') or "
+                + "@algaSecurity.podeGerenciarRestaurante(#restauranteId))")
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.METHOD)
+        public @interface PodeGerenciarColaboradores { }
+
+
 
         @PreAuthorize("hasAuthority('SCOPE_WRITE') and "
                 + " (hasAuthority('EDITAR_RESTAURANTES') or "

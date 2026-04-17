@@ -7,6 +7,7 @@ import com.algaworks.algafood.api.v1.assembler.GrupoDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.UsuarioDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.UsuarioInputDTODisassambler;
 import com.algaworks.algafood.domain.exception.JaExistente.EmailJaExistente;
+import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.NotFound.GrupoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.UsuarioNotFoundException;
 import com.algaworks.algafood.domain.model.Grupo;
@@ -84,18 +85,19 @@ public class UsuarioService {
     public void alterarSenha(Long id, String senhaAtual, String senhaNova) {
         Usuario usuario = buscarUsuarioOuFalhar(id);
         if(!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
-            throw new RuntimeException("Senha atual não coincide com a senha do usuário");
+            throw new NegocioException("Senha atual não coincide com a senha do usuário");
         }
         usuario.setSenha(passwordEncoder.encode(senhaNova));
     }
 
     public void login(String email, String senha) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email ou senha incorretos"));
-        if(!passwordEncoder.matches(senha, usuario.getSenha())) {
-            throw new RuntimeException("Email ou senha incorretos");
-        }
+                .orElseThrow(() -> new NegocioException("Email ou senha incorretos"));
+        if (!passwordEncoder.matches(senha, usuario.getSenha())) {
+            throw new NegocioException("Email ou senha incorretos");
 
+
+        }
     }
     public List<GrupoDTO> listarGrupos(Long usuarioId) {
         Usuario usuario = buscarUsuarioOuFalhar(usuarioId);
@@ -112,7 +114,7 @@ public class UsuarioService {
         Grupo grupo = buscarGrupoOuFalhar(grupoId);
 
         if(usuario.getGrupos().contains(grupo)) {
-            throw new RuntimeException("Usuário já está nesse grupo");
+            throw new NegocioException("Usuário já está nesse grupo");
         }
 
         usuario.getGrupos().add(grupo);

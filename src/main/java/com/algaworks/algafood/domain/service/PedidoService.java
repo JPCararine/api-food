@@ -8,6 +8,7 @@ import com.algaworks.algafood.api.v1.assembler.PedidoDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.PedidoDTODisassembler;
 import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.core.security.AlgaSecurity;
+import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.NotFound.*;
 import com.algaworks.algafood.domain.exception.NotFound.PedidoNotFoundExceptionId;
 import com.algaworks.algafood.domain.model.*;
@@ -106,10 +107,10 @@ public class PedidoService {
                 .map(item -> {
                     Produto produto = buscarProdutoOuFalhar(item.getProduto().getId());
                     if(!produto.getRestaurante().getId().equals(restaurante.getId())) {
-                        throw new RuntimeException("Produto não pertence ao restaurante");
+                        throw new NegocioException("Produto não pertence ao restaurante");
                     }
                     if(!produto.isAtivo()) {
-                        throw new RuntimeException("Produto não está mais disponível");
+                        throw new NegocioException("Produto não está mais disponível");
                     }
                     item.setProduto(produto);
                     item.setPedido(pedido);
@@ -148,7 +149,7 @@ public class PedidoService {
         FormaPagamento formaPagamento = buscarFormaPagamentoOuFalhar(formaPagamentoId);
 
         if(!restaurante.getFormaPagamentos().contains(formaPagamento)) {
-            throw new RuntimeException("Esse restaurante não possui essa forma de pagamento");
+            throw new NegocioException("Esse restaurante não possui essa forma de pagamento");
         }
 
     }

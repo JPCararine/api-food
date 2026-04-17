@@ -5,6 +5,7 @@ import com.algaworks.algafood.api.v1.DTO.UsuarioRestaurante.UsuarioRestauranteRe
 import com.algaworks.algafood.api.v1.assembler.UsuarioDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.UsuarioRestauranteDTOAssembler;
 import com.algaworks.algafood.core.security.AlgaSecurity;
+import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.NotFound.RestauranteNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.UsuarioNotFoundException;
 import com.algaworks.algafood.domain.model.Funcao;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,12 +30,9 @@ public class RestauranteUsuarioService {
 
     private final RestauranteRepository restauranteRepository;
     private final UsuarioRepository usuarioRepository;
-    private final UsuarioDTOAssembler usuarioDTOAssembler;
     private final AlgaSecurity algaSecurity;
     private final UsuarioRestauranteRepository usuarioRestauranteRepository;
-    private final UsuarioRestauranteDTOAssembler  usuarioDTOAssemblerAssembler;
-
-
+    private final UsuarioRestauranteDTOAssembler usuarioDTOAssemblerAssembler;
 
     public Set<UsuarioRestauranteResumoDTO> listarUsuarios(Long restauranteId) {
         Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
@@ -42,47 +41,105 @@ public class RestauranteUsuarioService {
                 .map(usuarioDTOAssemblerAssembler::toUsuarioResumoDTO)
                 .collect(Collectors.toSet());
     }
+
     @Transactional
     public void adicionarCOHOST(Long restauranteId, Long usuarioId) {
+        validarHost(restauranteId);
+
         Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
-        Usuario usuarioLogado = buscarUsuarioOuFalhar(algaSecurity.getUsuarioId());
         Usuario usuario = buscarUsuarioOuFalhar(usuarioId);
 
-        if(usuarioRestauranteRepository.existsByUsuarioIdAndRestauranteId(usuarioId, restauranteId)) {
-            throw new RuntimeException("Usuário já está vinculado a este restaurante");
-        }
-        boolean isHost =
-                usuarioRestauranteRepository.existsByUsuarioIdAndRestauranteIdAndFuncaoIn(
-                        usuarioLogado.getId(),
-                        restauranteId,
-                        Collections.singleton(Funcao.HOST)
-                );
-
-        if(!isHost) {
-            throw new RuntimeException("Você não possui permissão para executar essa ação");
+        if (usuarioRestauranteRepository.existsByUsuarioIdAndRestauranteId(usuarioId, restauranteId)) {
+            throw new NegocioException("Usuário já está vinculado a este restaurante");
         }
 
         UsuarioRestaurante vinculo = UsuarioRestaurante.builder()
-                        .restaurante(restaurante)
-                        .usuario(usuario)
-                        .funcao(Funcao.COHOST)
-                        .build();
+                .restaurante(restaurante)
+                .usuario(usuario)
+                .funcao(Funcao.COHOST)
+                .build();
 
         usuarioRestauranteRepository.save(vinculo);
-
     }
+
     @Transactional
-    public void removerResponsavel(Long restauranteId, Long responsavelId) {
-        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
+    public void removerCOHOSTOuColaborador(Long restauranteId, Long usuarioId) {
+        validarHost(restauranteId);
 
-        Usuario usuario = buscarUsuarioOuFalhar(responsavelId);
+        if (usuarioId.equals(algaSecurity.getUsuarioId())) {
+            throw new NegocioException("Você não pode remover a si mesmo");
+        }
 
-        restaurante.getUsuarios().remove(usuario);
+        UsuarioRestaurante vinculo = usuarioRestauranteRepository
+                .findByUsuarioIdAndRestauranteId(usuarioId, restauranteId)
+                .orElseThrow(() -> new NegocioException("Vínculo não encontrado"));
+
+        if (vinculo.getFuncao() == Funcao.HOST) {
+            throw new NegocioException("Não é possível remover o responsável do restaurante");
+        }
+
+        usuarioRestauranteRepository.deleteByUsuarioIdAndRestauranteId(usuarioId, restauranteId);
     }
+
+    @Transactional
+    public void adicionarCOLABORADOR(Long restauranteId, Long usuarioId) {
+        validarHostOuCohost(restauranteId);
+
+        Restaurante restaurante = buscarRestauranteOuFalhar(restauranteId);
+        Usuario usuario = buscarUsuarioOuFalhar(usuarioId);
+
+        if (usuarioRestauranteRepository.existsByUsuarioIdAndRestauranteId(usuarioId, restauranteId)) {
+            throw new NegocioException("Usuário já está vinculado a este restaurante");
+        }
+
+        UsuarioRestaurante vinculo = UsuarioRestaurante.builder()
+                .restaurante(restaurante)
+                .usuario(usuario)
+                .funcao(Funcao.COLABORADOR)
+                .build();
+
+        usuarioRestauranteRepository.save(vinculo);
+    }
+
+    @Transactional
+    public void removerCOLABORADOR(Long restauranteId, Long usuarioId) {
+        validarHostOuCohost(restauranteId);
+
+        if (usuarioId.equals(algaSecurity.getUsuarioId())) {
+            throw new NegocioException("Você não pode remover a si mesmo");
+        }
+
+        UsuarioRestaurante vinculo = usuarioRestauranteRepository
+                .findByUsuarioIdAndRestauranteId(usuarioId, restauranteId)
+                .orElseThrow(() -> new NegocioException("Vínculo não encontrado"));
+
+        if (vinculo.getFuncao() != Funcao.COLABORADOR) {
+            throw new NegocioException("Não é possível remover um usuário com cargo maior ou igual ao seu");
+        }
+
+        usuarioRestauranteRepository.deleteByUsuarioIdAndRestauranteId(usuarioId, restauranteId);
+    }
+
+
+    private void validarHost(Long restauranteId) {
+        if (!algaSecurity.hostRestaurante(restauranteId)) {
+            throw new NegocioException("Você não possui permissão para executar essa ação");
+        }
+    }
+
+    private void validarHostOuCohost(Long restauranteId) {
+        if (!algaSecurity.podeGerenciarRestaurante(restauranteId)) {
+            throw new NegocioException("Você não possui permissão para executar essa ação");
+        }
+    }
+
+
+
     private Restaurante buscarRestauranteOuFalhar(Long id) {
         return restauranteRepository.findById(id)
                 .orElseThrow(() -> new RestauranteNotFoundException(id));
     }
+
     private Usuario buscarUsuarioOuFalhar(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(id));

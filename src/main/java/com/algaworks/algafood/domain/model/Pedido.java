@@ -2,6 +2,7 @@ package com.algaworks.algafood.domain.model;
 
 import com.algaworks.algafood.domain.event.PedidoCanceladoEvent;
 import com.algaworks.algafood.domain.event.PedidoConfirmadoEvent;
+import com.algaworks.algafood.domain.exception.NegocioException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,7 +57,7 @@ public class Pedido extends AbstractAggregateRoot<Pedido> {
 
     public void confirmar() {
         if (this.status != StatusPedido.CRIADO) {
-            throw new RuntimeException("Pedido não pode ser confirmado");
+            throw new NegocioException("Pedido não pode ser confirmado");
         }
 
         this.status = StatusPedido.CONFIRMADO;
@@ -67,7 +68,7 @@ public class Pedido extends AbstractAggregateRoot<Pedido> {
 
     public void entregar() {
         if (this.status != StatusPedido.CONFIRMADO) {
-            throw new RuntimeException("Pedido não pode ser entregue");
+            throw new NegocioException("Pedido não pode ser entregue");
         }
 
         this.status = StatusPedido.ENTREGUE;
@@ -76,7 +77,7 @@ public class Pedido extends AbstractAggregateRoot<Pedido> {
 
     public void cancelar() {
         if (this.status == StatusPedido.ENTREGUE || this.status == StatusPedido.CANCELADO) {
-            throw new RuntimeException("Pedido não pode ser cancelado");
+            throw new NegocioException("Pedido não pode ser cancelado");
         }
 
         this.status = StatusPedido.CANCELADO;

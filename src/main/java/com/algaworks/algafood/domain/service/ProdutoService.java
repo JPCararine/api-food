@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.v1.DTO.Produto.ProdutoDTO;
 import com.algaworks.algafood.api.v1.DTO.Produto.ProdutoInputDTO;
 import com.algaworks.algafood.api.v1.assembler.ProdutoDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.ProdutoInputDTODisassembler;
+import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoAndRestauranteNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.ProdutoNotFoundException;
 import com.algaworks.algafood.domain.model.Produto;
@@ -84,7 +85,7 @@ public class ProdutoService {
                 .orElseThrow(() -> new ProdutoAndRestauranteNotFoundException(restauranteId, produtoId));
 
         if(!produto.getRestaurante().getId().equals(restauranteId)) {
-            throw new RuntimeException("Produto não pertence ao restaurante");
+            throw new NegocioException("Produto não pertence ao restaurante");
         }
         return produtoDTOAssembler.toDTO(produto);
 

@@ -6,6 +6,7 @@ import com.algaworks.algafood.api.v1.DTO.Permissao.PermissaoDTO;
 import com.algaworks.algafood.api.v1.assembler.GrupoDTOAssembler;
 import com.algaworks.algafood.api.v1.assembler.GrupoInputDTODisassembler;
 import com.algaworks.algafood.api.v1.assembler.PermissaoDTOAssembler;
+import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.NotFound.GrupoNotFoundException;
 import com.algaworks.algafood.domain.exception.NotFound.PermissaoNotFoundException;
 import com.algaworks.algafood.domain.model.Grupo;
@@ -54,7 +55,7 @@ public class GrupoService {
         List<Permissao> permissoes = permissaoRepository.findByIdIn(ids);
 
         if(permissoes.size() != ids.size()) {
-            throw new RuntimeException("Permissões não encotradas");
+            throw new NegocioException("Permissões não encotradas");
         }
         grupo.getPermissoes().clear();
         grupo.getPermissoes().addAll(permissoes);
@@ -81,7 +82,7 @@ public class GrupoService {
         List<Permissao> permissoes = permissaoRepository.findByIdIn(ids);
 
         if(permissoes.size() != ids.size()) {
-            throw new RuntimeException("Permissões não encontradas");
+            throw new NegocioException("Permissões não encontradas");
         }
         grupo.getPermissoes().clear();
         grupo.getPermissoes().addAll(permissoes);
@@ -102,7 +103,7 @@ public class GrupoService {
         Permissao permissao = buscarPermissaoOuFalhar(permissaoId);
 
         if(grupo.getPermissoes().contains(permissao)) {
-            throw new RuntimeException("Grupo já possui essa permissão");
+            throw new NegocioException("Grupo já possui essa permissão");
         }
         grupo.getPermissoes().add(permissao);
     }

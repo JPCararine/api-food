@@ -1,5 +1,6 @@
 package com.algaworks.algafood.core.validation;
 
+import com.algaworks.algafood.domain.exception.NegocioException;
 import org.springframework.context.annotation.Bean;
 
 import javax.imageio.ImageIO;
@@ -13,7 +14,7 @@ public class ImageValidator {
             BufferedImage imagem = ImageIO.read(inputStream);
 
             if(imagem == null) {
-                throw new RuntimeException("Arquivo não é uma imagem válida");
+                throw new NegocioException("Arquivo não é uma imagem válida");
             }
 
         } catch (Exception e) {
